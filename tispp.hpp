@@ -1,7 +1,3 @@
-//
-// Created by pengcheng on 5/7/19.
-//
-
 #ifndef TISPP_HPP
 #define TISPP_HPP
 
@@ -9,163 +5,135 @@ namespace tispp {
 
 #include "type_traits"
 
-namespace utils {
-/**
- * Fetch return type of a function.
- * e.g. ReturnType<int(int)> = int;
- * @tparam F
- * @tparam Args
- */
-template <class F, class... Args>
-struct ReturnType;
-
-template <class F, class... Args>
-struct ReturnType<F(Args...)> {
-  typedef F type;
-};
-
-/**
- * Fetch type of the first parameter of a function.
- * e.g. ReturnType<int(int)> = int;
- * @tparam F
- * @tparam Args
- */
-template <class F>
-struct ParamType;
-
-template <class F, class Arg>
-struct ParamType<F(Arg)> {
-  typedef Arg type;
-};
-}  // namespace utils
-
-using namespace utils;
-
 namespace ast {
-
-struct Value {};
-
-struct Function {};
-
-/**
- * Boolean type
- * @tparam V
- */
+/// -----------------------------------------------------
+/// Boolean value type.
 template <bool V>
-struct Bool : Value {
+struct Bool {
   typedef bool value_type;
   static const bool value = V;
   static constexpr const char *type_name = "boll";
-  typedef Bool<V> type;
 };
 
-/**
- * Char type
- * @tparam V
- */
+/// -----------------------------------------------------
+/// Char value type.
 template <char V>
-struct Char : Value {
+struct Char {
   typedef char value_type;
   static const char value = V;
   static constexpr const char *type_name = "char";
-  typedef Char<V> type;
 };
 
-/**
- * Int type which wraps a integer value.
- * @tparam V
- */
+/// -----------------------------------------------------
+/// Int value type.
 template <int V>
-struct Int : Value {
+struct Int {
   typedef int value_type;
   static const int value = V;
   static constexpr const char *type_name = "int";
-  typedef Int<V> type;
 };
 
-/**
- * Pair type (tuple).
- * @tparam L
- * @tparam R
- */
+/// -----------------------------------------------------
+/// Pair(tuple2) value type.
 template <typename L, typename R>
-struct Pair : Value {
+struct Pair {
   typedef L first;
   typedef R second;
-  typedef Pair<L, R> type;
 };
 
-/**
- * Nil type. Cons<x, nil> = list<x>
- */
-struct Nil : Value {
+/// -----------------------------------------------------
+/// Nil type. It likes the `void` type in C++.
+struct Nil {
   typedef void value_type;
   static constexpr const char *type_name = "Nil";
   static constexpr const char *value = "nil";
 };
 
-static const Nil nil = Nil();
-
+/// -----------------------------------------------------
+/// List(x,x,x,...)
+/// e.g. List<Int<1>, Int<2>> will be Pair<Int<1>,Pair<Int<2>, Nil>>.
 template <typename T, typename... Args>
-struct List : Function {
-  typedef Pair<T, typename List<Args...>::type> type;
-};
+struct List {};
 
+/// -----------------------------------------------------
+/// cons: construct Pair<L,R> from L and R.
+template <typename L, typename R>
+struct Cons {};
+
+/// -----------------------------------------------------
+/// car: get the first element of a Pair, e.g. Car<Pair<L,R>> will be L.
 template <typename T>
-struct List<T> {
-  typedef Pair<T, Nil> type;
-};
+struct Car {};
 
-struct CarNode {};
+/// -----------------------------------------------------
+/// cdr: get the second element of a Pair, e.g. Cdr<Pair<L,R>> will be R.
+template <typename T>
+struct Cdr {};
 
-struct PlusNode {};
+/// -----------------------------------------------------
+/// +
+template <typename... Args>
+struct Add {};
 
-struct MinusNode {};
+/// -----------------------------------------------------
+/// -
+template <typename... Args>
+struct Sub {};
 
-struct EqualNode {};
+/// -----------------------------------------------------
+/// *
+template <typename... Args>
+struct Mul {};
+
+/// -----------------------------------------------------
+/// /
+template <typename... Args>
+struct Mod {};
+
+/// -----------------------------------------------------
+/// &&
+template <typename... Args>
+struct And {};
+
+/// -----------------------------------------------------
+/// ||
+template <typename... Args>
+struct Or {};
+
+/// -----------------------------------------------------
+/// ==
+template <typename... Args>
+struct IsEqual {};
+
+/// -----------------------------------------------------
+/// >
+template <typename L, typename R>
+struct IsGreaterThan {};
+
+/// -----------------------------------------------------
+/// <
+template <typename L, typename R>
+struct IsLessThan {};
+
+/// -----------------------------------------------------
+/// >=
+template <typename L, typename R>
+struct IsGreaterEqual {};
+
+/// -----------------------------------------------------
+/// <=
+template <typename L, typename R>
+struct IsLessEqual {};
 
 }  // namespace ast
-
 using namespace ast;
 
-namespace builtin {
+namespace utils {
 
-/**
- *
- * @tparam T
- */
-template <typename T>
-struct CarImpl;
-
-template <typename L, typename R>
-struct CarImpl<Pair<L, R>> {
-  typedef L type;
-};
-
-/**
- *
- * @tparam T
- */
-template <typename T>
-struct CdrImpl;
-
-template <typename L, typename R>
-struct CdrImpl<Pair<L, R>> {
-  typedef R type;
-};
-}  // namespace builtin
-
-using namespace builtin;
-
-namespace api {
-
-/**
- * Pack a const value(int/char/bool) into Value type.
- * e.g. PackToValue<int, 1>::packed_type will be Value<Int<1>>
- * @tparam T
- * @tparam V
- */
-template <class T, T V>
+/// -----------------------------------------------------
+/// Pack a const value(int/char/bool) into Value type.
+/// e.g. PackToValue<int, 1>::packed_type will be Value<Int<1>>.
+template <typename T, T V>
 struct PackToType;
 
 template <bool V>
@@ -183,29 +151,106 @@ struct PackToType<int, V> {
   typedef Int<V> type;
 };
 
-/// Macro that wraps a literal value to it's represent type. e.g. v(1) => Int<1>
-#define v(x) PackToType<decltype(x), x>::type
+/// -----------------------------------------------------
+/// Implementation for `Car`
+template <typename T>
+struct CarImpl;
 
-/// Macro that applies `Cdr` on type l
-#define cdr(l) CdrImpl<l>::type
-
-/// Macro that applies `Car` on type l
-#define car(l) CarImpl<l>::type
-
-///
-#define list(args...) typename List<args>::type
-/**
- *
- * @tparam T
- */
-template <class T>
-struct Eval {
-  typedef class T::apply::type type;
+template <typename L, typename R>
+struct CarImpl<Pair<L, R>> {
+  typedef L type;
 };
 
+/// -----------------------------------------------------
+/// Implementation for `Cdr`
+template <typename T>
+struct CdrImpl;
+
+template <typename L, typename R>
+struct CdrImpl<Pair<L, R>> {
+  typedef R type;
+};
+
+/// -----------------------------------------------------
+/// Implementation for `List`
+template <typename T, typename... Args>
+struct ListImpl {
+  typedef Pair<T, typename List<Args...>::type> type;
+};
+
+template <typename T>
+struct ListImpl<T> {
+  typedef Pair<T, Nil> type;
+};
+
+/// -----------------------------------------------------
+/// Implementation for `Add`
+template <typename T, typename... Args>
+struct AddImpl {
+  typedef T L;
+  typedef typename AddImpl<Args...>::type R;
+  typedef decltype(L::value + R::value) value_type;
+  static constexpr const value_type value = L::value + R::value;
+  typedef typename PackToType<value_type, value>::type type;
+};
+
+template <typename T>
+struct AddImpl<T> : T {};
+
+template <typename L, typename R>
+struct AddImpl<L, R> {
+  typedef decltype(L::value + R::value) value_type;
+  static constexpr const value_type value = L::value + R::value;
+  typedef typename PackToType<value_type, value>::type type;
+};
+
+template <typename L, typename R, typename... Args>
+struct AddImpl<L, R, Args...> {
+  typedef AddImpl<L, R> LT;
+  typedef AddImpl<Args...> RT;
+  typedef decltype(LT::value + RT::value) value_type;
+  static constexpr const auto value = LT::value + RT::value;
+  typedef typename PackToType<value_type, value>::type type;
+};
+
+/// -----------------------------------------------------
+/// Most binary operators (-,*,%,...) are of the same form as `AddImpl`,
+/// thus we could implement them with an unified macro.
+
+//
+// ImplementOperator(Sub, -);
+// ImplementOperator(Mul, *);
+// ImplementOperator(Mod, %);
+// ImplementOperator(And, &&);
+// ImplementOperator(Or, ||);
+// ImplementOperator(IsEqual, ==);
+// ImplementOperator(IsGreaterThan, >);
+// ImplementOperator(IsLessThan, <);
+// ImplementOperator(IsGreaterEqual, >=);
+// ImplementOperator(IsLessEqual, <=);
+
+}  // namespace utils
+using namespace utils;
+
+namespace builtin {}  // namespace builtin
+using namespace builtin;
+
+namespace interpreter {
+
+template <typename T>
+struct Eval {
+  typedef T type;
+};
+
+}  // namespace interpreter
+using namespace interpreter;
+
+namespace api {
+
+#define v(x) PackToType<decltype(x), x>::type
+
 }  // namespace api
-
 using namespace api;
-}  // namespace tispp
 
+}  // namespace tispp
 #endif  // TISPP_HPP

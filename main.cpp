@@ -1,5 +1,6 @@
 #include <functional>
 #include <iostream>
+#include <ratio>
 #include "tispp.hpp"
 
 using namespace tispp;
@@ -7,9 +8,8 @@ using namespace tispp;
 int main() {
   std::cout << "Hello, World!" << std::endl;
 
-  typedef list(CarNode, v(1), v(2), v(3), v(4)) L;
-
-  typedef car(cdr(L)) F;
+  std::cout << AddImpl<v(1), v(2), v(3)>::value << std::endl;
+  std::cout << AddImpl<v(1), v(2), v(3)>::value << std::endl;
 
   return 0;
 }
