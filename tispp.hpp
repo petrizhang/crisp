@@ -187,7 +187,7 @@ struct PackToType<int, V> {
 #define v(x) PackToType<decltype(x), x>::type
 
 /// Macro that applies `Cdr` on type l
-#define cdr(l) Cdr<l>::type
+#define cdr(l) CdrImpl<l>::type
 
 /// Macro that applies `Car` on type l
 #define car(l) CarImpl<l>::type
