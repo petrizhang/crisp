@@ -3,4 +3,6 @@ project(tispp)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(tispp main.cpp tispp.hpp)
+add_executable(main.exe main.cpp tispp.hpp)
+
+add_executable(test.exe test.cpp tispp.hpp test.cpp)
