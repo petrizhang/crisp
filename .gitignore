@@ -1,6 +1,7 @@
 .idea
 
 # Cmake files
+cmake-build-*
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
