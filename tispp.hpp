@@ -185,31 +185,10 @@ struct ListImpl<T> {
 
 /// -----------------------------------------------------
 /// Implementation for `Add`
-template <typename T, typename... Args>
-struct AddImpl {
-  typedef T L;
-  typedef typename AddImpl<Args...>::type R;
-  typedef decltype(L::value + R::value) value_type;
-  static constexpr const value_type value = L::value + R::value;
-  typedef typename PackToType<value_type, value>::type type;
-};
-
-template <typename T>
-struct AddImpl<T> : T {};
-
 template <typename L, typename R>
-struct AddImpl<L, R> {
+struct AddImpl {
   typedef decltype(L::value + R::value) value_type;
   static constexpr const value_type value = L::value + R::value;
-  typedef typename PackToType<value_type, value>::type type;
-};
-
-template <typename L, typename R, typename... Args>
-struct AddImpl<L, R, Args...> {
-  typedef AddImpl<L, R> LT;
-  typedef AddImpl<Args...> RT;
-  typedef decltype(LT::value + RT::value) value_type;
-  static constexpr const auto value = LT::value + RT::value;
   typedef typename PackToType<value_type, value>::type type;
 };
 
@@ -217,17 +196,24 @@ struct AddImpl<L, R, Args...> {
 /// Most binary operators (-,*,%,...) are of the same form as `AddImpl`,
 /// thus we could implement them with an unified macro.
 
-//
-// ImplementOperator(Sub, -);
-// ImplementOperator(Mul, *);
-// ImplementOperator(Mod, %);
-// ImplementOperator(And, &&);
-// ImplementOperator(Or, ||);
-// ImplementOperator(IsEqual, ==);
-// ImplementOperator(IsGreaterThan, >);
-// ImplementOperator(IsLessThan, <);
-// ImplementOperator(IsGreaterEqual, >=);
-// ImplementOperator(IsLessEqual, <=);
+#define ImplementOperator(OpName, Operator)                               \
+  template <typename L, typename R>                                       \
+  struct OpName##Impl {                                                   \
+    typedef decltype(L::value Operator R::value) value_type;              \
+    static constexpr const value_type value = L::value Operator R::value; \
+    typedef typename PackToType<value_type, value>::type type;            \
+  };
+
+ImplementOperator(Sub, -);
+ImplementOperator(Mul, *);
+ImplementOperator(Mod, %);
+ImplementOperator(And, &&);
+ImplementOperator(Or, ||);
+ImplementOperator(IsEqual, ==);
+ImplementOperator(IsGreaterThan, >);
+ImplementOperator(IsLessThan, <);
+ImplementOperator(IsGreaterEqual, >=);
+ImplementOperator(IsLessEqual, <=);
 
 }  // namespace utils
 using namespace utils;
