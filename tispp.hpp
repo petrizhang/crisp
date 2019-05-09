@@ -5,197 +5,207 @@
 #ifndef TISPP_HPP
 #define TISPP_HPP
 
-
 namespace tispp {
 
 #include "type_traits"
 
-    namespace utils {
-        /**
-         * Fetch return type of a function.
-         * e.g. ReturnType<int(int)> = int;
-         * @tparam F
-         * @tparam Args
-         */
-        template<class F, class ...Args>
-        struct ReturnType;
+namespace utils {
+/**
+ * Fetch return type of a function.
+ * e.g. ReturnType<int(int)> = int;
+ * @tparam F
+ * @tparam Args
+ */
+template <class F, class... Args>
+struct ReturnType;
 
-        template<class F, class ...Args>
-        struct ReturnType<F(Args...)> {
-            typedef F type;
-        };
+template <class F, class... Args>
+struct ReturnType<F(Args...)> {
+  typedef F type;
+};
 
+/**
+ * Fetch type of the first parameter of a function.
+ * e.g. ReturnType<int(int)> = int;
+ * @tparam F
+ * @tparam Args
+ */
+template <class F>
+struct ParamType;
 
-        /**
-         * Fetch type of the first parameter of a function.
-         * e.g. ReturnType<int(int)> = int;
-         * @tparam F
-         * @tparam Args
-         */
-        template<class F>
-        struct ParamType;
+template <class F, class Arg>
+struct ParamType<F(Arg)> {
+  typedef Arg type;
+};
+}  // namespace utils
 
-        template<class F, class Arg>
-        struct ParamType<F(Arg)> {
-            typedef Arg type;
-        };
-    }
+using namespace utils;
 
-    using namespace utils;
+namespace ast {
 
-    namespace types {
-        struct Value {
-        };
+struct Value {};
 
-        struct Functor {
-        };
+struct Function {};
 
-        /**
-         *
-         * @tparam V
-         */
-        template<bool V>
-        struct Bool : Value {
-            typedef bool value_type;
-            static const bool value = V;
-            static constexpr const char *type_name = "boll";
+/**
+ * Boolean type
+ * @tparam V
+ */
+template <bool V>
+struct Bool : Value {
+  typedef bool value_type;
+  static const bool value = V;
+  static constexpr const char *type_name = "boll";
+  typedef Bool<V> type;
+};
 
-            struct apply {
-                typedef Bool<V> type;
-            };
-        };
+/**
+ * Char type
+ * @tparam V
+ */
+template <char V>
+struct Char : Value {
+  typedef char value_type;
+  static const char value = V;
+  static constexpr const char *type_name = "char";
+  typedef Char<V> type;
+};
 
-        /**
-         *
-         * @tparam V
-         */
-        template<char V>
-        struct Char : Value {
-            typedef char value_type;
-            static const char value = V;
-            static constexpr const char *type_name = "char";
+/**
+ * Int type which wraps a integer value.
+ * @tparam V
+ */
+template <int V>
+struct Int : Value {
+  typedef int value_type;
+  static const int value = V;
+  static constexpr const char *type_name = "int";
+  typedef Int<V> type;
+};
 
-            struct apply {
-                typedef Char<V> type;
-            };
-        };
+/**
+ * Pair type (tuple).
+ * @tparam L
+ * @tparam R
+ */
+template <typename L, typename R>
+struct Pair : Value {
+  typedef L first;
+  typedef R second;
+  typedef Pair<L, R> type;
+};
 
-        /**
-         * Int type which wraps a integer value.
-         * @tparam V
-         */
-        template<int V>
-        struct Int : Value {
-            typedef int value_type;
-            static const int value = V;
-            static constexpr const char *type_name = "int";
+/**
+ * Nil type. Cons<x, nil> = list<x>
+ */
+struct Nil : Value {
+  typedef void value_type;
+  static constexpr const char *type_name = "Nil";
+  static constexpr const char *value = "nil";
+};
 
-            struct apply {
-                typedef Int<V> type;
-            };
-        };
+static const Nil nil = Nil();
 
-        /**
-         * Pack a const value(int/char/bool) to Value type.
-         * e.g. PackToValue<int, 1>::packed_type will be Value<Int<1>>
-         * @tparam T
-         * @tparam V
-         */
-        template<class T, T V>
-        struct PackToType;
+template <typename T, typename... Args>
+struct List : Function {
+  typedef Pair<T, typename List<Args...>::type> type;
+};
 
-        template<bool V>
-        struct PackToType<bool, V> {
-            typedef Bool<V> type;
-        };
+template <typename T>
+struct List<T> {
+  typedef Pair<T, Nil> type;
+};
 
-        template<char V>
-        struct PackToType<char, V> {
-            typedef Char<V> type;
-        };
+struct CarNode {};
 
-        template<int V>
-        struct PackToType<int, V> {
-            typedef Int<V> type;
-        };
-    }
+struct PlusNode {};
 
-    using namespace types;
+struct MinusNode {};
 
-    namespace builtin {
+struct EqualNode {};
 
-#define DefineBinaryOperation(BinaryOpName, op) \
-        template<class L, class R> \
-        struct BinaryOpName : Functor { \
-            typedef decltype(L::value op R::value) value_type; \
-            typedef class PackToType<value_type, L::value op R::value>::type type; \
-        };
+}  // namespace ast
 
-#define DefineListOperation(OpName, BinaryOpName) \
-        template<class T1, class T2, class ...Params> \
-        struct OpName; \
-        \
-        template<class T1, class T2> \
-        struct OpName<T1, T2> : BinaryOpName<T1,T2> { \
-        };
+using namespace ast;
 
-#define CreateFunctionForOperation(FunctionName, OpName) ;
-//        struct FunctionName##Impl { \
-//            template<class ...Args> \
-//            auto operator()(Args... args) const { \
-//
-//            } \
-//        }; \
-//        \
-//        static constexpr const FunctionName##Impl FunctionName;
+namespace builtin {
 
+/**
+ *
+ * @tparam T
+ */
+template <typename T>
+struct CarImpl;
 
-        DefineBinaryOperation(BinaryPlus, +)
-        DefineBinaryOperation(BinaryMinus, -)
-        DefineBinaryOperation(BinaryMul, *)
-        DefineBinaryOperation(BinaryDiv, /)
-        DefineBinaryOperation(BinaryAnd, &&)
-        DefineBinaryOperation(BinaryOr, ||)
+template <typename L, typename R>
+struct CarImpl<Pair<L, R>> {
+  typedef L type;
+};
 
-        DefineListOperation(Plus, BinaryPlus)
-        DefineListOperation(Minus, BinaryMinus)
-        DefineListOperation(Mul, BinaryMul)
-        DefineListOperation(Div, BinaryDiv)
-        DefineListOperation(And, BinaryAnd)
-        DefineListOperation(Or, BinaryOr)
+/**
+ *
+ * @tparam T
+ */
+template <typename T>
+struct CdrImpl;
 
-        CreateFunctionForOperation(plus, Plus)
+template <typename L, typename R>
+struct CdrImpl<Pair<L, R>> {
+  typedef R type;
+};
+}  // namespace builtin
 
-        CreateFunctionForOperation(minus, Minus)
+using namespace builtin;
 
-        CreateFunctionForOperation(mul, Mul)
+namespace api {
 
-        CreateFunctionForOperation(div, Div)
+/**
+ * Pack a const value(int/char/bool) into Value type.
+ * e.g. PackToValue<int, 1>::packed_type will be Value<Int<1>>
+ * @tparam T
+ * @tparam V
+ */
+template <class T, T V>
+struct PackToType;
 
-        CreateFunctionForOperation(_and, And)
+template <bool V>
+struct PackToType<bool, V> {
+  typedef Bool<V> type;
+};
 
-        CreateFunctionForOperation(_or, Or)
-    }
+template <char V>
+struct PackToType<char, V> {
+  typedef Char<V> type;
+};
 
-    using namespace builtin;
+template <int V>
+struct PackToType<int, V> {
+  typedef Int<V> type;
+};
 
-    namespace api {
+/// Macro that wraps a literal value to it's represent type. e.g. v(1) => Int<1>
+#define v(x) PackToType<decltype(x), x>::type
 
-#define call(f, args...)  ReturnType<decltype(f)>::type<args>::type;
+/// Macro that applies `Cdr` on type l
+#define cdr(l) Cdr<l>::type
 
-        /**
-         *
-         * @tparam T
-         */
-        template<class T>
-        struct Eval {
-            typedef class T::apply::type type;
-        };
+/// Macro that applies `Car` on type l
+#define car(l) CarImpl<l>::type
 
-    }
+///
+#define list(args...) typename List<args>::type
+/**
+ *
+ * @tparam T
+ */
+template <class T>
+struct Eval {
+  typedef class T::apply::type type;
+};
 
-    using namespace api;
-}
+}  // namespace api
 
+using namespace api;
+}  // namespace tispp
 
-#endif //TISPP_HPP
+#endif  // TISPP_HPP
