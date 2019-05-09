@@ -61,6 +61,11 @@ struct Symbol<c, args...> {
 };
 
 /// ----------------------------------------------------------------------------
+/// Function parameter placeholder.
+template <char... args>
+struct Var : Symbol<args...> {};
+
+/// ----------------------------------------------------------------------------
 /// Pair(tuple2) value type.
 template <typename L, typename R>
 struct Pair {};
