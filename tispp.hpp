@@ -126,7 +126,7 @@ struct Or {};
 
 /// ----------------------------------------------------------------------------
 /// ==
-template <typename... Args>
+template <typename L, typename R>
 struct IsEqual {};
 
 /// ----------------------------------------------------------------------------
@@ -227,7 +227,7 @@ struct AddImpl<Int<LV>, Int<RV>> {
   typedef Int<LV + RV> type;
 };
 
-/// Most numeric operators (-,*,%,...) follow the same pattern as
+/// Most binary operators (-,*,%,...) follow the same pattern as
 /// `AddImpl`, thus we could implement them with an unified macro.
 #define BinaryOperator(OpName, Operator, LeftValueType, LeftType,     \
                        RightValueType, RightType, ResultType)         \
@@ -245,12 +245,20 @@ struct AddImpl<Int<LV>, Int<RV>> {
 BinaryOperator(Sub, -, int, Int, int, Int, Int);
 BinaryOperator(Mul, *, int, Int, int, Int, Int);
 BinaryOperator(Mod, %, int, Int, int, Int, Int);
+BinaryOperator(And, &&, bool, Bool, bool, Bool, Bool);
+BinaryOperator(Or, ||, bool, Bool, bool, Bool, Bool);
 BinaryOperator(IsGreaterThan, >, int, Int, int, Int, Bool);
 BinaryOperator(IsLessThan, <, int, Int, int, Int, Bool);
 BinaryOperator(IsGreaterEqual, >=, int, Int, int, Int, Bool);
 BinaryOperator(IsLessEqual, <=, int, Int, int, Int, Bool);
-BinaryOperator(And, &&, bool, Bool, bool, Bool, Bool);
-BinaryOperator(Or, ||, bool, Bool, bool, Bool, Bool);
+
+/// ----------------------------------------------------------------------------
+/// Implementation for `IsEqual`
+/// If two types are the same, then the values they represent are the same.
+template <typename L, typename R>
+struct IsEqualImpl {
+  typedef Bool<std::is_same<L, R>::value> type;
+};
 
 }  // namespace utils
 using namespace utils;
@@ -260,11 +268,15 @@ using namespace builtin;
 
 namespace interpreter {
 
+/// ----------------------------------------------------------------------------
+/// Interpreter implementation
 template <typename T>
 struct Eval : T {
   typedef T type;
 };
 
+/// ----------------------------------------------------------------------------
+/// Eval Add<n1,n2,n3,...>
 template <typename T>
 struct Eval<Add<T>> {
   typedef T type;
@@ -283,6 +295,55 @@ struct Eval<Add<L, R, Args...>> {
   typedef typename Eval<Add<Args...>>::type RT;
   typedef typename AddImpl<LT, RT>::type type;
 };
+
+/// ----------------------------------------------------------------------------
+/// Eval chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
+#define EvalForChainOperator(OpName)                                  \
+  template <typename T>                                               \
+  struct Eval<OpName<T>> {                                            \
+    typedef T type;                                                   \
+  };                                                                  \
+                                                                      \
+  template <typename L, typename R>                                   \
+  struct Eval<OpName<L, R>> {                                         \
+    typedef typename OpName##Impl<typename Eval<L>::type,             \
+                                  typename Eval<R>::type>::type type; \
+  };                                                                  \
+                                                                      \
+  template <typename L, typename R, typename... Args>                 \
+  struct Eval<OpName<L, R, Args...>> {                                \
+    typedef typename OpName##Impl<typename Eval<L>::type,             \
+                                  typename Eval<R>::type>::type LT;   \
+    typedef typename Eval<OpName<Args...>>::type RT;                  \
+    typedef typename OpName##Impl<LT, RT>::type type;                 \
+  };
+
+EvalForChainOperator(Sub);
+EvalForChainOperator(Mul);
+EvalForChainOperator(Mod);
+EvalForChainOperator(And);
+EvalForChainOperator(Or);
+
+/// ----------------------------------------------------------------------------
+/// Eval IsEqual<L,R>
+template <typename L, typename R>
+struct Eval<IsEqual<L, R>> {
+  typedef
+      typename IsEqualImpl<typename Eval<L>::type, typename Eval<R>::type>::type
+          type;
+};
+
+#define EvalForBinaryOperator(OpName)                                 \
+  template <typename L, typename R>                                   \
+  struct Eval<OpName<L, R>> {                                         \
+    typedef typename OpName##Impl<typename Eval<L>::type,             \
+                                  typename Eval<R>::type>::type type; \
+  };
+
+EvalForBinaryOperator(IsGreaterThan);
+EvalForBinaryOperator(IsLessThan);
+EvalForBinaryOperator(IsGreaterEqual);
+EvalForBinaryOperator(IsLessEqual);
 
 }  // namespace interpreter
 using namespace interpreter;
