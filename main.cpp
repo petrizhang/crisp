@@ -46,8 +46,6 @@ using program =
         v(1),
         v(2));
 
-
-
 template <typename P, typename Key>
 struct LookupEnv {
   using type = Int<1>;

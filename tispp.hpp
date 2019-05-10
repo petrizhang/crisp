@@ -12,7 +12,7 @@ namespace ast {
 template <bool V>
 struct Bool {
   /// These members and methods are used for interacting with c++ at runtime.
-  static constexpr const char *type_name = "bool";
+  static constexpr const char *repr = "bool";
   using c_type = bool;
   static constexpr c_type c_value() { return V; };
 };
@@ -22,7 +22,7 @@ struct Bool {
 template <char V>
 struct Char {
   /// These members and methods are used for interacting with c++ at runtime.
-  static constexpr const char *type_name = "char";
+  static constexpr const char *repr = "char";
   using c_type = char;
   static constexpr c_type c_value() { return V; };
 };
@@ -32,7 +32,7 @@ struct Char {
 template <int V>
 struct Int {
   /// These members and methods are used for interacting with c++ at runtime.
-  static constexpr const char *type_name = "int";
+  static constexpr const char *repr = "int";
   using c_type = int;
   static constexpr c_type c_value() { return V; };
 };
@@ -45,7 +45,7 @@ struct Symbol;
 template <char c>
 struct Symbol<c> {
   /// These members and methods are used for interacting with c++ at runtime.
-  static constexpr const char *type_name = "symbol";
+  static constexpr const char *repr = "symbol";
   using c_type = std::string;
   static const c_type c_value() { return std::string(1, c); }
 };
@@ -53,7 +53,7 @@ struct Symbol<c> {
 template <char c, char... args>
 struct Symbol<c, args...> {
   /// These members and methods are used for interacting with c++ at runtime.
-  static constexpr const char *type_name = "symbol";
+  static constexpr const char *repr = "symbol";
   using c_type = std::string;
   static const c_type c_value() {
     return std::string(1, c) + Symbol<args...>::c_value();
@@ -73,7 +73,7 @@ struct Pair {};
 /// ----------------------------------------------------------------------------
 /// Nil type. It likes the `void` type in C++.
 struct Nil {
-  static constexpr const char *type_name = "Nil";
+  static constexpr const char *repr = "Nil";
   using c_type = void;
   static constexpr const char *c_value() {
     return "nil";
@@ -84,83 +84,111 @@ struct Nil {
 /// List(x,x,x,...)
 /// e.g. List<Int<1>, Int<2>> will be Pair<Int<1>,Pair<Int<2>, Nil>>.
 template <typename T, typename... Args>
-struct List {};
+struct List {
+  static constexpr const char *repr = "list";
+};
 
 /// ----------------------------------------------------------------------------
 /// cons: construct Pair<L,R> from L and R.
 template <typename L, typename R>
-struct Cons {};
+struct Cons {
+  static constexpr const char *repr = "cons";
+};
 
 /// ----------------------------------------------------------------------------
 /// car: get the first element of a Pair, e.g. Car<Pair<L,R>> will be L.
 template <typename T>
-struct Car {};
+struct Car {
+  static constexpr const char *repr = "car";
+};
 
 /// ----------------------------------------------------------------------------
 /// cdr: get the second element of a Pair, e.g. Cdr<Pair<L,R>> will be R.
 template <typename T>
-struct Cdr {};
+struct Cdr {
+  static constexpr const char *repr = "cdr";
+};
 
 /// ----------------------------------------------------------------------------
 /// +
 template <typename... Args>
-struct Add {};
+struct Add {
+  static constexpr const char *repr = "+";
+};
 
 /// ----------------------------------------------------------------------------
 /// -
 template <typename... Args>
-struct Sub {};
+struct Sub {
+  static constexpr const char *repr = "-";
+};
 
 /// ----------------------------------------------------------------------------
 /// *
 template <typename... Args>
-struct Mul {};
+struct Mul {
+  static constexpr const char *repr = "*";
+};
 
 /// ----------------------------------------------------------------------------
 /// /
 template <typename... Args>
-struct Mod {};
+struct Mod {
+  static constexpr const char *repr = "/";
+};
 
 /// ----------------------------------------------------------------------------
 /// &&
 template <typename... Args>
-struct And {};
+struct And {
+  static constexpr const char *repr = "and";
+};
 
 /// ----------------------------------------------------------------------------
 /// ||
 template <typename... Args>
-struct Or {};
+struct Or {
+  static constexpr const char *repr = "or";
+};
 
 /// ----------------------------------------------------------------------------
 /// ==
 template <typename L, typename R>
-struct IsEqual {};
+struct IsEqual {
+  static constexpr const char *repr = "==";
+};
 
 /// ----------------------------------------------------------------------------
 /// >
 template <typename L, typename R>
-struct IsGreaterThan {};
+struct IsGreaterThan {
+  static constexpr const char *repr = ">";
+};
 
 /// ----------------------------------------------------------------------------
 /// <
 template <typename L, typename R>
-struct IsLessThan {};
+struct IsLessThan {
+  static constexpr const char *repr = "<";
+};
 
 /// ----------------------------------------------------------------------------
 /// >=
 template <typename L, typename R>
-struct IsGreaterEqual {};
+struct IsGreaterEqual {
+  static constexpr const char *repr = ">=";
+};
 
 /// ----------------------------------------------------------------------------
 /// <=
 template <typename L, typename R>
-struct IsLessEqual {};
-
+struct IsLessEqual {
+  static constexpr const char *repr = "<=";
+};
 }  // namespace ast
 using namespace ast;
 
 namespace utils {
-
 /// ----------------------------------------------------------------------------
 /// Use this type in static_assert to trigger a compiling error.
 template <typename...>
@@ -268,7 +296,7 @@ struct IsEqualImpl {
 };
 
 /// ----------------------------------------------------------------------------
-/// A Dictionary (map-like) type used for variable lookup.
+/// A Dictionary (map-like) type used as a symbol table.
 template <typename L = Nil, typename R = Nil>
 using DictImpl = Pair<L, R>;
 
@@ -309,15 +337,10 @@ template <typename T, typename K, typename V, typename Tail>
 struct DictGetImpl<DictImpl<Pair<T, V>, Tail>, K> {
   using type = typename DictGetImpl<Tail, K>::type;
 };
-
 }  // namespace utils
 using namespace utils;
 
-namespace builtin {}  // namespace builtin
-using namespace builtin;
-
 namespace interpreter {
-
 /// ----------------------------------------------------------------------------
 /// Interpreter implementation
 template <typename T>
@@ -398,7 +421,6 @@ EvalForBinaryOperator(IsLessEqual);
 using namespace interpreter;
 
 namespace api {
-
 #define v(x) PackToType<decltype(x), x>::type
 #define add(args...) Add<args>
 #define sub(args...) Sub<args>
@@ -419,7 +441,6 @@ namespace api {
 #define call(f, args...) Call<f, args>
 #define seq(args...) Seq<args>
 #define eval(s) Eval<s>
-
 }  // namespace api
 using namespace api;
 
