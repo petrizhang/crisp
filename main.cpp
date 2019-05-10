@@ -6,6 +6,9 @@
 using namespace tispp;
 
 template <typename... Args>
+struct Seq {};
+
+template <typename... Args>
 struct ParamList {};
 
 template <typename... Args>
@@ -20,51 +23,64 @@ struct Call {};
 template <typename Params, typename Body>
 struct Lambda {};
 
-// clang-format off
-typedef Lambda<
-    ParamList<Id<'a'>, Id<'b'>>,
-    Add<Id<'a'>, Id<'b'>>> add;
+using add = Lambda<
+    ParamList<Var<'a'>, Var<'b'>>,
+    Add<Var<'a'>, Var<'b'>>>;
 
-typedef Lambda<
-    ParamList<Id<'x'>>,
+using make_add_x_y = Lambda<
+    ParamList<Var<'x'>>,
     Lambda<
-        ParamList<Id<'y'>>,
-        Add<Id<'x'>, Id<'y'>>>> make_add_x_y;
+        ParamList<Var<'y'>>,
+        Add<Var<'x'>, Var<'y'>>>>;
 
-using fac = Id<'f','a','c'>;
+using fac = Var<'f', 'a', 'c'>;
+using x = Var<'x'>;
+using y = Var<'y'>;
 
-using fac_def =
-define(fac,
-    lambda(params(id('n')),
-        _if(eq(id('x'), v(1)),
-            v(1),
-            call(fac, sub(id('n'),v(1))))));
+using program =
+    seq(define(fac,
+               lambda(params(var('n')),
+                      _if(eq(var('x'), v(1)),
+                          v(1),
+                          call(fac, sub(var('n'), v(1)))))),
+        v(1),
+        v(2));
 
-// clang-format on
-template <typename... Args>
-struct Extend {
+
+
+template <typename P, typename Key>
+struct LookupEnv {
+  using type = Int<1>;
+};
+
+template <typename Expr>
+struct interp {
+  using env = int;
+};
+
+template <typename Ident, typename Value>
+struct interp<Define<Ident, Value>> {
+  using env = int;
+};
+
+template <char... args>
+struct interp<Var<args...>> {
   using type = int;
 };
 
-template <typename Env, typename Expr>
-struct interp;
+using program =
+    seq(define(fac,
+               lambda(params(var('n')),
+                      _if(eq(var('x'), v(1)),
+                          v(1),
+                          call(fac, sub(var('n'), v(1)))))),
+        v(1),
+        v(2));
 
-template <typename Env, typename Ident, typename Value>
-struct interp<Env, Define<Ident, Value>> {
-  using env = typename Extend<Env, Pair<Ident, Value>>::type;
-  struct Eval {};
-};
+using program1 =
+    seq(define(var('a'), v(5)),
+        var('a'));
 
-template <typename Env, typename... Args>
-struct interp<Env, Add<Args...>> {
-  using env = Env;
-  using type = typename AddImpl<Args...>::type;
-};
-
-// clang-format on
 int main() {
-  std::cout << "Hello, World!" << std::endl;
-  std::cout << eval(eq(v(1), v(1)))::type::c_value() << std::endl;
-  std::cout << eval(add(v(1), v(1000)))::type::c_value() << std::endl;
-  return 0;
+
 }

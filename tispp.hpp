@@ -61,9 +61,9 @@ struct Symbol<c, args...> {
 };
 
 /// ----------------------------------------------------------------------------
-/// Function parameter placeholder.
+/// Variable reference or an identifier used in function parameters and variable definition.
 template <char... args>
-struct Id : Symbol<args...> {};
+struct Var : Symbol<args...> {};
 
 /// ----------------------------------------------------------------------------
 /// Pair(tuple2) value type.
@@ -75,7 +75,9 @@ struct Pair {};
 struct Nil {
   static constexpr const char *type_name = "Nil";
   using c_type = void;
-  static constexpr const char *value = "nil";
+  static constexpr const char *c_value() {
+    return "nil";
+  };
 };
 
 /// ----------------------------------------------------------------------------
@@ -265,6 +267,49 @@ struct IsEqualImpl {
   using type = Bool<std::is_same<L, R>::value>;
 };
 
+/// ----------------------------------------------------------------------------
+/// A Dictionary (map-like) type used for variable lookup.
+template <typename L = Nil, typename R = Nil>
+using DictImpl = Pair<L, R>;
+
+template <typename dict, typename K, typename V>
+struct DictPutImpl {
+  using type = DictImpl<Pair<K, V>, dict>;
+};
+
+template <typename K, typename V>
+struct DictPutImpl<DictImpl<Nil, Nil>, K, V> {
+  using type = DictImpl<Pair<K, V>, Nil>;
+};
+
+template <typename P, typename K, typename V>
+struct DictPutImpl<DictImpl<P, Nil>, K, V> {
+  using type = DictImpl<Pair<K, V>, DictImpl<P, Nil>>;
+};
+
+template <typename dict, typename K>
+struct DictGetImpl;
+
+template <typename K>
+struct DictGetImpl<DictImpl<Nil, Nil>, K> {
+  static_assert(type_checker<K>::value, "Cannot find variable.");
+};
+
+template <typename K, typename V>
+struct DictGetImpl<DictImpl<Pair<K, V>, Nil>, K> {
+  using type = V;
+};
+
+template <typename K, typename V, typename Tail>
+struct DictGetImpl<DictImpl<Pair<K, V>, Tail>, K> {
+  using type = V;
+};
+
+template <typename T, typename K, typename V, typename Tail>
+struct DictGetImpl<DictImpl<Pair<T, V>, Tail>, K> {
+  using type = typename DictGetImpl<Tail, K>::type;
+};
+
 }  // namespace utils
 using namespace utils;
 
@@ -364,7 +409,7 @@ namespace api {
 #define lt(args...) IsLessThan<args>
 #define ge(args...) IsGreatEqual<args>
 #define le(args...) IsLessEqual<args>
-#define id(args...) Id<args>
+#define var(args...) Var<args>
 #define _or(args...) Or<args>
 #define _and(args...) And<args>
 #define define(args...) Define<args>
@@ -372,6 +417,7 @@ namespace api {
 #define params(args...) ParamList<args>
 #define lambda(args...) Lambda<args>
 #define call(f, args...) Call<f, args>
+#define seq(args...) Seq<args>
 #define eval(s) Eval<s>
 
 }  // namespace api

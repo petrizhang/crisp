@@ -4,6 +4,22 @@
 
 using namespace tispp;
 
+void TestDict() {
+  using x = var('x');
+  using y = var('y');
+  using d = DictImpl<>;
+  using d1 = DictPutImpl<d, x, Int<1>>::type;
+  using d2 = DictPutImpl<d1, y, Int<2>>::type;
+  using d3 = DictPutImpl<d2, x, Int<3>>::type;
+  using d4 = DictPutImpl<d3, y, Int<4>>::type;
+
+  static_assert(DictGetImpl<d1, x>::type::c_value() == 1, "");
+  static_assert(DictGetImpl<d2, x>::type::c_value() == 1, "");
+  static_assert(DictGetImpl<d2, y>::type::c_value() == 2, "");
+  static_assert(DictGetImpl<d3, x>::type::c_value() == 3, "");
+  static_assert(DictGetImpl<d4, y>::type::c_value() == 4, "");
+}
+
 void TestBinaryOpImpl() {
   static_assert((AddImpl<v(3), v(4)>::type::c_value() == 7), "");
   static_assert((SubImpl<v(100), v(4)>::type::c_value() == 96), "");
@@ -27,6 +43,7 @@ void TestEvalBinaryOp() {
 }
 
 int main() {
+  TestDict();
   TestBinaryOpImpl();
   TestEvalBinaryOp();
   return 0;
