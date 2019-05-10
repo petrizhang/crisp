@@ -13,7 +13,7 @@ template <bool V>
 struct Bool {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *type_name = "bool";
-  typedef bool c_type;
+  using c_type = bool;
   static constexpr c_type c_value() { return V; };
 };
 
@@ -23,7 +23,7 @@ template <char V>
 struct Char {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *type_name = "char";
-  typedef char c_type;
+  using c_type = char;
   static constexpr c_type c_value() { return V; };
 };
 
@@ -33,7 +33,7 @@ template <int V>
 struct Int {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *type_name = "int";
-  typedef int c_type;
+  using c_type = int;
   static constexpr c_type c_value() { return V; };
 };
 
@@ -46,7 +46,7 @@ template <char c>
 struct Symbol<c> {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *type_name = "symbol";
-  typedef std::string c_type;
+  using c_type = std::string;
   static const c_type c_value() { return std::string(1, c); }
 };
 
@@ -54,7 +54,7 @@ template <char c, char... args>
 struct Symbol<c, args...> {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *type_name = "symbol";
-  typedef std::string c_type;
+  using c_type = std::string;
   static const c_type c_value() {
     return std::string(1, c) + Symbol<args...>::c_value();
   }
@@ -73,8 +73,8 @@ struct Pair {};
 /// ----------------------------------------------------------------------------
 /// Nil type. It likes the `void` type in C++.
 struct Nil {
-  typedef void c_type;
   static constexpr const char *type_name = "Nil";
+  using c_type = void;
   static constexpr const char *value = "nil";
 };
 
@@ -174,17 +174,17 @@ struct PackToType;
 
 template <bool V>
 struct PackToType<bool, V> {
-  typedef Bool<V> type;
+  using type = Bool<V>;
 };
 
 template <char V>
 struct PackToType<char, V> {
-  typedef Char<V> type;
+  using type = Char<V>;
 };
 
 template <int V>
 struct PackToType<int, V> {
-  typedef Int<V> type;
+  using type = Int<V>;
 };
 
 /// ----------------------------------------------------------------------------
@@ -194,7 +194,7 @@ struct CarImpl;
 
 template <typename L, typename R>
 struct CarImpl<Pair<L, R>> {
-  typedef L type;
+  using type = L;
 };
 
 /// ----------------------------------------------------------------------------
@@ -204,19 +204,19 @@ struct CdrImpl;
 
 template <typename L, typename R>
 struct CdrImpl<Pair<L, R>> {
-  typedef R type;
+  using type = R;
 };
 
 /// ----------------------------------------------------------------------------
 /// Implementation for `List`
 template <typename T, typename... Args>
 struct ListImpl {
-  typedef Pair<T, typename List<Args...>::type> type;
+  using type = Pair<T, typename List<Args...>::type>;
 };
 
 template <typename T>
 struct ListImpl<T> {
-  typedef Pair<T, Nil> type;
+  using type = Pair<T, Nil>;
 };
 
 /// ----------------------------------------------------------------------------
@@ -229,7 +229,7 @@ struct AddImpl {
 
 template <int LV, int RV>
 struct AddImpl<Int<LV>, Int<RV>> {
-  typedef Int<LV + RV> type;
+  using type = Int<LV + RV>;
 };
 
 /// Most binary operators (-,*,%,...) follow the same pattern as
@@ -244,7 +244,7 @@ struct AddImpl<Int<LV>, Int<RV>> {
                                                                       \
   template <LeftValueType LV, RightValueType RV>                      \
   struct OpName##Impl<LeftType<LV>, RightType<RV>> {                  \
-    typedef ResultType<(LV Operator RV)> type;                        \
+    using type = ResultType<(LV Operator RV)>;                        \
   };
 
 BinaryOperator(Sub, -, int, Int, int, Int, Int);
@@ -262,7 +262,7 @@ BinaryOperator(IsLessEqual, <=, int, Int, int, Int, Bool);
 /// If two types are the same, then the values they represent are the same.
 template <typename L, typename R>
 struct IsEqualImpl {
-  typedef Bool<std::is_same<L, R>::value> type;
+  using type = Bool<std::is_same<L, R>::value>;
 };
 
 }  // namespace utils
@@ -277,14 +277,14 @@ namespace interpreter {
 /// Interpreter implementation
 template <typename T>
 struct Eval : T {
-  typedef T type;
+  using type = T;
 };
 
 /// ----------------------------------------------------------------------------
 /// Eval Add<n1,n2,n3,...>
 template <typename T>
 struct Eval<Add<T>> {
-  typedef T type;
+  using type = T;
 };
 
 template <typename L, typename R>
@@ -295,10 +295,10 @@ struct Eval<Add<L, R>> {
 
 template <typename L, typename R, typename... Args>
 struct Eval<Add<L, R, Args...>> {
-  typedef
-      typename AddImpl<typename Eval<L>::type, typename Eval<R>::type>::type LT;
-  typedef typename Eval<Add<Args...>>::type RT;
-  typedef typename AddImpl<LT, RT>::type type;
+  using LT =
+      typename AddImpl<typename Eval<L>::type, typename Eval<R>::type>::type;
+  using RT = typename Eval<Add<Args...>>::type;
+  using type = typename AddImpl<LT, RT>::type;
 };
 
 /// ----------------------------------------------------------------------------
@@ -306,21 +306,21 @@ struct Eval<Add<L, R, Args...>> {
 #define EvalForChainOperator(OpName)                                  \
   template <typename T>                                               \
   struct Eval<OpName<T>> {                                            \
-    typedef T type;                                                   \
+    using type = T;                                                   \
   };                                                                  \
                                                                       \
   template <typename L, typename R>                                   \
   struct Eval<OpName<L, R>> {                                         \
-    typedef typename OpName##Impl<typename Eval<L>::type,             \
-                                  typename Eval<R>::type>::type type; \
+    using type = typename OpName##Impl<typename Eval<L>::type,        \
+                                       typename Eval<R>::type>::type; \
   };                                                                  \
                                                                       \
   template <typename L, typename R, typename... Args>                 \
   struct Eval<OpName<L, R, Args...>> {                                \
-    typedef typename OpName##Impl<typename Eval<L>::type,             \
-                                  typename Eval<R>::type>::type LT;   \
-    typedef typename Eval<OpName<Args...>>::type RT;                  \
-    typedef typename OpName##Impl<LT, RT>::type type;                 \
+    using LT = typename OpName##Impl<typename Eval<L>::type,          \
+                                     typename Eval<R>::type>::type;   \
+    using RT = typename Eval<OpName<Args...>>::type;                  \
+    using type = typename OpName##Impl<LT, RT>::type;                 \
   };
 
 EvalForChainOperator(Sub);
@@ -333,16 +333,15 @@ EvalForChainOperator(Or);
 /// Eval IsEqual<L,R>
 template <typename L, typename R>
 struct Eval<IsEqual<L, R>> {
-  typedef
-      typename IsEqualImpl<typename Eval<L>::type, typename Eval<R>::type>::type
-          type;
+  using type = typename IsEqualImpl<typename Eval<L>::type,
+                                    typename Eval<R>::type>::type;
 };
 
 #define EvalForBinaryOperator(OpName)                                 \
   template <typename L, typename R>                                   \
   struct Eval<OpName<L, R>> {                                         \
-    typedef typename OpName##Impl<typename Eval<L>::type,             \
-                                  typename Eval<R>::type>::type type; \
+    using type = typename OpName##Impl<typename Eval<L>::type,        \
+                                       typename Eval<R>::type>::type; \
   };
 
 EvalForBinaryOperator(IsGreaterThan);

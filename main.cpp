@@ -41,6 +41,27 @@ define(fac,
             call(fac, sub(id('n'),v(1))))));
 
 // clang-format on
+template <typename... Args>
+struct Extend {
+  using type = int;
+};
+
+template <typename Env, typename Expr>
+struct interp;
+
+template <typename Env, typename Ident, typename Value>
+struct interp<Env, Define<Ident, Value>> {
+  using env = typename Extend<Env, Pair<Ident, Value>>::type;
+  struct Eval {};
+};
+
+template <typename Env, typename... Args>
+struct interp<Env, Add<Args...>> {
+  using env = Env;
+  using type = typename AddImpl<Args...>::type;
+};
+
+// clang-format on
 int main() {
   std::cout << "Hello, World!" << std::endl;
   std::cout << eval(eq(v(1), v(1)))::type::c_value() << std::endl;
