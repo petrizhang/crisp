@@ -296,47 +296,85 @@ struct IsEqualImpl {
 };
 
 /// ----------------------------------------------------------------------------
-/// A Dictionary (map-like) type used as a symbol table.
-template <typename L = Nil, typename R = Nil>
-using DictImpl = Pair<L, R>;
+/// A array-like collection type.
+template <typename... Elements>
+struct Array {};
 
-template <typename dict, typename K, typename V>
-struct DictPutImpl {
-  using type = DictImpl<Pair<K, V>, dict>;
+template <typename array, typename Elem>
+struct ArrayPushFront;
+
+template <typename Elem, typename... Elements>
+struct ArrayPushFront<Array<Elements...>, Elem> {
+  using type = Array<Elem, Elements...>;
+};
+
+template <typename array>
+struct ArrayPopFront;
+
+template <typename Elem, typename... Elements>
+struct ArrayPopFront<Array<Elem, Elements...>> {
+  using type = Array<Elements...>;
+};
+
+/// ----------------------------------------------------------------------------
+/// A map-like collection type.
+template <typename... Pairs>
+using Dict = Array<Pairs...>;
+
+template <typename dict, typename pair>
+using DictPut = ArrayPushFront<dict, pair>;
+
+template <typename dict, typename K>
+struct DictGet {
+  using type = Nil;
 };
 
 template <typename K, typename V>
-struct DictPutImpl<DictImpl<Nil, Nil>, K, V> {
-  using type = DictImpl<Pair<K, V>, Nil>;
+struct DictGet<Dict<Pair<K, V>>, K> {
+  using type = V;
 };
 
-template <typename P, typename K, typename V>
-struct DictPutImpl<DictImpl<P, Nil>, K, V> {
-  using type = DictImpl<Pair<K, V>, DictImpl<P, Nil>>;
+template <typename K, typename V, typename... Tail>
+struct DictGet<Dict<Pair<K, V>, Tail...>, K> {
+  using type = V;
 };
 
-template <typename dict, typename K>
-struct DictGetImpl;
+template <typename K, typename V, typename T, typename... Tail>
+struct DictGet<Dict<Pair<T, V>, Tail...>, K> {
+  using type = typename DictGet<Dict<Tail...>, K>::type;
+};
 
-template <typename K>
-struct DictGetImpl<DictImpl<Nil, Nil>, K> {
+/// ----------------------------------------------------------------------------
+/// Environment stack implementation.
+/// Every element in the stack is a symbol table for a specific lexical scope.
+template <typename... Dicts>
+using Env = Array<Dicts...>;
+
+template <typename env, typename dict>
+using EnvPush = ArrayPushFront<env, dict>;
+
+template <typename env>
+using EnvPop = ArrayPopFront<env>;
+
+template <typename env, typename K>
+struct LookupEnv {
   static_assert(type_checker<K>::value, "Cannot find variable.");
 };
 
-template <typename K, typename V>
-struct DictGetImpl<DictImpl<Pair<K, V>, Nil>, K> {
-  using type = V;
+template <typename K, typename dict>
+struct LookupEnv<Env<dict>, K> {
+  using type = typename DictGet<dict, K>::type;
 };
 
-template <typename K, typename V, typename Tail>
-struct DictGetImpl<DictImpl<Pair<K, V>, Tail>, K> {
-  using type = V;
+template <typename K, typename dict, typename... Tail>
+struct LookupEnv<Env<dict, Tail...>, K> {
+  using current_scope_value = typename DictGet<dict, K>::type;
+  using type = typename std::conditional<std::is_same<current_scope_value, Nil>::value,
+                                         typename LookupEnv<Env<Tail...>, K>::type,
+                                         current_scope_value>::type;
+  static_assert(!std::is_same<type, Nil>::value, "Cannot find variable.");
 };
 
-template <typename T, typename K, typename V, typename Tail>
-struct DictGetImpl<DictImpl<Pair<T, V>, Tail>, K> {
-  using type = typename DictGetImpl<Tail, K>::type;
-};
 }  // namespace utils
 using namespace utils;
 

@@ -46,11 +46,6 @@ using program =
         v(1),
         v(2));
 
-template <typename P, typename Key>
-struct LookupEnv {
-  using type = Int<1>;
-};
-
 template <typename Expr>
 struct interp {
   using env = int;
@@ -80,5 +75,9 @@ using program1 =
         var('a'));
 
 int main() {
-
+  using x = var('x');
+  using y = var('y');
+  LookupEnv<
+      Array<Array<Pair<Var<'x'>, Int<1>>>>,
+      Var<'y'>>;
 }
