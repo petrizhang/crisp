@@ -22,25 +22,28 @@ struct Lambda {};
 
 // clang-format off
 typedef Lambda<
-    ParamList<Var<'a'>, Var<'b'>>,
-    Add<Var<'a'>, Var<'b'>>> add;
+    ParamList<Id<'a'>, Id<'b'>>,
+    Add<Id<'a'>, Id<'b'>>> add;
 
 typedef Lambda<
-    ParamList<Var<'x'>>,
+    ParamList<Id<'x'>>,
     Lambda<
-        ParamList<Var<'y'>>,
-        Add<Var<'x'>, Var<'y'>>>> make_add_x_y;
+        ParamList<Id<'y'>>,
+        Add<Id<'x'>, Id<'y'>>>> make_add_x_y;
 
-typedef
-Define<Symbol<'x'>,
-    Lambda<ParamList<Var<'n'>>,
-        If<IsEqual<Var<'x'>, v(1)>,
+using fac = Id<'f','a','c'>;
+
+using fac_def =
+define(fac,
+    lambda(params(id('n')),
+        _if(eq(id('x'), v(1)),
             v(1),
-            Call<Symbol<'x'>,Sub<Var<'n'>,v(1)>>>>> factorial;
+            call(fac, sub(id('n'),v(1))))));
 
+// clang-format on
 int main() {
-std::cout << "Hello, World!" << std::endl;
-  Eval<factorial>::type a;
-  Eval<Call<Symbol<'x'>,v(10)>>::type b;
+  std::cout << "Hello, World!" << std::endl;
+  std::cout << eval(eq(v(1), v(1)))::type::c_value() << std::endl;
+  std::cout << eval(add(v(1), v(1000)))::type::c_value() << std::endl;
   return 0;
 }

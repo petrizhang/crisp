@@ -63,7 +63,7 @@ struct Symbol<c, args...> {
 /// ----------------------------------------------------------------------------
 /// Function parameter placeholder.
 template <char... args>
-struct Var : Symbol<args...> {};
+struct Id : Symbol<args...> {};
 
 /// ----------------------------------------------------------------------------
 /// Pair(tuple2) value type.
@@ -356,6 +356,24 @@ using namespace interpreter;
 namespace api {
 
 #define v(x) PackToType<decltype(x), x>::type
+#define add(args...) Add<args>
+#define sub(args...) Sub<args>
+#define mul(args...) Mul<args>
+#define mod(args...) Mod<args>
+#define eq(args...) IsEqual<args>
+#define gt(args...) IsGreaterThan<args>
+#define lt(args...) IsLessThan<args>
+#define ge(args...) IsGreatEqual<args>
+#define le(args...) IsLessEqual<args>
+#define id(args...) Id<args>
+#define _or(args...) Or<args>
+#define _and(args...) And<args>
+#define define(args...) Define<args>
+#define _if(args...) If<args>
+#define params(args...) ParamList<args>
+#define lambda(args...) Lambda<args>
+#define call(f, args...) Call<f, args>
+#define eval(s) Eval<s>
 
 }  // namespace api
 using namespace api;
