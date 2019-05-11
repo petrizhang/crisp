@@ -46,19 +46,38 @@ using program =
         v(1),
         v(2));
 
-template <typename Expr>
-struct interp {
-  using env = int;
+template <typename Expr, typename ParentEnv = Env<>>
+struct interp;
+
+template <typename ParentEnv, int v>
+struct interp<Int<v>, ParentEnv> {
+  using env = ParentEnv;
+  using type = Int<v>;
 };
 
-template <typename Ident, typename Value>
-struct interp<Define<Ident, Value>> {
-  using env = int;
+template <typename ParentEnv, typename Ident, typename Value>
+struct interp<Define<Ident, Value>, ParentEnv> {
+  using env = typename EnvPut<ParentEnv,
+                              Ident,
+                              typename interp<Value, ParentEnv>::type>::type;
+  using type = Nil;
 };
 
-template <char... args>
-struct interp<Var<args...>> {
-  using type = int;
+template <char... args, typename ParentEnv>
+struct interp<Var<args...>, ParentEnv> {
+  using env = ParentEnv;
+  using type = typename EnvLookup<ParentEnv, Var<args...>>::type;
+};
+
+template <typename ParentEnv, typename Head, typename... Tail>
+struct interp<Seq<Head, Tail...>, ParentEnv> {
+  using env = typename interp<Head>::env;
+  using type = typename interp<Seq<Tail...>, env>::type;
+};
+template <typename ParentEnv, typename Head>
+struct interp<Seq<Head>, ParentEnv> {
+  using env = typename interp<Head, ParentEnv>::env;
+  using type = typename interp<Head, ParentEnv>::type;
 };
 
 using program =
@@ -77,7 +96,8 @@ using program1 =
 int main() {
   using x = var('x');
   using y = var('y');
-  LookupEnv<
-      Array<Array<Pair<Var<'x'>, Int<1>>>>,
-      Var<'y'>>;
+  using def = define(x, v(1));
+  using ref = x;
+  using r0 = interp<seq(def, ref)>::type;
+  std::cout << r0::c_value();
 }

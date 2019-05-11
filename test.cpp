@@ -29,9 +29,13 @@ void TestEnv() {
   using e0 = Env<d0>;
   using e1 = EnvPush<e0, d1>::type;
 
-  static_assert(LookupEnv<e0, x>::type::c_value() == 1, "");
-  static_assert(LookupEnv<e1, x>::type::c_value() == 2, "");
-  static_assert(LookupEnv<e1, y>::type::c_value() == 3, "");
+  static_assert(EnvLookup<e0, x>::type::c_value() == 1, "");
+  static_assert(EnvLookup<e1, x>::type::c_value() == 2, "");
+  static_assert(EnvLookup<e1, y>::type::c_value() == 3, "");
+
+  using e2 = Env<>;
+  using e3 = EnvPut<e2, x, v(4)>::type;
+  static_assert(EnvLookup<e3, x>::type::c_value() == 4, "");
 }
 
 void TestBinaryOpImpl() {

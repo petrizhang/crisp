@@ -193,7 +193,7 @@ namespace utils {
 /// Use this type in static_assert to trigger a compiling error.
 template <typename...>
 struct type_checker {
-  static const bool value = false;
+  static const bool always_false = false;
 };
 
 /// ----------------------------------------------------------------------------
@@ -253,7 +253,7 @@ struct ListImpl<T> {
 /// Implementation for `Add`
 template <typename L, typename R>
 struct AddImpl {
-  static_assert(type_checker<L, R>::value,
+  static_assert(type_checker<L, R>::always_false,
                 "Incompatible types for operation `Add`.");
 };
 
@@ -268,7 +268,7 @@ struct AddImpl<Int<LV>, Int<RV>> {
                        RightValueType, RightType, ResultType)         \
   template <typename L, typename R>                                   \
   struct OpName##Impl {                                               \
-    static_assert(type_checker<L, R>::value,                          \
+    static_assert(type_checker<L, R>::always_false,                          \
                   "Incompatible types for operation `" #OpName "`."); \
   };                                                                  \
                                                                       \
@@ -356,21 +356,34 @@ using EnvPush = ArrayPushFront<env, dict>;
 template <typename env>
 using EnvPop = ArrayPopFront<env>;
 
+template <typename env, typename K, typename V>
+struct EnvPut;
+
+template <typename K, typename V>
+struct EnvPut<Env<>, K, V> {
+  using type = Env<Dict<Pair<K, V>>>;
+};
+
+template <typename K, typename V, typename dict, typename... Tail>
+struct EnvPut<Env<dict, Tail...>, K, V> {
+  using type = Env<typename DictPut<dict, Pair<K, V>>::type, Tail...>;
+};
+
 template <typename env, typename K>
-struct LookupEnv {
-  static_assert(type_checker<K>::value, "Cannot find variable.");
+struct EnvLookup {
+  static_assert(type_checker<K>::always_false, "Cannot find variable.");
 };
 
 template <typename K, typename dict>
-struct LookupEnv<Env<dict>, K> {
+struct EnvLookup<Env<dict>, K> {
   using type = typename DictGet<dict, K>::type;
 };
 
 template <typename K, typename dict, typename... Tail>
-struct LookupEnv<Env<dict, Tail...>, K> {
+struct EnvLookup<Env<dict, Tail...>, K> {
   using current_scope_value = typename DictGet<dict, K>::type;
   using type = typename std::conditional<std::is_same<current_scope_value, Nil>::value,
-                                         typename LookupEnv<Env<Tail...>, K>::type,
+                                         typename EnvLookup<Env<Tail...>, K>::type,
                                          current_scope_value>::type;
   static_assert(!std::is_same<type, Nil>::value, "Cannot find variable.");
 };
