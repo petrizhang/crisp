@@ -268,7 +268,7 @@ struct AddImpl<Int<LV>, Int<RV>> {
                        RightValueType, RightType, ResultType)         \
   template <typename L, typename R>                                   \
   struct OpName##Impl {                                               \
-    static_assert(type_checker<L, R>::always_false,                          \
+    static_assert(type_checker<L, R>::always_false,                   \
                   "Incompatible types for operation `" #OpName "`."); \
   };                                                                  \
                                                                       \
@@ -296,9 +296,50 @@ struct IsEqualImpl {
 };
 
 /// ----------------------------------------------------------------------------
+/// Get the size of a parameter list.
+template <typename... Args>
+struct Size;
+
+template <>
+struct Size<> {
+  static const u_long value = 0;
+};
+
+template <typename Head, typename... Tails>
+struct Size<Head, Tails...> {
+  static const u_long value = 1 + Size<Tails...>::value;
+};
+
+/// ----------------------------------------------------------------------------
 /// A array-like collection type.
 template <typename... Elements>
 struct Array {};
+
+template <typename array>
+struct ArrayHead;
+
+template <>
+struct ArrayHead<Array<>> {
+  using type = Nil;
+};
+
+template <typename Head, typename... Tail>
+struct ArrayHead<Array<Head, Tail...>> {
+  using type = Head;
+};
+
+template <typename array>
+struct ArrayTail;
+
+template <>
+struct ArrayTail<Array<>> {
+  using type = Array<>;
+};
+
+template <typename Head, typename... Tail>
+struct ArrayTail<Array<Head, Tail...>> {
+  using type = Array<Tail...>;
+};
 
 template <typename array, typename Elem>
 struct ArrayPushFront;
@@ -308,12 +349,45 @@ struct ArrayPushFront<Array<Elements...>, Elem> {
   using type = Array<Elem, Elements...>;
 };
 
+template <typename array, typename Elem>
+struct ArrayPushBack;
+
+template <typename Elem, typename... Elements>
+struct ArrayPushBack<Array<Elements...>, Elem> {
+  using type = Array<Elements..., Elem>;
+};
+
 template <typename array>
 struct ArrayPopFront;
 
-template <typename Elem, typename... Elements>
-struct ArrayPopFront<Array<Elem, Elements...>> {
-  using type = Array<Elements...>;
+template <typename Head, typename... Tail>
+struct ArrayPopFront<Array<Head, Tail...>> {
+  using type = Array<Tail...>;
+  using poped = Head;
+};
+
+template <typename Environ, typename Extra>
+struct ArrayExtendBack;
+
+template <typename... Head, typename... Tail>
+struct ArrayExtendBack<Array<Head...>, Array<Tail...>> {
+  using type = Array<Head..., Tail...>;
+};
+
+/// Zip two arrays to a pair array.
+/// An intuitive example: zip([1,2,3],[a,b,c]) => [(1,a),(2,b),(3,c)]
+template <typename Keys, typename Values>
+struct Zip;
+
+template <typename K, typename V, typename... Keys, typename... Values>
+struct Zip<Array<K, Keys...>, Array<V, Values...>> {
+  using tailResult = typename Zip<Array<Keys...>, Array<Values...>>::type;
+  using type = typename ArrayPushFront<tailResult, Pair<K, V>>::type;
+};
+
+template <>
+struct Zip<Array<>, Array<>> {
+  using type = Array<>;
 };
 
 /// ----------------------------------------------------------------------------
@@ -350,11 +424,14 @@ struct DictGet<Dict<Pair<T, V>, Tail...>, K> {
 template <typename... Dicts>
 using Env = Array<Dicts...>;
 
+template <typename Environ, typename Extra>
+using EnvExtendBack = ArrayExtendBack<Environ, Extra>;
+
 template <typename env, typename dict>
-using EnvPush = ArrayPushFront<env, dict>;
+using EnvPushFront = ArrayPushFront<env, dict>;
 
 template <typename env>
-using EnvPop = ArrayPopFront<env>;
+using EnvPopFront = ArrayPopFront<env>;
 
 template <typename env, typename K, typename V>
 struct EnvPut;
@@ -483,10 +560,10 @@ namespace api {
 #define ge(args...) IsGreatEqual<args>
 #define le(args...) IsLessEqual<args>
 #define var(args...) Var<args>
-#define _or(args...) Or<args>
-#define _and(args...) And<args>
+#define or_(args...) Or<args>
+#define and_(args...) And<args>
 #define define(args...) Define<args>
-#define _if(args...) If<args>
+#define if_(args...) If<args>
 #define params(args...) ParamList<args>
 #define lambda(args...) Lambda<args>
 #define call(f, args...) Call<f, args>

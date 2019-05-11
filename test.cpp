@@ -27,7 +27,7 @@ void TestEnv() {
   using d1 = Dict<Pair<x, v(2)>, Pair<y, v(3)>>;
 
   using e0 = Env<d0>;
-  using e1 = EnvPush<e0, d1>::type;
+  using e1 = EnvPushFront<e0, d1>::type;
 
   static_assert(EnvLookup<e0, x>::type::c_value() == 1, "");
   static_assert(EnvLookup<e1, x>::type::c_value() == 2, "");
