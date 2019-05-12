@@ -7,7 +7,7 @@ add_compile_options(-ftemplate-depth-5000)
 
 set(tispp src/tispp.hpp)
 
-add_executable(test.exe test.cpp ${tispp})
+add_executable(test.exe tests/test.cpp ${tispp})
 
 include_directories(src)
 
