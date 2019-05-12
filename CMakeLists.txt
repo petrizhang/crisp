@@ -3,6 +3,18 @@ project(tispp)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(main.exe main.cpp tispp.hpp)
+add_compile_options(-ftemplate-depth-5000)
 
-add_executable(test.exe test.cpp tispp.hpp)
+set(tispp src/tispp.hpp)
+
+add_executable(test.exe test.cpp ${tispp})
+
+include_directories(src)
+
+# Add executables for files in "examples/"
+FILE(GLOB Examples examples/*)
+
+FOREACH (path ${Examples})
+    get_filename_component(name ${path} NAME_WE)
+    add_executable(${name}.exe ${path})
+ENDFOREACH ()

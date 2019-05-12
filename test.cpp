@@ -1,12 +1,29 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include <cassert>
 #include <iostream>
-#include "tispp.hpp"
+#include "tispp_templates.h"
 
 using namespace tispp;
 
 void TestDict() {
-  using x = var('x');
-  using y = var('y');
+  using x = Var<'x'>;
+  using y = Var<'y'>;
   using d = Dict<>;
   using d1 = DictPut<d, Pair<x, Int<1>>>::type;
   using d2 = DictPut<d1, Pair<y, Int<2>>>::type;
@@ -21,10 +38,10 @@ void TestDict() {
 }
 
 void TestEnv() {
-  using x = var('x');
-  using y = var('y');
-  using d0 = Dict<Pair<x, v(1)>>;
-  using d1 = Dict<Pair<x, v(2)>, Pair<y, v(3)>>;
+  using x = Var<'x'>;
+  using y = Var<'y'>;
+  using d0 = Dict<Pair<x, Int<1>>>;
+  using d1 = Dict<Pair<x, Int<2>>, Pair<y, Int<3>>>;
 
   using e0 = Env<d0>;
   using e1 = EnvPushFront<e0, d1>::type;
@@ -34,30 +51,30 @@ void TestEnv() {
   static_assert(EnvLookup<e1, y>::type::c_value() == 3, "");
 
   using e2 = Env<>;
-  using e3 = EnvPut<e2, x, v(4)>::type;
+  using e3 = EnvPut<e2, x, Int<4>>::type;
   static_assert(EnvLookup<e3, x>::type::c_value() == 4, "");
 }
 
 void TestBinaryOpImpl() {
-  static_assert((AddImpl<v(3), v(4)>::type::c_value() == 7), "");
-  static_assert((SubImpl<v(100), v(4)>::type::c_value() == 96), "");
-  static_assert((MulImpl<v(100), v(4)>::type::c_value() == 400), "");
-  static_assert((ModImpl<v(101), v(4)>::type::c_value() == 1), "");
+  static_assert((AddImpl<Int<3>, Int<4>>::type::c_value() == 7), "");
+  static_assert((SubImpl<Int<100>, Int<4>>::type::c_value() == 96), "");
+  static_assert((MulImpl<Int<100>, Int<4>>::type::c_value() == 400), "");
+  static_assert((ModImpl<Int<101>, Int<4>>::type::c_value() == 1), "");
 
-  static_assert((IsGreaterEqualImpl<v(5), v(4)>::type::c_value()), "");
-  static_assert((IsGreaterEqualImpl<v(4), v(4)>::type::c_value()), "");
-  static_assert(!(IsGreaterEqualImpl<v(3), v(4)>::type::c_value()), "");
+  static_assert((IsGreaterEqualImpl<Int<5>, Int<4>>::type::c_value()), "");
+  static_assert((IsGreaterEqualImpl<Int<4>, Int<4>>::type::c_value()), "");
+  static_assert(!(IsGreaterEqualImpl<Int<3>, Int<4>>::type::c_value()), "");
 
-  static_assert((IsGreaterThanImpl<v(5), v(4)>::type::c_value()), "");
-  static_assert((!IsGreaterThanImpl<v(4), v(4)>::type::c_value()), "");
-  static_assert(!(IsGreaterThanImpl<v(3), v(4)>::type::c_value()), "");
+  static_assert((IsGreaterThanImpl<Int<5>, Int<4>>::type::c_value()), "");
+  static_assert((!IsGreaterThanImpl<Int<4>, Int<4>>::type::c_value()), "");
+  static_assert(!(IsGreaterThanImpl<Int<3>, Int<4>>::type::c_value()), "");
 
-  typedef AddImpl<v(3), v(2)>::type i5;
+  typedef AddImpl<Int<3>, Int<2>>::type i5;
   static_assert((IsEqualImpl<i5, Int<5>>::type::c_value()), "");
 }
 
 void TestEvalBinaryOp() {
-  static_assert((Eval<Add<v(1), v(2), v(3), v(4)>>::type::c_value() == 10), "");
+  static_assert((Eval<Add<Int<1>, Int<2>, Int<3>, Int<4>>>::type::c_value() == 10), "");
 }
 
 int main() {

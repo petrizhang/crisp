@@ -1,12 +1,33 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #ifndef TISPP_HPP
 #define TISPP_HPP
 
-namespace tispp {
-
 #include <cassert>
+#include <string>
 #include <type_traits>
 
-namespace ast {
+namespace tispp {
+
+/// ****************************************************************************
+/// * AST nodes.
+/// ****************************************************************************
+
 /// ----------------------------------------------------------------------------
 /// Boolean value type.
 template <bool V>
@@ -74,6 +95,14 @@ struct Nil {
   static constexpr const char *repr = "Nil";
   using c_type = void;
   static constexpr const char *c_value() { return "nil"; };
+};
+
+/// ----------------------------------------------------------------------------
+/// Undefined type. We use this value when we cannot resolve a variable reference.
+struct Undefined {
+  static constexpr const char *repr = "Undefined";
+  using c_type = void;
+  static constexpr const char *c_value() { return "undefined"; };
 };
 
 template <typename... Args>
@@ -202,10 +231,11 @@ template <typename L, typename R>
 struct IsLessEqual {
   static constexpr const char *repr = "<=";
 };
-}  // namespace ast
-using namespace ast;
 
-namespace utils {
+/// ****************************************************************************
+/// * Utilities
+/// ****************************************************************************
+
 /// ----------------------------------------------------------------------------
 /// Use this type in static_assert to trigger a compiling error.
 template <typename...>
@@ -399,12 +429,15 @@ struct EnvPut<Env<dict, Tail...>, K, V> {
 
 template <typename env, typename K>
 struct EnvLookup {
-  static_assert(type_checker<K>::always_false, "Cannot find variable.");
+  using type = Undefined;
 };
 
 template <typename K, typename dict>
 struct EnvLookup<Env<dict>, K> {
-  using type = typename DictGet<dict, K>::type;
+  using V = typename DictGet<dict, K>::type;
+  using type = typename std::conditional<std::is_same<V, Nil>::value,
+                                         Undefined,
+                                         V>::type;
 };
 
 template <typename K, typename dict, typename... Tail>
@@ -413,13 +446,8 @@ struct EnvLookup<Env<dict, Tail...>, K> {
   using type = typename std::conditional<std::is_same<current_scope_value, Nil>::value,
                                          typename EnvLookup<Env<Tail...>, K>::type,
                                          current_scope_value>::type;
-  static_assert(!std::is_same<type, Nil>::value, "Cannot find variable.");
 };
 
-}  // namespace utils
-using namespace utils;
-
-namespace interpreter {
 /// ----------------------------------------------------------------------------
 /// Implementation for `Car`
 template <typename T>
@@ -499,7 +527,7 @@ struct IsEqualImpl {
 
 /// ----------------------------------------------------------------------------
 /// Interpreter implementation
-template <typename Expr, typename Environ>
+template <typename Expr, typename Environ = Env<>>
 struct Eval;
 
 template <typename Environ, bool V>
@@ -525,14 +553,14 @@ struct Eval<Int<V>, Environ> {
 template <typename Environ, typename L, typename R>
 struct Eval<Add<L, R>, Environ> {
   using env = Environ;
-  typedef typename AddImpl<typename Eval<L, Environ>::type,
-                           typename Eval<R, Environ>::type>::type type;
+  typedef typename AddImpl<typename Eval<L, Environ>::type, typename Eval<R, Environ>::type>::type
+      type;
 };
 
 template <typename Environ, typename L, typename R, typename... Args>
 struct Eval<Add<L, R, Args...>, Environ> {
-  using LT = typename AddImpl<typename Eval<L, Environ>::type,
-                              typename Eval<R, Environ>::type>::type;
+  using LT =
+      typename AddImpl<typename Eval<L, Environ>::type, typename Eval<R, Environ>::type>::type;
   using RT = typename Eval<Add<Args...>, Environ>::type;
 
   using env = Environ;
@@ -570,8 +598,8 @@ EvalForChainOperator(Or);
 template <typename Environ, typename L, typename R>
 struct Eval<IsEqual<L, R>, Environ> {
   using env = Environ;
-  using type = typename IsEqualImpl<typename Eval<L, Environ>::type,
-                                    typename Eval<R, Environ>::type>::type;
+  using type =
+      typename IsEqualImpl<typename Eval<L, Environ>::type, typename Eval<R, Environ>::type>::type;
 };
 
 #define EvalForBinaryOperator(OpName)                                          \
@@ -586,32 +614,124 @@ EvalForBinaryOperator(IsLessThan);
 EvalForBinaryOperator(IsGreaterEqual);
 EvalForBinaryOperator(IsLessEqual);
 
-}  // namespace interpreter
-using namespace interpreter;
+/// ----------------------------------------------------------------------------
+/// Evaluate if-then-else expression
+template <typename Environ, typename CondEvaluated, typename Body, typename ElseBody>
+struct DelayIf {
+  using type = typename Eval<Body, Environ>::type;
+};
 
-namespace api {
-#define v(x) PackToType<decltype(x), x>::type
-#define add(args...) Add<args>
-#define sub(args...) Sub<args>
-#define mul(args...) Mul<args>
-#define mod(args...) Mod<args>
-#define eq(args...) IsEqual<args>
-#define gt(args...) IsGreaterThan<args>
-#define lt(args...) IsLessThan<args>
-#define ge(args...) IsGreatEqual<args>
-#define le(args...) IsLessEqual<args>
-#define or_(args...) Or<args>
-#define and_(args...) And<args>
-#define if_(cond, body, elseBody) If<cond, body, elseBody>
-#define params(args...) ParamList<args>
-#define var(args...) Var<args>
-#define define(args...) Define<args>
-#define lambda(args...) Lambda<args>
-#define call(f, args...) Call<f, args>
-#define seq(args...) Seq<args>
-#define eval(s) Eval<s>
-}  // namespace api
-using namespace api;
+template <typename Environ, typename Body, typename ElseBody>
+struct DelayIf<Environ, Bool<false>, Body, ElseBody> {
+  using type = typename Eval<ElseBody, Environ>::type;
+};
 
+template <typename Environ, typename Cond, typename Body, typename ElseBody>
+struct Eval<If<Cond, Body, ElseBody>, Environ> {
+  using condEvaluated = typename Eval<Cond, Environ>::type;
+  using env = Environ;
+  using type = typename DelayIf<Environ, condEvaluated, Body, ElseBody>::type;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate variable definition. e.g. Define<Var<'a'>,Int<1>>
+template <typename Environ, typename Ident, typename Value>
+struct Eval<Define<Ident, Value>, Environ> {
+  using env = typename EnvPut<Environ, Ident, typename Eval<Value, Environ>::type>::type;
+  using type = Nil;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate variable reference. e.g. Var<'n'>
+template <char... args, typename Environ>
+struct Eval<Var<args...>, Environ> {
+  using env = Environ;
+  using type = typename EnvLookup<Environ, Var<args...>>::type;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate a sequence of expressions. e.g Seq< Define<Var<'n'>,1>, Var<'n'>>
+template <typename Environ, typename Head, typename... Tail>
+struct Eval<Seq<Head, Tail...>, Environ> {
+  using env = typename Eval<Head, Environ>::env;
+  using type = typename Eval<Seq<Tail...>, env>::type;
+};
+
+template <typename Environ, typename Head>
+struct Eval<Seq<Head>, Environ> {
+  using env = typename Eval<Head, Environ>::env;
+  using type = typename Eval<Head, Environ>::type;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate lambda instantiation.
+template <typename Environ, typename Body, typename ParamL>
+struct Eval<Lambda<ParamL, Body>, Environ> {
+  using env = Environ;
+  using type = Closure<Environ, Lambda<ParamL, Body>>;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate argument list for function calls.
+template <typename Environ>
+struct Eval<Array<>, Environ> {
+  using env = Environ;
+  using type = Array<>;
+};
+
+template <typename Environ, typename Head, typename... Tail>
+struct Eval<Array<Head, Tail...>, Environ> {
+  using headValue = typename Eval<Head, Environ>::type;
+  using tailValues = typename Eval<Array<Tail...>, Environ>::type;
+
+  using env = Environ;
+  using type = typename ArrayPushFront<tailValues, headValue>::type;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate function calls.
+template <typename CallSiteEnviron, typename ClosureV, typename... Args>
+struct CallClosure;
+
+template <typename CallSiteEnviron, typename ClosureEnviron, typename Body, typename... Params,
+          typename... ArgValues>
+struct CallClosure<CallSiteEnviron, Closure<ClosureEnviron, Lambda<ParamList<Params...>, Body>>,
+                   Array<ArgValues...>> {
+  // Check arguments number
+  static_assert(Size<Params...>::value == Size<ArgValues...>::value,
+                "Arguments number does't match.");
+
+  // Get function inner scope
+  using argDict = typename Zip<Array<Params...>, Array<ArgValues...>>::type;
+
+  // Insert all arguments into the function's scope to create the execution scope
+  using executionEnv0 = typename ArrayPushFront<ClosureEnviron, argDict>::type;
+  // Add the call site's scope into the end of the environment list,
+  // thus the recursive calls could be supported
+  using executionEnv = typename ArrayExtendBack<executionEnv0, CallSiteEnviron>::type;
+
+  using env = CallSiteEnviron;
+  // Evaluate function body
+  using type = typename Eval<Body, executionEnv>::type;
+};
+
+template <typename Environ, typename Func, typename... Args>
+struct Eval<Call<Func, Args...>, Environ> {
+  // Evaluate the expression to get a closure value.
+  using closure = typename Eval<Func, Environ>::type;
+  // Evaluate argument list.
+  using argValues = typename Eval<Array<Args...>, Environ>::type;
+  static_assert(IsCallable<closure>::value, "Expected a callable function/closure.");
+
+  using env = Environ;
+  // Call the closure.
+  using type = typename CallClosure<Environ, closure, argValues>::type;
+};
+
+template <typename Environ, typename... Args>
+struct Eval<Closure<Args...>, Environ> {
+  using env = Environ;
+  using type = Closure<Args...>;
+};
 }  // namespace tispp
 #endif  // TISPP_HPP
