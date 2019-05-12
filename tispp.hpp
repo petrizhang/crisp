@@ -55,9 +55,7 @@ struct Symbol<c, args...> {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *repr = "symbol";
   using c_type = std::string;
-  static const c_type c_value() {
-    return std::string(1, c) + Symbol<args...>::c_value();
-  }
+  static const c_type c_value() { return std::string(1, c) + Symbol<args...>::c_value(); }
 };
 
 /// ----------------------------------------------------------------------------
@@ -75,10 +73,29 @@ struct Pair {};
 struct Nil {
   static constexpr const char *repr = "Nil";
   using c_type = void;
-  static constexpr const char *c_value() {
-    return "nil";
-  };
+  static constexpr const char *c_value() { return "nil"; };
 };
+
+template <typename... Args>
+struct Seq {};
+
+template <typename... Params>
+struct ParamList {};
+
+template <typename Cond, typename Body, typename ElseBody>
+struct If {};
+
+template <typename... Args>
+struct Define {};
+
+template <typename... Args>
+struct Call {};
+
+template <typename Params, typename Body>
+struct Lambda {};
+
+template <typename Environ, typename Func>
+struct Closure {};
 
 /// ----------------------------------------------------------------------------
 /// List(x,x,x,...)
@@ -111,42 +128,42 @@ struct Cdr {
 
 /// ----------------------------------------------------------------------------
 /// +
-template <typename... Args>
+template <typename L, typename R, typename... Args>
 struct Add {
   static constexpr const char *repr = "+";
 };
 
 /// ----------------------------------------------------------------------------
 /// -
-template <typename... Args>
+template <typename L, typename R, typename... Args>
 struct Sub {
   static constexpr const char *repr = "-";
 };
 
 /// ----------------------------------------------------------------------------
 /// *
-template <typename... Args>
+template <typename L, typename R, typename... Args>
 struct Mul {
   static constexpr const char *repr = "*";
 };
 
 /// ----------------------------------------------------------------------------
 /// /
-template <typename... Args>
+template <typename L, typename R, typename... Args>
 struct Mod {
   static constexpr const char *repr = "/";
 };
 
 /// ----------------------------------------------------------------------------
 /// &&
-template <typename... Args>
+template <typename L, typename R, typename... Args>
 struct And {
   static constexpr const char *repr = "and";
 };
 
 /// ----------------------------------------------------------------------------
 /// ||
-template <typename... Args>
+template <typename L, typename R, typename... Args>
 struct Or {
   static constexpr const char *repr = "or";
 };
@@ -218,81 +235,15 @@ struct PackToType<int, V> {
 };
 
 /// ----------------------------------------------------------------------------
-/// Implementation for `Car`
-template <typename T>
-struct CarImpl;
-
-template <typename L, typename R>
-struct CarImpl<Pair<L, R>> {
-  using type = L;
+/// Check if an expression is callable or not.
+template <typename... Args>
+struct IsCallable {
+  static const bool value = false;
 };
 
-/// ----------------------------------------------------------------------------
-/// Implementation for `Cdr`
-template <typename T>
-struct CdrImpl;
-
-template <typename L, typename R>
-struct CdrImpl<Pair<L, R>> {
-  using type = R;
-};
-
-/// ----------------------------------------------------------------------------
-/// Implementation for `List`
-template <typename T, typename... Args>
-struct ListImpl {
-  using type = Pair<T, typename List<Args...>::type>;
-};
-
-template <typename T>
-struct ListImpl<T> {
-  using type = Pair<T, Nil>;
-};
-
-/// ----------------------------------------------------------------------------
-/// Implementation for `Add`
-template <typename L, typename R>
-struct AddImpl {
-  static_assert(type_checker<L, R>::always_false,
-                "Incompatible types for operation `Add`.");
-};
-
-template <int LV, int RV>
-struct AddImpl<Int<LV>, Int<RV>> {
-  using type = Int<LV + RV>;
-};
-
-/// Most binary operators (-,*,%,...) follow the same pattern as
-/// `AddImpl`, thus we could implement them with an unified macro.
-#define BinaryOperator(OpName, Operator, LeftValueType, LeftType,     \
-                       RightValueType, RightType, ResultType)         \
-  template <typename L, typename R>                                   \
-  struct OpName##Impl {                                               \
-    static_assert(type_checker<L, R>::always_false,                   \
-                  "Incompatible types for operation `" #OpName "`."); \
-  };                                                                  \
-                                                                      \
-  template <LeftValueType LV, RightValueType RV>                      \
-  struct OpName##Impl<LeftType<LV>, RightType<RV>> {                  \
-    using type = ResultType<(LV Operator RV)>;                        \
-  };
-
-BinaryOperator(Sub, -, int, Int, int, Int, Int);
-BinaryOperator(Mul, *, int, Int, int, Int, Int);
-BinaryOperator(Mod, %, int, Int, int, Int, Int);
-BinaryOperator(And, &&, bool, Bool, bool, Bool, Bool);
-BinaryOperator(Or, ||, bool, Bool, bool, Bool, Bool);
-BinaryOperator(IsGreaterThan, >, int, Int, int, Int, Bool);
-BinaryOperator(IsLessThan, <, int, Int, int, Int, Bool);
-BinaryOperator(IsGreaterEqual, >=, int, Int, int, Int, Bool);
-BinaryOperator(IsLessEqual, <=, int, Int, int, Int, Bool);
-
-/// ----------------------------------------------------------------------------
-/// Implementation for `IsEqual`
-/// If two types are the same, then the values they represent are the same.
-template <typename L, typename R>
-struct IsEqualImpl {
-  using type = Bool<std::is_same<L, R>::value>;
+template <typename... Args>
+struct IsCallable<Closure<Args...>> {
+  static const bool value = true;
 };
 
 /// ----------------------------------------------------------------------------
@@ -470,53 +421,142 @@ using namespace utils;
 
 namespace interpreter {
 /// ----------------------------------------------------------------------------
-/// Interpreter implementation
+/// Implementation for `Car`
 template <typename T>
-struct Eval : T {
-  using type = T;
+struct CarImpl;
+
+template <typename L, typename R>
+struct CarImpl<Pair<L, R>> {
+  using type = L;
+};
+
+/// ----------------------------------------------------------------------------
+/// Implementation for `Cdr`
+template <typename T>
+struct CdrImpl;
+
+template <typename L, typename R>
+struct CdrImpl<Pair<L, R>> {
+  using type = R;
+};
+
+/// ----------------------------------------------------------------------------
+/// Implementation for `List`
+template <typename T, typename... Args>
+struct ListImpl {
+  using type = Pair<T, typename List<Args...>::type>;
+};
+
+template <typename T>
+struct ListImpl<T> {
+  using type = Pair<T, Nil>;
+};
+
+/// ----------------------------------------------------------------------------
+/// Implementation for `Add`
+template <typename L, typename R>
+struct AddImpl {
+  static_assert(type_checker<L, R>::always_false, "Incompatible types for operation `Add`.");
+};
+
+template <int LV, int RV>
+struct AddImpl<Int<LV>, Int<RV>> {
+  using type = Int<LV + RV>;
+};
+
+/// Most binary operators (-,*,%,...) follow the same pattern as
+/// `AddImpl`, thus we could implement them with an unified macro.
+#define BinaryOperator(OpName, Operator, LeftValueType, LeftType, RightValueType, RightType, \
+                       ResultType)                                                           \
+  template <typename L, typename R>                                                          \
+  struct OpName##Impl {                                                                      \
+    static_assert(type_checker<L, R>::always_false,                                          \
+                  "Incompatible types for operation `" #OpName "`.");                        \
+  };                                                                                         \
+                                                                                             \
+  template <LeftValueType LV, RightValueType RV>                                             \
+  struct OpName##Impl<LeftType<LV>, RightType<RV>> {                                         \
+    using type = ResultType<(LV Operator RV)>;                                               \
+  };
+
+BinaryOperator(Sub, -, int, Int, int, Int, Int);
+BinaryOperator(Mul, *, int, Int, int, Int, Int);
+BinaryOperator(Mod, %, int, Int, int, Int, Int);
+BinaryOperator(And, &&, bool, Bool, bool, Bool, Bool);
+BinaryOperator(Or, ||, bool, Bool, bool, Bool, Bool);
+BinaryOperator(IsGreaterThan, >, int, Int, int, Int, Bool);
+BinaryOperator(IsLessThan, <, int, Int, int, Int, Bool);
+BinaryOperator(IsGreaterEqual, >=, int, Int, int, Int, Bool);
+BinaryOperator(IsLessEqual, <=, int, Int, int, Int, Bool);
+
+/// ----------------------------------------------------------------------------
+/// Implementation for `IsEqual`
+/// If two types are the same, then the values they represent are the same.
+template <typename L, typename R>
+struct IsEqualImpl {
+  using type = Bool<std::is_same<L, R>::value>;
+};
+
+/// ----------------------------------------------------------------------------
+/// Interpreter implementation
+template <typename Expr, typename Environ>
+struct Eval;
+
+template <typename Environ, bool V>
+struct Eval<Bool<V>, Environ> {
+  using env = Environ;
+  using type = Bool<V>;
+};
+
+template <typename Environ, char V>
+struct Eval<Char<V>, Environ> {
+  using env = Environ;
+  using type = Char<V>;
+};
+
+template <typename Environ, int V>
+struct Eval<Int<V>, Environ> {
+  using env = Environ;
+  using type = Int<V>;
 };
 
 /// ----------------------------------------------------------------------------
 /// Eval Add<n1,n2,n3,...>
-template <typename T>
-struct Eval<Add<T>> {
-  using type = T;
+template <typename Environ, typename L, typename R>
+struct Eval<Add<L, R>, Environ> {
+  using env = Environ;
+  typedef typename AddImpl<typename Eval<L, Environ>::type,
+                           typename Eval<R, Environ>::type>::type type;
 };
 
-template <typename L, typename R>
-struct Eval<Add<L, R>> {
-  typedef typename AddImpl<typename Eval<L>::type, typename Eval<R>::type>::type
-      type;
-};
+template <typename Environ, typename L, typename R, typename... Args>
+struct Eval<Add<L, R, Args...>, Environ> {
+  using LT = typename AddImpl<typename Eval<L, Environ>::type,
+                              typename Eval<R, Environ>::type>::type;
+  using RT = typename Eval<Add<Args...>, Environ>::type;
 
-template <typename L, typename R, typename... Args>
-struct Eval<Add<L, R, Args...>> {
-  using LT =
-      typename AddImpl<typename Eval<L>::type, typename Eval<R>::type>::type;
-  using RT = typename Eval<Add<Args...>>::type;
+  using env = Environ;
   using type = typename AddImpl<LT, RT>::type;
 };
 
 /// ----------------------------------------------------------------------------
 /// Eval chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
-#define EvalForChainOperator(OpName)                                  \
-  template <typename T>                                               \
-  struct Eval<OpName<T>> {                                            \
-    using type = T;                                                   \
-  };                                                                  \
-                                                                      \
-  template <typename L, typename R>                                   \
-  struct Eval<OpName<L, R>> {                                         \
-    using type = typename OpName##Impl<typename Eval<L>::type,        \
-                                       typename Eval<R>::type>::type; \
-  };                                                                  \
-                                                                      \
-  template <typename L, typename R, typename... Args>                 \
-  struct Eval<OpName<L, R, Args...>> {                                \
-    using LT = typename OpName##Impl<typename Eval<L>::type,          \
-                                     typename Eval<R>::type>::type;   \
-    using RT = typename Eval<OpName<Args...>>::type;                  \
-    using type = typename OpName##Impl<LT, RT>::type;                 \
+#define EvalForChainOperator(OpName)                                           \
+  template <typename Environ, typename L, typename R>                          \
+  struct Eval<OpName<L, R>, Environ> {                                         \
+    using env = Environ;                                                       \
+    typedef typename OpName##Impl<typename Eval<L, Environ>::type,             \
+                                  typename Eval<R, Environ>::type>::type type; \
+  };                                                                           \
+                                                                               \
+  template <typename Environ, typename L, typename R, typename... Args>        \
+  struct Eval<OpName<L, R, Args...>, Environ> {                                \
+    using LT = typename OpName##Impl<typename Eval<L, Environ>::type,          \
+                                     typename Eval<R, Environ>::type>::type;   \
+    using RT = typename Eval<OpName<Args...>, Environ>::type;                  \
+                                                                               \
+    using env = Environ;                                                       \
+    using type = typename OpName##Impl<LT, RT>::type;                          \
   };
 
 EvalForChainOperator(Sub);
@@ -527,17 +567,18 @@ EvalForChainOperator(Or);
 
 /// ----------------------------------------------------------------------------
 /// Eval IsEqual<L,R>
-template <typename L, typename R>
-struct Eval<IsEqual<L, R>> {
-  using type = typename IsEqualImpl<typename Eval<L>::type,
-                                    typename Eval<R>::type>::type;
+template <typename Environ, typename L, typename R>
+struct Eval<IsEqual<L, R>, Environ> {
+  using env = Environ;
+  using type = typename IsEqualImpl<typename Eval<L, Environ>::type,
+                                    typename Eval<R, Environ>::type>::type;
 };
 
-#define EvalForBinaryOperator(OpName)                                 \
-  template <typename L, typename R>                                   \
-  struct Eval<OpName<L, R>> {                                         \
-    using type = typename OpName##Impl<typename Eval<L>::type,        \
-                                       typename Eval<R>::type>::type; \
+#define EvalForBinaryOperator(OpName)                                          \
+  template <typename Environ, typename L, typename R>                          \
+  struct Eval<OpName<L, R>, Environ> {                                         \
+    using type = typename OpName##Impl<typename Eval<L, Environ>::type,        \
+                                       typename Eval<R, Environ>::type>::type; \
   };
 
 EvalForBinaryOperator(IsGreaterThan);
@@ -559,12 +600,12 @@ namespace api {
 #define lt(args...) IsLessThan<args>
 #define ge(args...) IsGreatEqual<args>
 #define le(args...) IsLessEqual<args>
-#define var(args...) Var<args>
 #define or_(args...) Or<args>
 #define and_(args...) And<args>
-#define define(args...) Define<args>
-#define if_(args...) If<args>
+#define if_(cond, body, elseBody) If<cond, body, elseBody>
 #define params(args...) ParamList<args>
+#define var(args...) Var<args>
+#define define(args...) Define<args>
 #define lambda(args...) Lambda<args>
 #define call(f, args...) Call<f, args>
 #define seq(args...) Seq<args>
