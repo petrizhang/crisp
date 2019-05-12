@@ -20,6 +20,7 @@
 #include "tispp.hpp"
 
 #define v(x) tispp::PackToType<decltype(x), x>::type
+#define sym(args...) tispp::Symbol<args>
 #define add(args...) tispp::Add<args>
 #define sub(args...) tispp::Sub<args>
 #define mul(args...) tispp::Mul<args>
