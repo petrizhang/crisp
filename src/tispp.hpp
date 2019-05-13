@@ -239,7 +239,7 @@ struct IsLessEqual {
 /// ----------------------------------------------------------------------------
 /// Use this type in static_assert to trigger a compiling error.
 template <typename...>
-struct type_checker {
+struct Error {
   static const bool always_false = false;
 };
 
@@ -484,7 +484,7 @@ struct ListImpl<T> {
 /// Implementation for `Add`
 template <typename L, typename R>
 struct AddImpl {
-  static_assert(type_checker<L, R>::always_false, "Incompatible types for operation `Add`.");
+  static_assert(Error<L, R>::always_false, "Incompatible types for operation `Add`.");
 };
 
 template <int LV, int RV>
@@ -498,7 +498,7 @@ struct AddImpl<Int<LV>, Int<RV>> {
                        ResultType)                                                           \
   template <typename L, typename R>                                                          \
   struct OpName##Impl {                                                                      \
-    static_assert(type_checker<L, R>::always_false,                                          \
+    static_assert(Error<L, R>::always_false,                                          \
                   "Incompatible types for operation `" #OpName "`.");                        \
   };                                                                                         \
                                                                                              \
