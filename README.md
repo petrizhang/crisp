@@ -11,9 +11,7 @@ rather than manually writing tedious C++ templates code.
 Just like lisp, Tispp is a simple but powerful functional programming language. The core features of Tispp
 include immutable variables, lambdas, lexical scope and closures, and recursive functions.
 
-Further more, **all operations in Tispp are accomplished at compile time**.
-
-It is the most attractive and awesome feature of Tispp.
+Further more, **all operations in Tispp are accomplished at compile time**. It is the most attractive and awesome feature of Tispp.
 ## Examples
 ### Closure
 ```cpp
