@@ -61,13 +61,13 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
 
 ## Expressions
-Tispp provides two kinds of syntax: macro style and template style. Users could choose their preferred style.
+Tispp provides two kinds of syntax: macro style and template style. Users could choose their preferred one.
 
 A basic principle to use Tispp is **never mix these two styles together**, as it will lead to unexpected behaviors.
 
 For example, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`.   
 
-Thus the best practice is to always use one style in a single C++ source file. 
+Thus the best practice is always use one style in a single C++ source file. 
 
 Generally, to express the same program, the macro style will be shorter, more readable 
 and more friendly to IDE highlighting. 
