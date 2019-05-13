@@ -57,18 +57,21 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
   std::cout << v3 << std::endl;
 ```
 
-In this example, we define a recursive function `factorial` which calculates the product from 0 to `n`.
-It calls itself in it's function body thus it is a recursive function. 
+In this example, we define a recursive function `factorial` which calls itself to calculate the product from 0 to `n`.
 
 ## Expressions
-Tispp provides two kinds of syntax: macro style and template style.
-A basic principle to use Tispp is that **never mix these two styles together**.
-Mix of macros and templates will lead to unexpected behaviors
-as the different priority of `,` in macros and templates.
+Tispp provides two kinds of syntax: macro style and template style. Users could choose their preferred style.
+
+A basic principle to use Tispp is **never mix these two styles together**, as it will lead to unexpected behaviors.
+
 For example, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`.   
-So the best practice is to always use one style in a C++ source file. 
+
+Thus the best practice is to always use one style in a single C++ source file. 
+
 Generally, to express the same program, the macro style will be shorter, more readable 
-and more friendly to IDE highlighting. Thus we recommend the macro style. 
+and more friendly to IDE highlighting. 
+
+Thus **we recommend the macro style**. 
 
 ### Macro Style
 Users could find a complete macro api list at "src/tispp_macros.h".
@@ -93,19 +96,19 @@ Lambda< ParamList<Var<'x'>,Var<'y'>>,
 ## Build and Dependency
 
 ### Use Tispp in Your Project
-Tispp is a header-only library, you could easily 
-copy the head files at the `src` folder to your project and choose a style:
-- Add a line `#include "tispp_macros.h"` in your source to use Tispp macro api.
-- Add a line `#include "tispp_templates.h"` in your source to use Tispp template api.  
-Then enjoy it.
+Tispp is a header-only library, users could use Tispp by copying the head files at the `src` folder.
+
+1. To use Tispp macro api, add `#include "tispp_macros.h"` to your c++ source code.
+2. To use Tispp template api, add`#include "tispp_templates.h"` in c++ source code.
+
+Enjoy it.
 
 Notes:
-0. Your compiler must support C++11.
-1. Remember to set the `-ftemplate-depth-5000` flag to avoid insufficient template expansion depth.
-2. You'd better add the line `#include "tispp_macros.h"` to the last after all your includes
-because that our macros may potentially have the same names as symbols in other source files.
-Those same names will cause compile errors for other source files.
-3. As mentioned above: **never mix macros and templates style together**.   
+
+1. Your compiler must support C++11.
+2. Remember to set the `-ftemplate-depth-5000` flag to avoid insufficient template expansion depth.
+3. You'd better use Tispp headers as the last ones of your includes. For that Tispp macros may potentially have the same names as symbols in other source files and cause compile errors.
+4. As mentioned above: **never mix macros and templates style together**.   
 
 ### Build Examples and Tests
 1. Prepare `cmake` and `make` and a compiler supports C++11.
