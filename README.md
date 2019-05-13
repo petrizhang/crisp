@@ -58,7 +58,7 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
   std::cout << v3 << std::endl;
 ```
 
-In this example, we define a recursive function `factorial` which calls itself to calculate the product from 0 to `n`.
+In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
 
 ## Expressions
 Tispp provides two kinds of syntax: macro style and template style. Users could choose their preferred style.
