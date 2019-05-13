@@ -110,8 +110,9 @@ Notes:
 4. As mentioned above: **never mix macros and templates style together**.   
 
 ### Build Examples and Tests
-1. Prepare `cmake` and `make` and a compiler supports C++11.
-2. In project directory, run commands:
+1. Prepare "cmake" and "make" and a C++ compiler supports C++11 in your system.
+2. Clone this project.
+2. In the project root directory, run commands:
 ```
 cmake .
 make
