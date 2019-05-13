@@ -1,5 +1,5 @@
 # Crisp
-Crisp: **C**ompile Time Interprete**r** for L**isp** Written in C++ Templates
+Crisp: ***C***ompile Time Interprete***r*** for L***isp*** Written in C++ Templates
 
 ## About Crisp
 Crisp is a lisp-like DSL built upon C++ templates.
