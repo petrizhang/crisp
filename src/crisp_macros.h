@@ -28,7 +28,7 @@
 #define eq_(args...) crisp::IsEqual<args>
 #define gt(args...) crisp::IsGreaterThan<args>
 #define lt(args...) crisp::IsLessThan<args>
-#define ge(args...) crisp::IsGreatEqual<args>
+#define ge(args...) crisp::IsGreaterEqual<args>
 #define le(args...) crisp::IsLessEqual<args>
 #define or_(args...) crisp::Or<args>
 #define and_(args...) crisp::And<args>
@@ -38,7 +38,8 @@
 #define define(args...) crisp::Define<args>
 #define lambda(args...) crisp::Lambda<args>
 #define call(f, args...) crisp::Call<f, args>
-#define seq(args...) crisp::Seq<args>
-#define eval(expr) crisp::Eval<expr, crisp::Env<>>
+#define block(args...) crisp::Block<args>
+#define eval(expr) crisp::Eval<expr, crisp::Env<>>::type
+#define run(expr) crisp::Eval<expr, crisp::Env<>>::type::c_value()
 
 #endif  //CRISP_MACROS_H

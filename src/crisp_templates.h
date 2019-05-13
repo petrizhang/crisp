@@ -45,7 +45,7 @@ using crisp::ParamList;
 using crisp::Lambda;
 using crisp::Define;
 using crisp::Call;
-using crisp::Seq;
+using crisp::Block;
 
 using crisp::Eval;
 

@@ -3,7 +3,7 @@ Crisp: ***C***ompile Time Interprete***r*** for L***isp*** Written in C++ Templa
 
 ## About Crisp
 Crisp is a lisp-like DSL built upon C++ templates.
-Users could consider Crisp as a lisp interpreter which interprets lisp programs at C++ compile time.
+Users could consider Crisp as a lisp interpreter that interprets lisp programs at C++ compile time.
 
 With Crisp, users could easily build compile-time programs by an extremely friendly syntax,
 rather than manually writing tedious C++ templates code. 
@@ -11,32 +11,83 @@ rather than manually writing tedious C++ templates code.
 Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
 include immutable variables, lambdas, lexical scope and closures, and recursive functions.
 
-Further more, **all operations in Crisp are accomplished at compile time**. It is the most attractive and awesome feature of Crisp.
+Further more, **all operations in Crisp are accomplished at compile time**.
+It is the most attractive and awesome feature of Crisp.
+
 ## Examples
+### Basic value types
+```cpp
+    std::cout << run(v(1)) << std::endl;
+    std::cout << run(v(true)) << std::endl;
+    std::cout << run(v('c')) << std::endl;
+    std::cout << run(sym('s', 'y', 'm', 'b', 'o', 'l')) << std::endl;
+```
+
+### Basic operations
+```cpp
+    // 1+2 = 3
+    std::cout << run(add(v(1), v(2))) << std::endl;
+    // 1-2 = -1
+    std::cout << run(sub(v(1), v(2))) << std::endl;
+    // 1*2 = 2
+    std::cout << run(mul(v(1), v(2))) << std::endl;
+    // 1 == 2 -> true
+    std::cout << run(eq_(v(1), v(2))) << std::endl;
+    // 1 > 2 -> false
+    std::cout << run(gt(v(1), v(2))) << std::endl;
+    // 1 >= 2 -> false
+    std::cout << run(ge(v(1), v(2))) << std::endl;
+    // 1 < 2 -> true
+    std::cout << run(lt(v(1), v(2))) << std::endl;
+    // 1 <= 2 -> true
+    std::cout << run(le(v(1), v(2))) << std::endl;
+```
+### Variable definition
+```cpp
+    /*
+     * int a = 100;
+     * return a;
+     */
+    std::cout << run(block(define(var('a'), v(100)),
+                           var('a')))
+              << std::endl;
+```
+### If-then-else
+```cpp
+    // true ? 1 : 2
+    std::cout << run(if_(v(true), v(1), v(2))) << std::endl;
+```
+### Function definition and function call
+```cpp
+    std::cout << run(block(define(var('+'), lambda(params(var('x'), var('y')),
+                                                   add(var('x'), var('y')))),
+                           call(var('+'), v(10), v(20))))
+              << std::endl;
+```
 ### Closure
 ```cpp
-  using x = var('x');
-  using y = var('y');
-  using add1 = var('a', 'd', 'd', '1');
-  using add2 = var('a', 'd', 'd', '2');
-  using makeAddX = var('m', 'a', 'k', 'e', 'A', 'd', 'd', 'X');
+    using x = var('x');
+    using y = var('y');
+    using add1 = var('a', 'd', 'd', '1');
+    using add2 = var('a', 'd', 'd', '2');
+    using makeAddX = var('m', 'a', 'k', 'e', 'A', 'd', 'd', 'X');
 
-  // 11
-  auto v1 = eval(seq(define(makeAddX, lambda(params(y),
-                                             lambda(params(x), add(x, y)))),
-                     define(add1, call(makeAddX, v(1))),
-                     call(add1, v(10))))::type::c_value();
+    // 11
+    auto v1 = run(block(define(makeAddX, lambda(params(y),
+                                                lambda(params(x), add(x, y)))),
+                        define(add1, call(makeAddX, v(1))),
+                        call(add1, v(10))));
 
-  // 12
-  auto v2 = eval(seq(define(makeAddX, lambda(params(y),
-                                             lambda(params(x), add(x, y)))),
-                     define(add2, call(makeAddX, v(2))),
-                     call(add2, v(10))))::type::c_value();
+    // 12
+    auto v2 = run(block(define(makeAddX, lambda(params(y),
+                                                lambda(params(x), add(x, y)))),
+                        define(add2, call(makeAddX, v(2))),
+                        call(add2, v(10))));
 
-  // 11
-  std::cout << v1 << std::endl;
-  // 12
-  std::cout << v2 << std::endl;
+    // 11
+    std::cout << v1 << std::endl;
+    // 12
+    std::cout << v2 << std::endl;
 ```
 
 In this example, the function `makeAddX` captures it's parameter `x` and returns another function.
@@ -45,17 +96,17 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
  
 ### Recursive Function
 ```cpp
-  using n = var('n');
-  using factorial = var('f', 'a', 'c', 't', 'o', 'r', 'i', 'a', 'l');
+    using n = var('n');
+    using factorial = var('f', 'a', 'c', 't', 'o', 'r', 'i', 'a', 'l');
 
-  // 3628800
-  auto v3 = eval(seq(define(factorial, lambda(params(n),
-                                              if_(eq_(n, v(1)),
-                                                  v(1),
-                                                  mul(n, call(factorial, sub(n, v(1))))))),
-                     call(factorial, v(10))))::type::c_value();
-  // 3628800
-  std::cout << v3 << std::endl;
+    // 3628800
+    auto v3 = run(block(define(factorial, lambda(params(n),
+                                                 if_(eq_(n, v(1)),
+                                                     v(1),
+                                                     mul(n, call(factorial, sub(n, v(1))))))),
+                        call(factorial, v(10))));
+    // 3628800
+    std::cout << v3 << std::endl;
 ```
 
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
@@ -98,7 +149,7 @@ Lambda< ParamList<Var<'x'>,Var<'y'>>,
 Crisp is a header-only library, users could use Crisp by copying the head files at the `src` folder.
 
 1. To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
-2. To use Crisp template api, add`#include "crisp_templates.h"` in c++ source code.
+2. To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
 
 Enjoy it.
 

@@ -21,25 +21,22 @@
 using n = var('n');
 using factorial = var('f', 'a', 'c', 't', 'o', 'r', 'i', 'a', 'l');
 
-using factorial_def = define(factorial, lambda(params(n),
-                                               if_(eq_(n, v(1)),
-                                                   v(1),
-                                                   mul(n, call(factorial, sub(n, v(1)))))));
+using factorialDef = define(factorial, lambda(params(n),
+                                              if_(eq_(n, v(1)),
+                                                  v(1),
+                                                  mul(n, call(factorial, sub(n, v(1)))))));
 
-using program0 = seq(factorial_def,
-                     call(factorial, v(3)));
-
-using program1 = seq(factorial_def,
-                     call(factorial, v(10)));
 int main() {
-  using r0 = eval(program0)::type;
-  using r1 = eval(program1)::type;
+  constexpr auto r0 = run(block(factorialDef,
+                                call(factorial, v(3))));
+  constexpr auto r1 = run(block(factorialDef,
+                                call(factorial, v(10))));
 
   // factorial(3) = 6
-  static_assert(r0::c_value() == 6, "");
-  std::cout << r0::c_value() << std::endl;
+  static_assert(r0 == 6, "");
+  std::cout << r0 << std::endl;
   // factorial(10) = 3628800
-  static_assert(r1::c_value() == 3628800, "");
-  std::cout << r1::c_value() << std::endl;
+  static_assert(r1 == 3628800, "");
+  std::cout << r1 << std::endl;
   return 0;
 }

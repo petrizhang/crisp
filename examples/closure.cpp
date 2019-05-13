@@ -25,12 +25,12 @@ using prgram_make_addx = lambda(params(y),
                                 lambda(params(x), add(x, y)));
 
 int main() {
-  using make_addx = eval(prgram_make_addx)::type;
-  using add1 = eval(call(make_addx, v(1)))::type;
-  using add2 = eval(call(make_addx, v(2)))::type;
+  using make_addx = eval(prgram_make_addx);
+  using add1 = eval(call(make_addx, v(1)));
+  using add2 = eval(call(make_addx, v(2)));
 
-  using r1 = eval(call(add1, v(1)))::type;
-  using r2 = eval(call(add2, v(1)))::type;
+  using r1 = eval(call(add1, v(1)));
+  using r2 = eval(call(add2, v(1)));
 
   static_assert(r1::c_value() == 2, "");
   std::cout << r1::c_value() << std::endl;

@@ -106,7 +106,7 @@ struct Undefined {
 };
 
 template <typename... Args>
-struct Seq {};
+struct Block {};
 
 template <typename... Params>
 struct ParamList {};
@@ -498,7 +498,7 @@ struct AddImpl<Int<LV>, Int<RV>> {
                        ResultType)                                                           \
   template <typename L, typename R>                                                          \
   struct OpName##Impl {                                                                      \
-    static_assert(Error<L, R>::always_false,                                          \
+    static_assert(Error<L, R>::always_false,                                                 \
                   "Incompatible types for operation `" #OpName "`.");                        \
   };                                                                                         \
                                                                                              \
@@ -546,6 +546,12 @@ template <typename Environ, int V>
 struct Eval<Int<V>, Environ> {
   using env = Environ;
   using type = Int<V>;
+};
+
+template <typename Environ, char... chars>
+struct Eval<Symbol<chars...>, Environ> {
+  using env = Environ;
+  using type = Symbol<chars...>;
 };
 
 /// ----------------------------------------------------------------------------
@@ -650,15 +656,15 @@ struct Eval<Var<args...>, Environ> {
 };
 
 /// ----------------------------------------------------------------------------
-/// Evaluate a sequence of expressions. e.g Seq< Define<Var<'n'>,1>, Var<'n'>>
+/// Evaluate a sequence of expressions. e.g Block< Define<Var<'n'>,1>, Var<'n'>>
 template <typename Environ, typename Head, typename... Tail>
-struct Eval<Seq<Head, Tail...>, Environ> {
+struct Eval<Block<Head, Tail...>, Environ> {
   using env = typename Eval<Head, Environ>::env;
-  using type = typename Eval<Seq<Tail...>, env>::type;
+  using type = typename Eval<Block<Tail...>, env>::type;
 };
 
 template <typename Environ, typename Head>
-struct Eval<Seq<Head>, Environ> {
+struct Eval<Block<Head>, Environ> {
   using env = typename Eval<Head, Environ>::env;
   using type = typename Eval<Head, Environ>::type;
 };
