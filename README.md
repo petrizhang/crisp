@@ -80,11 +80,11 @@ Users could find a complete template api list at "src/tispp_templates.h".
 
 - `Nil`: the Nil value is similar to null in other languages.
 - `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
-- `Char<C>`: a char value. e.g. `Char<'a'>, Char<'b'>``
+- `Char<C>`: a char value. e.g. `Char<'a'>, Char<'b'>`
 - `Int<N>` : an integer value. e.g. `Int<5>`
 - `Var<'c','c',...>`: a symbol/variable reference. e.g. `Var<'a'>, Var<'t','e','s','t'>`
 - `Pair<L,R>`: a pair value, it is very similar to `std::pair` in C++
-- `List<e1,e2,...en>`: equivalent to  `Pair<e1, Pair<e2, ...Pair<en, Nil>>, e.g. `List<Int<1>,Int<2>>`
+- `List<e1,e2,...en>`: equivalent to  `Pair<e1, Pair<e2, ...Pair<en, Nil>>`, e.g. `List<Int<1>,Int<2>>`
 - `Lambda< ParamList< Var<..>, Var<..>... >, Body >`, e.g. :
 ```cpp
 Lambda< ParamList<Var<'x'>,Var<'y'>>,
