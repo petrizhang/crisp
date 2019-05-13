@@ -70,9 +70,7 @@ For example, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`.
 Thus the best practice is always use one style in a single C++ source file. 
 
 Generally, to express the same program, the macro style will be shorter, more readable 
-and more friendly to IDE highlighting. 
-
-Thus **we recommend the macro style**. 
+and more friendly to IDE highlighting. Thus **we recommend the macro style**. 
 
 ### Macro Style
 Users could find a complete macro api list at "src/tispp_macros.h".
