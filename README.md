@@ -2,10 +2,10 @@
 Tispp: Yet Another Lisp Interpreter Written in C++ Template
 
 ## About Tispp
-Tispp is a DSL built upon C++ template.
+Tispp is a DSL built upon C++ templates.
 Users could consider Tispp as a lisp interpreter which interpret lisp programs at C++ compile time.
 With Tispp, users could easily build compile-time programs by an extremely friendly syntax,
-rather than manually writing tedious C++ templates.
+rather than manually writing tedious C++ templates code.
 
 Just like lisp, Tispp is a simple but powerful functional programming language. The core features of Tispp
 include immutable variables, lambdas, lexical scope and closures, and recursive functions.
