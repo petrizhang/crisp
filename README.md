@@ -1,17 +1,17 @@
-# tispp
-Tispp: Yet Another Lisp Interpreter Written in C++ Template
+# Crisp
+Crisp: Compile Time Interpreter for Lisp Written in C++ Templates
 
-## About Tispp
-Tispp is a lisp-like DSL built upon C++ templates.
-Users could consider Tispp as a lisp interpreter which interprets lisp programs at C++ compile time.
+## About Crisp
+Crisp is a lisp-like DSL built upon C++ templates.
+Users could consider Crisp as a lisp interpreter which interprets lisp programs at C++ compile time.
 
-With Tispp, users could easily build compile-time programs by an extremely friendly syntax,
+With Crisp, users could easily build compile-time programs by an extremely friendly syntax,
 rather than manually writing tedious C++ templates code. 
 
-Just like lisp, Tispp is a simple but powerful functional programming language. The core features of Tispp
+Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
 include immutable variables, lambdas, lexical scope and closures, and recursive functions.
 
-Further more, **all operations in Tispp are accomplished at compile time**. It is the most attractive and awesome feature of Tispp.
+Further more, **all operations in Crisp are accomplished at compile time**. It is the most attractive and awesome feature of Crisp.
 ## Examples
 ### Closure
 ```cpp
@@ -61,9 +61,9 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
 
 ## Expressions
-Tispp provides two kinds of syntax: macro style and template style. Users could choose their preferred one.
+Crisp provides two kinds of syntax: macro style and template style. Users could choose their preferred one.
 
-A basic principle to use Tispp is **never mix these two styles together**, as it will lead to unexpected behaviors.
+A basic principle to use Crisp is **never mix these two styles together**, as it will lead to unexpected behaviors.
 
 For example, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`.   
 
@@ -73,10 +73,10 @@ Generally, to express the same program, the macro style will be shorter, more re
 and more friendly to IDE highlighting. Thus **we recommend the macro style**. 
 
 ### Macro Style
-Users could find a complete macro api list at "src/tispp_macros.h".
+Users could find a complete macro api list at "src/crisp_macros.h".
   
 ### Template Style
-Users could find a complete template api list at "src/tispp_templates.h".
+Users could find a complete template api list at "src/crisp_templates.h".
 
 - `Nil`: the Nil value is similar to null in other languages.
 - `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
@@ -94,11 +94,11 @@ Lambda< ParamList<Var<'x'>,Var<'y'>>,
 
 ## Build and Dependency
 
-### Use Tispp in Your Project
-Tispp is a header-only library, users could use Tispp by copying the head files at the `src` folder.
+### Use Crisp in Your Project
+Crisp is a header-only library, users could use Crisp by copying the head files at the `src` folder.
 
-1. To use Tispp macro api, add `#include "tispp_macros.h"` to your c++ source code.
-2. To use Tispp template api, add`#include "tispp_templates.h"` in c++ source code.
+1. To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
+2. To use Crisp template api, add`#include "crisp_templates.h"` in c++ source code.
 
 Enjoy it.
 
@@ -106,7 +106,7 @@ Notes:
 
 1. Your compiler must support C++11.
 2. Remember to set the `-ftemplate-depth-5000` flag to avoid insufficient template expansion depth.
-3. You'd better use Tispp headers as the last ones of your includes. For that Tispp macros may potentially have the same names as symbols in other source files and cause compile errors.
+3. You'd better use Crisp headers as the last ones of your includes. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
 4. As mentioned above: **never mix macros and templates style together**.   
 
 ### Build Examples and Tests

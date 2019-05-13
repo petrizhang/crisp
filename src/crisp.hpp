@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-#ifndef TISPP_HPP
-#define TISPP_HPP
+#ifndef CRISP_HPP
+#define CRISP_HPP
 
 #include <cassert>
 #include <string>
 #include <type_traits>
 
-namespace tispp {
+namespace crisp {
 
 /// ****************************************************************************
 /// * AST nodes.
@@ -733,5 +733,5 @@ struct Eval<Closure<Args...>, Environ> {
   using env = Environ;
   using type = Closure<Args...>;
 };
-}  // namespace tispp
-#endif  // TISPP_HPP
+}  // namespace crisp
+#endif  // CRISP_HPP

@@ -15,38 +15,38 @@
  * limitations under the License.
  */
 
-#ifndef TISPP_TEMPLATES_H
-#define TISPP_TEMPLATES_H
+#ifndef CRISP_TEMPLATES_H
+#define CRISP_TEMPLATES_H
 
-#include "tispp.hpp"
+#include "crisp.hpp"
 
 // clang-format off
-using tispp::Bool;
-using tispp::Char;
-using tispp::Int;
-using tispp::Symbol;
+using crisp::Bool;
+using crisp::Char;
+using crisp::Int;
+using crisp::Symbol;
 
-using tispp::Add;
-using tispp::Mul;
-using tispp::Sub;
-using tispp::Mod;
+using crisp::Add;
+using crisp::Mul;
+using crisp::Sub;
+using crisp::Mod;
 
-using tispp::And;
-using tispp::Or;
+using crisp::And;
+using crisp::Or;
 
-using tispp::IsEqual;
-using tispp::IsGreaterThan;
-using tispp::IsLessThan;
-using tispp::IsGreaterEqual;
-using tispp::IsLessEqual;
+using crisp::IsEqual;
+using crisp::IsGreaterThan;
+using crisp::IsLessThan;
+using crisp::IsGreaterEqual;
+using crisp::IsLessEqual;
 
-using tispp::Var;
-using tispp::ParamList;
-using tispp::Lambda;
-using tispp::Define;
-using tispp::Call;
-using tispp::Seq;
+using crisp::Var;
+using crisp::ParamList;
+using crisp::Lambda;
+using crisp::Define;
+using crisp::Call;
+using crisp::Seq;
 
-using tispp::Eval;
+using crisp::Eval;
 
-#endif  //TISPP_TEMPLATE_API_H
+#endif  //CRISP_TEMPLATES_H

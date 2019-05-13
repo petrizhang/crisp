@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-ftemplate-depth-5000)
 
-set(tispp src/tispp.hpp)
+set(tispp src/crisp.hpp)
 
 add_executable(test.exe tests/test.cpp ${tispp})
 

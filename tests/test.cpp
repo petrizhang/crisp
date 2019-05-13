@@ -17,9 +17,9 @@
 
 #include <cassert>
 #include <iostream>
-#include "tispp_templates.h"
+#include "crisp_templates.h"
 
-using namespace tispp;
+using namespace crisp;
 
 void TestDict() {
   using x = Var<'x'>;
