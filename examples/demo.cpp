@@ -23,18 +23,18 @@ int main() {
   using y = var('y');
   using add1 = var('a', 'd', 'd', '1');
   using add2 = var('a', 'd', 'd', '2');
-  using make_add_x = var('m', 'a', 'k', 'e', 'a', 'd', 'd', 'x');
+  using makeAddX = var('m', 'a', 'k', 'e', 'A', 'd', 'd', 'X');
 
   // 11
-  auto v1 = eval(seq(define(make_add_x, lambda(params(y),
-                                               lambda(params(x), add(x, y)))),
-                     define(add1, call(make_add_x, v(1))),
+  auto v1 = eval(seq(define(makeAddX, lambda(params(y),
+                                             lambda(params(x), add(x, y)))),
+                     define(add1, call(makeAddX, v(1))),
                      call(add1, v(10))))::type::c_value();
 
   // 12
-  auto v2 = eval(seq(define(make_add_x, lambda(params(y),
-                                               lambda(params(x), add(x, y)))),
-                     define(add2, call(make_add_x, v(2))),
+  auto v2 = eval(seq(define(makeAddX, lambda(params(y),
+                                             lambda(params(x), add(x, y)))),
+                     define(add2, call(makeAddX, v(2))),
                      call(add2, v(10))))::type::c_value();
 
   // 11
