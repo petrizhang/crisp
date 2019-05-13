@@ -19,7 +19,7 @@
 #define CRISP_HPP
 
 #include <cassert>
-#include <string>
+#include <iostream>
 #include <type_traits>
 
 namespace crisp {
@@ -105,6 +105,45 @@ struct Undefined {
   static constexpr const char *c_value() { return "undefined"; };
 };
 
+/// ----------------------------------------------------------------------------
+/// Closure type. We use this type to represent a function value
+template <typename Environ, typename Func>
+struct Closure {
+  static constexpr const char *repr = "Closure";
+  static constexpr const char *c_value() { return "#Closure"; };
+};
+
+/// ----------------------------------------------------------------------------
+/// We use this type to represent a `println` event
+/// Invoke the `c_value` method will trigger `print` execution.
+template <typename... Args>
+struct Println;
+
+template <typename Head, typename... Args>
+struct Println<Head, Args...> {
+  static const char *c_value() {
+    std::cout << Head::c_value();
+    return "nil";
+  };
+};
+
+template <>
+struct Println<> {
+  static const char *c_value() {
+    std::cout << std::endl;
+    return "nil";
+  };
+};
+
+/// ----------------------------------------------------------------------------
+/// We use this type to represent a print event
+template <typename... Args>
+struct Println {
+  static constexpr const char *c_value() {
+    return "nil";
+  };
+};
+
 template <typename... Args>
 struct Block {};
 
@@ -122,9 +161,6 @@ struct Call {};
 
 template <typename Params, typename Body>
 struct Lambda {};
-
-template <typename Environ, typename Func>
-struct Closure {};
 
 /// ----------------------------------------------------------------------------
 /// List(x,x,x,...)
@@ -619,6 +655,11 @@ EvalForBinaryOperator(IsGreaterThan);
 EvalForBinaryOperator(IsLessThan);
 EvalForBinaryOperator(IsGreaterEqual);
 EvalForBinaryOperator(IsLessEqual);
+
+
+/// ----------------------------------------------------------------------------
+/// Evaluate println
+
 
 /// ----------------------------------------------------------------------------
 /// Evaluate if-then-else expression

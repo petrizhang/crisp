@@ -106,4 +106,8 @@ int main() {
     // 3628800
     std::cout << v3 << std::endl;
   }
+  {
+    std::cout << run(lambda(params(var('a')),
+                            var('a')));
+  }
 }
