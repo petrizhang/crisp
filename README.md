@@ -39,7 +39,7 @@ Further more, **all operations in Crisp are accomplished at compile time**. It i
   std::cout << v2 << std::endl;
 ```
 
-In this example, the function `make_add_x` captures it's parameter `x` and returns another function.
+In this example, the function `makeAddX` captures it's parameter `x` and returns another function.
 The returned function takes a parameter `y` and returns the sum of `y` and the captured `x`.
 We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we will get `12`. 
  
