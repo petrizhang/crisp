@@ -137,7 +137,7 @@ Generally, to express the same program, the macro style will be shorter, more re
 and more friendly to IDE highlighting. Thus **we recommend the macro style**. 
 
 ### Macro Style
-Users could find a complete macro api list at "src/crisp_macros.h".
+Users could find a complete macro api list at "include/crisp_macros.h".
   
 ### Template Style
 
@@ -155,7 +155,7 @@ Lambda< ParamList<Var<'x'>,Var<'y'>>,
 - `Call`: calling user defined functions 
 - ...
 
-Users could find a complete template api list at "src/crisp_templates.h".
+Users could find a complete template api list at "include/crisp_templates.h".
 Here is an example program written in Crisp's template style:
 ```cpp
   std::cout << Eval<Add<Int<1>, Int<2>>>::type::c_value();
