@@ -15,79 +15,98 @@ Further more, **all operations in Crisp are accomplished at compile time**.
 It is the most attractive and awesome feature of Crisp.
 
 ## Examples
+### Println
+```cpp
+  {
+    // print an empty line
+    run(println());
+    // 3
+    run(println(v(3)));
+    // 5 true
+    run(println(v(5), v(true)));
+  }
+```
+ 
 ### Basic value types
 ```cpp
-    std::cout << run(v(1)) << std::endl;
-    std::cout << run(v(true)) << std::endl;
-    std::cout << run(v('c')) << std::endl;
-    std::cout << run(sym('s', 'y', 'm', 'b', 'o', 'l')) << std::endl;
+    run(println(v(1)));
+    run(println(v(true)));
+    run(println(v('c')));
+    run(println(sym('s', 'y', 'm', 'b', 'o', 'l')));
+```
+### Block
+A block contains a sequence of expressions, and the result is also an expression. 
+The value of the block is the value of the last expression.
+```cpp
+    // 3
+    run(println(block(v(1),
+                      v(2),
+                      v(3))));
 ```
 
 ### Basic operations
 ```cpp
     // 1+2 = 3
-    std::cout << run(add(v(1), v(2))) << std::endl;
+    run(println(add(v(1), v(2))));
     // 1-2 = -1
-    std::cout << run(sub(v(1), v(2))) << std::endl;
+    run(println(sub(v(1), v(2))));
     // 1*2 = 2
-    std::cout << run(mul(v(1), v(2))) << std::endl;
-    // 1 == 2 -> true
-    std::cout << run(eq_(v(1), v(2))) << std::endl;
+    run(println(mul(v(1), v(2))));
+    // 1 == 2 -> false
+    run(println(eq_(v(1), v(2))));
     // 1 > 2 -> false
-    std::cout << run(gt(v(1), v(2))) << std::endl;
+    run(println(gt(v(1), v(2))));
     // 1 >= 2 -> false
-    std::cout << run(ge(v(1), v(2))) << std::endl;
+    run(println(ge(v(1), v(2))));
     // 1 < 2 -> true
-    std::cout << run(lt(v(1), v(2))) << std::endl;
+    run(println(lt(v(1), v(2))));
     // 1 <= 2 -> true
-    std::cout << run(le(v(1), v(2))) << std::endl;
+    run(println(le(v(1), v(2))));
 ```
 ### Variable definition
 ```cpp
     /*
      * int a = 100;
-     * return a;
+     * println(a);
      */
-    std::cout << run(block(define(var('a'), v(100)),
-                           var('a')))
-              << std::endl;
+    run(block(define(var('a'), v(100)),
+              var('a'),
+              println(var('a'))));
 ```
 ### If-then-else
 ```cpp
     // true ? 1 : 2
-    std::cout << run(if_(v(true), v(1), v(2))) << std::endl;
+    run(println(if_(v(true), v(1), v(2))));
 ```
 ### Function definition and function call
 ```cpp
-    std::cout << run(block(define(var('+'), lambda(params(var('x'), var('y')),
-                                                   add(var('x'), var('y')))),
-                           call(var('+'), v(10), v(20))))
-              << std::endl;
+    run(block(define(var('+'), lambda(params(var('x'), var('y')),
+                                      add(var('x'), var('y')))),
+              define(var('s'), call(var('+'), v(10), v(20))),
+              println(var('s'))));
 ```
 ### Closure
 ```cpp
     using x = var('x');
     using y = var('y');
+    using z = var('z');
     using add1 = var('a', 'd', 'd', '1');
     using add2 = var('a', 'd', 'd', '2');
     using makeAddX = var('m', 'a', 'k', 'e', 'A', 'd', 'd', 'X');
 
     // 11
-    auto v1 = run(block(define(makeAddX, lambda(params(y),
-                                                lambda(params(x), add(x, y)))),
-                        define(add1, call(makeAddX, v(1))),
-                        call(add1, v(10))));
+    run(block(define(makeAddX, lambda(params(y),
+                                      lambda(params(x), add(x, y)))),
+              define(add1, call(makeAddX, v(1))),
+              define(z, call(add1, v(10))),
+              println(z)));
 
     // 12
-    auto v2 = run(block(define(makeAddX, lambda(params(y),
-                                                lambda(params(x), add(x, y)))),
-                        define(add2, call(makeAddX, v(2))),
-                        call(add2, v(10))));
-
-    // 11
-    std::cout << v1 << std::endl;
-    // 12
-    std::cout << v2 << std::endl;
+    run(block(define(makeAddX, lambda(params(y),
+                                      lambda(params(x), add(x, y)))),
+              define(add2, call(makeAddX, v(2))),
+              define(z, call(add2, v(10))),
+              println(z)));
 ```
 
 In this example, the function `makeAddX` captures it's parameter `x` and returns another function.
@@ -100,13 +119,11 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
     using factorial = var('f', 'a', 'c', 't', 'o', 'r', 'i', 'a', 'l');
 
     // 3628800
-    auto v3 = run(block(define(factorial, lambda(params(n),
-                                                 if_(eq_(n, v(1)),
-                                                     v(1),
-                                                     mul(n, call(factorial, sub(n, v(1))))))),
-                        call(factorial, v(10))));
-    // 3628800
-    std::cout << v3 << std::endl;
+    run(block(define(factorial, lambda(params(n),
+                                       if_(eq_(n, v(1)),
+                                           v(1),
+                                           mul(n, call(factorial, sub(n, v(1))))))),
+              println(call(factorial, v(10)))));
 ```
 
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.

@@ -25,6 +25,15 @@
 
 namespace crisp {
 
+template <typename T>
+inline void output(T v) {
+  std::cout << v;
+}
+
+inline void output(bool v) {
+  std::cout << (v ? "true" : "false");
+}
+
 /// ****************************************************************************
 /// * AST nodes.
 /// ****************************************************************************
@@ -563,7 +572,7 @@ template <typename Environ, int V>
 struct Eval<Int<V>, Environ> {
   using env = Environ;
   using type = Int<V>;
-  static constexpr bool c_value() {
+  static constexpr int c_value() {
     return V;
   }
 };
@@ -605,17 +614,24 @@ struct Eval<Lambda<ParamL, Body>, Environ> {
 /// Evaluate println
 template <typename Environ, typename Head, typename... Args>
 struct Eval<Println<Head, Args...>, Environ> {
-  static constexpr bool toBool(bool value) { return value; };
-  static bool toBool(const std::string &) { return false; };
-
   static const char *c_value() {
     auto value = Eval<Head, Environ>::c_value();
-    if (std::is_same<decltype(value), bool>::value) {
-      std::cout << (toBool(value) ? "true" : "false");
-    } else {
-      std::cout << value;
-    }
+    output(value);
+    std::cout << " ";
     Eval<Println<Args...>, Environ>::c_value();
+    return "#undefined";
+  };
+
+  using env = Environ;
+  using type = Undefined;
+};
+
+template <typename Environ, typename Head>
+struct Eval<Println<Head>, Environ> {
+  static const char *c_value() {
+    auto value = Eval<Head, Environ>::c_value();
+    output(value);
+    std::cout << std::endl;
     return "#undefined";
   };
 

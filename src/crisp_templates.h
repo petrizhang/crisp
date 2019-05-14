@@ -26,6 +26,7 @@ using crisp::Char;
 using crisp::Int;
 using crisp::Symbol;
 
+using crisp::Println;
 using crisp::Add;
 using crisp::Mul;
 using crisp::Sub;

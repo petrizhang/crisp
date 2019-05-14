@@ -19,6 +19,12 @@
 #include "crisp_macros.h"
 
 int main() {
+  // Println
+  {
+    run(println());
+    run(println(v(3)));
+    run(println(v(5), v(true)));
+  }
   // Basic value types
   {
     run(println(v(1)));
@@ -26,6 +32,14 @@ int main() {
     run(println(v('c')));
     run(println(sym('s', 'y', 'm', 'b', 'o', 'l')));
   }
+  // Block
+  {
+    // 3
+    run(println(block(v(1),
+                      v(2),
+                      v(3))));
+  }
+
   // Basic operations
   {
     // 1+2 = 3
@@ -48,9 +62,9 @@ int main() {
   // Variable definition
   {
     /*
-           * int a = 100;
-           * return a;
-           */
+       * int a = 100;
+       * println(a);
+       */
     run(block(define(var('a'), v(100)),
               var('a'),
               println(var('a'))));
