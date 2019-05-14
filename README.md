@@ -11,20 +11,17 @@ rather than manually writing tedious C++ templates code.
 Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
 include immutable variables, lambdas, lexical scope and closures, and recursive functions.
 
-Further more, **all operations in Crisp are accomplished at compile time**.
-It is the most attractive and awesome feature of Crisp.
+Lastly and most importantly, **all operations in Crisp are accomplished at compile time**. It is the most attractive and awesome feature of Crisp.
 
 ## Examples
 ### Println
 ```cpp
-  {
     // print an empty line
     run(println());
     // 3
     run(println(v(3)));
     // 5 true
     run(println(v(5), v(true)));
-  }
 ```
  
 ### Basic value types
@@ -163,7 +160,7 @@ Lambda< ParamList<Var<'x'>,Var<'y'>>,
 ## Build and Dependency
 
 ### Use Crisp in Your Project
-Crisp is a header-only library, users could use Crisp by copying the head files at the `src` folder.
+Crisp is a header-only library, users could use Crisp by including Crisp header files.
 
 1. To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
 2. To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
