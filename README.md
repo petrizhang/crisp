@@ -128,11 +128,10 @@ In this example, we define a recursive function `factorial` which calls itself t
 ## Expressions
 Crisp provides two kinds of syntax: macro style and template style. Users could choose their preferred one.
 
-A basic principle to use Crisp is **never mix these two styles together**, as it will lead to unexpected behaviors.
+Users would better **never mix templates and macros together**, as it will lead to unexpected behaviors.
+For example, in C++, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`, which will causes a compile error.   
 
-For example, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`.   
-
-Thus the best practice is always use one style in a single C++ source file. 
+Thus the best practice to use Crisp is always using one style in a single C++ source file. 
 
 Generally, to express the same program, the macro style will be shorter, more readable 
 and more friendly to IDE highlighting. Thus **we recommend the macro style**. 
@@ -141,7 +140,6 @@ and more friendly to IDE highlighting. Thus **we recommend the macro style**.
 Users could find a complete macro api list at "src/crisp_macros.h".
   
 ### Template Style
-Users could find a complete template api list at "src/crisp_templates.h".
 
 - `Nil`: the Nil value is similar to null in other languages.
 - `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
@@ -149,13 +147,19 @@ Users could find a complete template api list at "src/crisp_templates.h".
 - `Int<N>` : an integer value. e.g. `Int<5>`
 - `Var<'c','c',...>`: a symbol/variable reference. e.g. `Var<'a'>, Var<'t','e','s','t'>`
 - `Pair<L,R>`: a pair value, it is very similar to `std::pair` in C++
-- `List<e1,e2,...en>`: equivalent to  `Pair<e1, Pair<e2, ...Pair<en, Nil>>`, e.g. `List<Int<1>,Int<2>>`
 - `Lambda< ParamList< Var<..>, Var<..>... >, Body >`, e.g. :
 ```cpp
 Lambda< ParamList<Var<'x'>,Var<'y'>>,
     Add<Var<'x'>, Var<'y'>> >
 ```
 - `Call`: calling user defined functions 
+- ...
+
+Users could find a complete template api list at "src/crisp_templates.h".
+Here is an example program written in Crisp's template style:
+```cpp
+  std::cout << Eval<Add<Int<1>, Int<2>>>::type::c_value();
+```
 
 ## Build and Dependency
 

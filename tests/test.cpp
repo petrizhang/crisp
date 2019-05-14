@@ -78,6 +78,7 @@ void TestEvalBinaryOp() {
 }
 
 int main() {
+  std::cout << Eval<Add<Int<1>, Int<2>>>::type::c_value();
   TestDict();
   TestEnv();
   TestBinaryOpImpl();
