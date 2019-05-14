@@ -164,9 +164,9 @@ Here is an example program written in Crisp's template style:
 ## Build and Dependency
 
 ### Use Crisp in Your Project
-Crisp is a header-only library, users could use Crisp by including Crisp header files.
+Crisp is a header-only library, users could use Crisp by including Crisp header files in their projects.
 
-1. Copy header files localted at `crisp/include` into your project.
+1. Copy header files located at `crisp/include` into your project.
 2. Choose one style of API you prefer.
     - To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
     - To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
