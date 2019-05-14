@@ -162,10 +162,11 @@ Lambda< ParamList<Var<'x'>,Var<'y'>>,
 ### Use Crisp in Your Project
 Crisp is a header-only library, users could use Crisp by including Crisp header files.
 
-1. To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
-2. To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
-
-Enjoy it.
+1. Copy header files localted at `crisp/include` into your project.
+2. Choose one style of API you prefer.
+    - To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
+    - To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
+3. Enjoy it.
 
 Notes:
 
