@@ -18,6 +18,7 @@
 #ifndef CRISP_HPP
 #define CRISP_HPP
 
+#include <array>
 #include <cassert>
 #include <iostream>
 #include <type_traits>
@@ -94,7 +95,7 @@ struct Pair {};
 struct Nil {
   static constexpr const char *repr = "Nil";
   using c_type = void;
-  static constexpr const char *c_value() { return "nil"; };
+  static constexpr const char *c_value() { return "#nil"; };
 };
 
 /// ----------------------------------------------------------------------------
@@ -102,7 +103,7 @@ struct Nil {
 struct Undefined {
   static constexpr const char *repr = "Undefined";
   using c_type = void;
-  static constexpr const char *c_value() { return "undefined"; };
+  static constexpr const char *c_value() { return "#undefined"; };
 };
 
 /// ----------------------------------------------------------------------------
@@ -110,39 +111,13 @@ struct Undefined {
 template <typename Environ, typename Func>
 struct Closure {
   static constexpr const char *repr = "Closure";
-  static constexpr const char *c_value() { return "#Closure"; };
+  static constexpr const char *c_value() { return "#closure"; };
 };
 
 /// ----------------------------------------------------------------------------
 /// We use this type to represent a `println` event
-/// Invoke the `c_value` method will trigger `print` execution.
 template <typename... Args>
-struct Println;
-
-template <typename Head, typename... Args>
-struct Println<Head, Args...> {
-  static const char *c_value() {
-    std::cout << Head::c_value();
-    return "nil";
-  };
-};
-
-template <>
-struct Println<> {
-  static const char *c_value() {
-    std::cout << std::endl;
-    return "nil";
-  };
-};
-
-/// ----------------------------------------------------------------------------
-/// We use this type to represent a print event
-template <typename... Args>
-struct Println {
-  static constexpr const char *c_value() {
-    return "nil";
-  };
-};
+struct Println {};
 
 template <typename... Args>
 struct Block {};
@@ -570,24 +545,108 @@ template <typename Environ, bool V>
 struct Eval<Bool<V>, Environ> {
   using env = Environ;
   using type = Bool<V>;
+  static constexpr bool c_value() {
+    return V;
+  }
 };
 
 template <typename Environ, char V>
 struct Eval<Char<V>, Environ> {
   using env = Environ;
   using type = Char<V>;
+  static constexpr char c_value() {
+    return V;
+  }
 };
 
 template <typename Environ, int V>
 struct Eval<Int<V>, Environ> {
   using env = Environ;
   using type = Int<V>;
+  static constexpr bool c_value() {
+    return V;
+  }
 };
 
 template <typename Environ, char... chars>
 struct Eval<Symbol<chars...>, Environ> {
   using env = Environ;
   using type = Symbol<chars...>;
+  static std::string c_value() {
+    return type::c_value();
+  }
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate variable reference. e.g. Var<'n'>
+template <char... args, typename Environ>
+struct Eval<Var<args...>, Environ> {
+  using env = Environ;
+  using type = typename EnvLookup<Environ, Var<args...>>::type;
+
+  static decltype(type::c_value()) c_value() {
+    return type::c_value();
+  }
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate lambda instantiation.
+template <typename Environ, typename Body, typename ParamL>
+struct Eval<Lambda<ParamL, Body>, Environ> {
+  using env = Environ;
+  using type = Closure<Environ, Lambda<ParamL, Body>>;
+
+  static constexpr const char *c_value() {
+    return "#closure";
+  }
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate println
+template <typename Environ, typename Head, typename... Args>
+struct Eval<Println<Head, Args...>, Environ> {
+  static constexpr bool toBool(bool value) { return value; };
+  static bool toBool(const std::string &) { return false; };
+
+  static const char *c_value() {
+    auto value = Eval<Head, Environ>::c_value();
+    if (std::is_same<decltype(value), bool>::value) {
+      std::cout << (toBool(value) ? "true" : "false");
+    } else {
+      std::cout << value;
+    }
+    Eval<Println<Args...>, Environ>::c_value();
+    return "#undefined";
+  };
+
+  using env = Environ;
+  using type = Undefined;
+};
+
+template <typename Environ>
+struct Eval<Println<>, Environ> {
+  static const char *c_value() {
+    std::cout << std::endl;
+    return "#undefined";
+  };
+
+  using env = Environ;
+  using type = Undefined;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate variable definition. e.g. Define<Var<'a'>,Int<1>>
+template <typename Environ, typename Ident, typename Value>
+struct Eval<Define<Ident, Value>, Environ> {
+  using ValueEval = Eval<Value, Environ>;
+
+  using env = typename EnvPut<Environ, Ident, typename ValueEval::type>::type;
+  using type = Undefined;
+
+  static decltype(type::c_value()) c_value() {
+    ValueEval::c_value();
+    return type::c_value();
+  }
 };
 
 /// ----------------------------------------------------------------------------
@@ -595,38 +654,75 @@ struct Eval<Symbol<chars...>, Environ> {
 template <typename Environ, typename L, typename R>
 struct Eval<Add<L, R>, Environ> {
   using env = Environ;
-  typedef typename AddImpl<typename Eval<L, Environ>::type, typename Eval<R, Environ>::type>::type
-      type;
+  using LEval = Eval<L, Environ>;
+  using REval = Eval<R, Environ>;
+  typedef typename AddImpl<typename LEval::type,
+                           typename REval::type>::type type;
+
+  static decltype(type::c_value()) c_value() {
+    LEval::c_value();
+    REval::c_value();
+    return type::c_value();
+  }
 };
 
 template <typename Environ, typename L, typename R, typename... Args>
 struct Eval<Add<L, R, Args...>, Environ> {
-  using LT =
-      typename AddImpl<typename Eval<L, Environ>::type, typename Eval<R, Environ>::type>::type;
-  using RT = typename Eval<Add<Args...>, Environ>::type;
+  using LEval = Eval<L, Environ>;
+  using REval = Eval<R, Environ>;
+  using LT = typename AddImpl<typename LEval::type,
+                              typename REval::type>::type;
+
+  using TailEval = Eval<Add<Args...>, Environ>;
+  using RT = typename TailEval::type;
 
   using env = Environ;
   using type = typename AddImpl<LT, RT>::type;
+
+  static decltype(type::c_value()) c_value() {
+    LEval::c_value();
+    REval::c_value();
+    TailEval::c_value();
+    return type::c_value();
+  }
 };
 
 /// ----------------------------------------------------------------------------
 /// Eval chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
-#define EvalForChainOperator(OpName)                                           \
-  template <typename Environ, typename L, typename R>                          \
-  struct Eval<OpName<L, R>, Environ> {                                         \
-    using env = Environ;                                                       \
-    typedef typename OpName##Impl<typename Eval<L, Environ>::type,             \
-                                  typename Eval<R, Environ>::type>::type type; \
-  };                                                                           \
-                                                                               \
-  template <typename Environ, typename L, typename R, typename... Args>        \
-  struct Eval<OpName<L, R, Args...>, Environ> {                                \
-    using LT = typename OpName##Impl<typename Eval<L, Environ>::type,          \
-                                     typename Eval<R, Environ>::type>::type;   \
-    using RT = typename Eval<OpName<Args...>, Environ>::type;                  \
-                                                                               \
-    using env = Environ;                                                       \
-    using type = typename OpName##Impl<LT, RT>::type;                          \
+#define EvalForChainOperator(OpName)                                    \
+  template <typename Environ, typename L, typename R>                   \
+  struct Eval<OpName<L, R>, Environ> {                                  \
+    using env = Environ;                                                \
+    using LEval = Eval<L, Environ>;                                     \
+    using REval = Eval<R, Environ>;                                     \
+    typedef typename OpName##Impl<typename LEval::type,                 \
+                                  typename REval::type>::type type;     \
+                                                                        \
+    static decltype(type::c_value()) c_value() {                        \
+      LEval::c_value();                                                 \
+      REval::c_value();                                                 \
+      return type::c_value();                                           \
+    }                                                                   \
+  };                                                                    \
+                                                                        \
+  template <typename Environ, typename L, typename R, typename... Args> \
+  struct Eval<OpName<L, R, Args...>, Environ> {                         \
+    using LEval = Eval<L, Environ>;                                     \
+    using REval = Eval<R, Environ>;                                     \
+    using LT = typename OpName##Impl<typename LEval::type,              \
+                                     typename REval::type>::type;       \
+    using TailEval = Eval<Add<Args...>, Environ>;                       \
+    using RT = typename Eval<OpName<Args...>, Environ>::type;           \
+                                                                        \
+    using env = Environ;                                                \
+    using type = typename OpName##Impl<LT, RT>::type;                   \
+                                                                        \
+    static decltype(type::c_value()) c_value() {                        \
+      LEval::c_value();                                                 \
+      REval::c_value();                                                 \
+      TailEval::c_value();                                              \
+      return type::c_value();                                           \
+    }                                                                   \
   };
 
 EvalForChainOperator(Sub);
@@ -640,15 +736,36 @@ EvalForChainOperator(Or);
 template <typename Environ, typename L, typename R>
 struct Eval<IsEqual<L, R>, Environ> {
   using env = Environ;
-  using type =
-      typename IsEqualImpl<typename Eval<L, Environ>::type, typename Eval<R, Environ>::type>::type;
+
+  using LEval = Eval<L, Environ>;
+  using REval = Eval<R, Environ>;
+
+  using type = typename IsEqualImpl<typename LEval::type,
+                                    typename REval::type>::type;
+
+  static decltype(type::c_value()) c_value() {
+    LEval::c_value();
+    REval::c_value();
+    return type::c_value();
+  }
 };
 
-#define EvalForBinaryOperator(OpName)                                          \
-  template <typename Environ, typename L, typename R>                          \
-  struct Eval<OpName<L, R>, Environ> {                                         \
-    using type = typename OpName##Impl<typename Eval<L, Environ>::type,        \
-                                       typename Eval<R, Environ>::type>::type; \
+#define EvalForBinaryOperator(OpName)                               \
+  template <typename Environ, typename L, typename R>               \
+  struct Eval<OpName<L, R>, Environ> {                              \
+    using env = Environ;                                            \
+                                                                    \
+    using LEval = Eval<L, Environ>;                                 \
+    using REval = Eval<R, Environ>;                                 \
+                                                                    \
+    using type = typename OpName##Impl<typename LEval::type,        \
+                                       typename REval::type>::type; \
+                                                                    \
+    static decltype(type::c_value()) c_value() {                    \
+      LEval::c_value();                                             \
+      REval::c_value();                                             \
+      return type::c_value();                                       \
+    }                                                               \
   };
 
 EvalForBinaryOperator(IsGreaterThan);
@@ -656,66 +773,77 @@ EvalForBinaryOperator(IsLessThan);
 EvalForBinaryOperator(IsGreaterEqual);
 EvalForBinaryOperator(IsLessEqual);
 
-
-/// ----------------------------------------------------------------------------
-/// Evaluate println
-
-
 /// ----------------------------------------------------------------------------
 /// Evaluate if-then-else expression
 template <typename Environ, typename CondEvaluated, typename Body, typename ElseBody>
 struct DelayIf {
-  using type = typename Eval<Body, Environ>::type;
+  using BodyEval = Eval<Body, Environ>;
+  using type = typename BodyEval::type;
+
+  static decltype(type::c_value()) c_value() {
+    BodyEval::c_value();
+    return type::c_value();
+  }
 };
 
 template <typename Environ, typename Body, typename ElseBody>
 struct DelayIf<Environ, Bool<false>, Body, ElseBody> {
-  using type = typename Eval<ElseBody, Environ>::type;
+  using ElseBodyEval = Eval<ElseBody, Environ>;
+  using type = typename ElseBodyEval::type;
+
+  static decltype(type::c_value()) c_value() {
+    ElseBodyEval::c_value();
+    return type::c_value();
+  }
 };
 
 template <typename Environ, typename Cond, typename Body, typename ElseBody>
 struct Eval<If<Cond, Body, ElseBody>, Environ> {
-  using condEvaluated = typename Eval<Cond, Environ>::type;
   using env = Environ;
-  using type = typename DelayIf<Environ, condEvaluated, Body, ElseBody>::type;
-};
 
-/// ----------------------------------------------------------------------------
-/// Evaluate variable definition. e.g. Define<Var<'a'>,Int<1>>
-template <typename Environ, typename Ident, typename Value>
-struct Eval<Define<Ident, Value>, Environ> {
-  using env = typename EnvPut<Environ, Ident, typename Eval<Value, Environ>::type>::type;
-  using type = Nil;
-};
+  using CondEval = Eval<Cond, Environ>;
+  using CondValue = typename CondEval::type;
 
-/// ----------------------------------------------------------------------------
-/// Evaluate variable reference. e.g. Var<'n'>
-template <char... args, typename Environ>
-struct Eval<Var<args...>, Environ> {
-  using env = Environ;
-  using type = typename EnvLookup<Environ, Var<args...>>::type;
+  using DelayIfEval = DelayIf<Environ, CondValue, Body, ElseBody>;
+  using type = typename DelayIfEval::type;
+
+  static decltype(type::c_value()) c_value() {
+    CondEval::c_value();
+    DelayIfEval::c_value();
+    return type::c_value();
+  }
 };
 
 /// ----------------------------------------------------------------------------
 /// Evaluate a sequence of expressions. e.g Block< Define<Var<'n'>,1>, Var<'n'>>
+/// The result of a block is the result of the last expression int this block
 template <typename Environ, typename Head, typename... Tail>
 struct Eval<Block<Head, Tail...>, Environ> {
-  using env = typename Eval<Head, Environ>::env;
-  using type = typename Eval<Block<Tail...>, env>::type;
+  using env = Environ;
+
+  using HeadEval = Eval<Head, Environ>;
+  // Pass the resulted env from `Head` to the next expression's execution
+  using TailEval = Eval<Block<Tail...>, typename HeadEval::env>;
+  using type = typename TailEval::type;
+
+  static decltype(type::c_value()) c_value() {
+    HeadEval::c_value();
+    TailEval::c_value();
+    return type::c_value();
+  }
 };
 
 template <typename Environ, typename Head>
 struct Eval<Block<Head>, Environ> {
-  using env = typename Eval<Head, Environ>::env;
-  using type = typename Eval<Head, Environ>::type;
-};
+  using HeadEval = Eval<Head, Environ>;
 
-/// ----------------------------------------------------------------------------
-/// Evaluate lambda instantiation.
-template <typename Environ, typename Body, typename ParamL>
-struct Eval<Lambda<ParamL, Body>, Environ> {
-  using env = Environ;
-  using type = Closure<Environ, Lambda<ParamL, Body>>;
+  using env = typename HeadEval::env;
+  using type = typename HeadEval::type;
+
+  static decltype(type::c_value()) c_value() {
+    HeadEval::c_value();
+    return type::c_value();
+  }
 };
 
 /// ----------------------------------------------------------------------------
@@ -724,15 +852,28 @@ template <typename Environ>
 struct Eval<Array<>, Environ> {
   using env = Environ;
   using type = Array<>;
+
+  static constexpr const char *c_value() {
+    return "#undefined";
+  }
 };
 
 template <typename Environ, typename Head, typename... Tail>
 struct Eval<Array<Head, Tail...>, Environ> {
-  using headValue = typename Eval<Head, Environ>::type;
-  using tailValues = typename Eval<Array<Tail...>, Environ>::type;
+  using HeadEval = Eval<Head, Environ>;
+  using HeadValue = typename HeadEval::type;
+
+  using TailEval = Eval<Array<Tail...>, Environ>;
+  using TailValue = typename TailEval::type;
 
   using env = Environ;
-  using type = typename ArrayPushFront<tailValues, headValue>::type;
+  using type = typename ArrayPushFront<TailValue, HeadValue>::type;
+
+  static const char *c_value() {
+    HeadEval::c_value();
+    TailEval::c_value();
+    return "#undefined";
+  }
 };
 
 /// ----------------------------------------------------------------------------
@@ -740,45 +881,64 @@ struct Eval<Array<Head, Tail...>, Environ> {
 template <typename CallSiteEnviron, typename ClosureV, typename... Args>
 struct CallClosure;
 
-template <typename CallSiteEnviron, typename ClosureEnviron, typename Body, typename... Params,
-          typename... ArgValues>
+template <typename CallSiteEnviron, typename ClosureEnviron,
+          typename Body, typename... Params, typename... ArgValues>
 struct CallClosure<CallSiteEnviron, Closure<ClosureEnviron, Lambda<ParamList<Params...>, Body>>,
                    Array<ArgValues...>> {
   // Check arguments number
   static_assert(Size<Params...>::value == Size<ArgValues...>::value,
                 "Arguments number does't match.");
 
-  // Get function inner scope
+  // Pack parameters and given arguments to a dict
   using argDict = typename Zip<Array<Params...>, Array<ArgValues...>>::type;
 
-  // Insert all arguments into the function's scope to create the execution scope
+  // Insert the arguments dict to the closest level of the closure's environment
   using executionEnv0 = typename ArrayPushFront<ClosureEnviron, argDict>::type;
-  // Add the call site's scope into the end of the environment list,
+  // Add the call site's environment into the end of the environment list,
   // thus the recursive calls could be supported
   using executionEnv = typename ArrayExtendBack<executionEnv0, CallSiteEnviron>::type;
 
   using env = CallSiteEnviron;
   // Evaluate function body
-  using type = typename Eval<Body, executionEnv>::type;
+  using BodyEval = Eval<Body, executionEnv>;
+  using type = typename BodyEval::type;
+
+  static decltype(type::c_value()) c_value() {
+    BodyEval::c_value();
+    return type::c_value();
+  }
 };
 
 template <typename Environ, typename Func, typename... Args>
 struct Eval<Call<Func, Args...>, Environ> {
   // Evaluate the expression to get a closure value.
-  using closure = typename Eval<Func, Environ>::type;
+  using ClosureEval = Eval<Func, Environ>;
+  using ClosureValue = typename ClosureEval::type;
+
   // Evaluate argument list.
-  using argValues = typename Eval<Array<Args...>, Environ>::type;
-  static_assert(IsCallable<closure>::value, "Expected a callable function/closure.");
+  using ArgEval = Eval<Array<Args...>, Environ>;
+  using ArgValues = typename ArgEval::type;
+  static_assert(IsCallable<ClosureValue>::value, "Expected a callable function/closure.");
 
   using env = Environ;
   // Call the closure.
-  using type = typename CallClosure<Environ, closure, argValues>::type;
+  using type = typename CallClosure<Environ, ClosureValue, ArgValues>::type;
+
+  static decltype(type::c_value()) c_value() {
+    ClosureEval::c_value();
+    ArgEval::c_value();
+    return type::c_value();
+  }
 };
 
 template <typename Environ, typename... Args>
 struct Eval<Closure<Args...>, Environ> {
   using env = Environ;
   using type = Closure<Args...>;
+
+  static constexpr const char *c_value() {
+    return "#closure";
+  }
 };
 }  // namespace crisp
 #endif  // CRISP_HPP
