@@ -5,11 +5,11 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-ftemplate-depth-5000)
 
-set(tispp src/crisp.hpp)
+set(tispp include/crisp.hpp)
 
 add_executable(test.exe tests/test.cpp ${tispp})
 
-include_directories(src)
+include_directories(include)
 
 # Add executables for files in "examples/"
 FILE(GLOB Examples examples/*)
