@@ -86,24 +86,17 @@ The value of the block is the value of the last expression.
 ```cpp
     using x = var('x');
     using y = var('y');
-    using z = var('z');
     using add1 = var('a', 'd', 'd', '1');
     using add2 = var('a', 'd', 'd', '2');
     using makeAddX = var('m', 'a', 'k', 'e', 'A', 'd', 'd', 'X');
 
-    // 11
+    // 11, 12
     run(block(define(makeAddX, lambda(params(y),
                                       lambda(params(x), add(x, y)))),
               define(add1, call(makeAddX, v(1))),
-              define(z, call(add1, v(10))),
-              println(z)));
-
-    // 12
-    run(block(define(makeAddX, lambda(params(y),
-                                      lambda(params(x), add(x, y)))),
               define(add2, call(makeAddX, v(2))),
-              define(z, call(add2, v(10))),
-              println(z)));
+              println(call(add1, v(10))),    // 11
+              println(call(add2, v(10)))));  //12
 ```
 
 In this example, the function `makeAddX` captures it's parameter `x` and returns another function.
