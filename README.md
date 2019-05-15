@@ -13,6 +13,84 @@ include immutable variables, lambdas, lexical scope and closures, and recursive 
 
 What's more, **all operations in Crisp are accomplished at compile time**. It is the most attractive and awesome feature of Crisp.
 
+## How to Use
+First let us see two simple but complete examples:
+
+1. Crisp Macro Style
+```cpp
+#include "crisp_macros.h"
+
+int main() {
+  run(println(add(v(1),v(1))));
+  return 0;
+}
+```
+
+2. Crisp Template Style
+```cpp
+#include "crisp_templates.h"
+
+int main() {
+  Eval<Println<Add<Int<1>, Int<1>>>>::c_value();
+  return 0;
+}
+```
+
+As demonstrated above, Crisp provides two kinds of syntax: macro style and template style. You could build Crisp program with your preferred one. But you should **never mix these two styles together**, as it will lead to unexpected behaviors.
+For instance, in C++, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`, which will causes a compile error. 
+
+Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
+
+Generally, to express the same program, the macro style will be shorter, more readable 
+and more friendly to IDE highlighting. Thus **we recommend the macro style**. 
+
+### Use Crisp in Your Project
+Crisp is a header-only library, users could use Crisp by including Crisp header files in their projects.
+
+1. Copy header files located at `crisp/include` into your project.
+2. Choose one style of API you prefer.
+    - To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
+    - To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
+3. Enjoy it.
+
+Notes:
+
+1. Your compiler must support C++11.
+2. Remember to set the `-ftemplate-depth-5000` flag to avoid insufficient template expansion depth.
+3. You'd better use Crisp headers as the last ones of your includes. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
+4. As mentioned above: **never mix macros and templates style together**.  
+
+## Essential Concepts
+### Encode values with templates
+
+### `eval` v.s. `run`
+```
+#define eval(expr) crisp::Eval<expr, crisp::Env<>>::type
+#define run(expr) crisp::Eval<expr, crisp::Env<>>::c_value()
+```
+
+## Expressions
+
+### Macro Style
+Users could find a complete macro api list at "include/crisp_macros.h".
+  
+### Template Style
+- `Nil`: the Nil value is similar to null in other languages.
+- `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
+- `Char<C>`: a char value. e.g. `Char<'a'>, Char<'b'>`
+- `Int<N>` : an integer value. e.g. `Int<5>`
+- `Var<'c','c',...>`: a symbol/variable reference. e.g. `Var<'a'>, Var<'t','e','s','t'>`
+- `Pair<L,R>`: a pair value, it is very similar to `std::pair` in C++
+- `Lambda< ParamList< Var<..>, Var<..>... >, Body >`, e.g. :
+```cpp
+Lambda< ParamList<Var<'x'>,Var<'y'>>,
+    Add<Var<'x'>, Var<'y'>> >
+```
+- `Call`: calling user defined functions 
+- ...
+
+Users could find a complete template api list at "include/crisp_templates.h".
+
 ## Examples
 ### Println
 ```cpp
@@ -118,61 +196,9 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
 
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
 
-## Expressions
-Crisp provides two kinds of syntax: macro style and template style. Users could choose their preferred one.
-
-Users would better **never mix templates and macros together**, as it will lead to unexpected behaviors.
-For example, in C++, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`, which will causes a compile error.   
-
-Thus the best practice to use Crisp is always using one style in a single C++ source file. 
-
-Generally, to express the same program, the macro style will be shorter, more readable 
-and more friendly to IDE highlighting. Thus **we recommend the macro style**. 
-
-### Macro Style
-Users could find a complete macro api list at "include/crisp_macros.h".
-  
-### Template Style
-
-- `Nil`: the Nil value is similar to null in other languages.
-- `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
-- `Char<C>`: a char value. e.g. `Char<'a'>, Char<'b'>`
-- `Int<N>` : an integer value. e.g. `Int<5>`
-- `Var<'c','c',...>`: a symbol/variable reference. e.g. `Var<'a'>, Var<'t','e','s','t'>`
-- `Pair<L,R>`: a pair value, it is very similar to `std::pair` in C++
-- `Lambda< ParamList< Var<..>, Var<..>... >, Body >`, e.g. :
-```cpp
-Lambda< ParamList<Var<'x'>,Var<'y'>>,
-    Add<Var<'x'>, Var<'y'>> >
-```
-- `Call`: calling user defined functions 
-- ...
-
-Users could find a complete template api list at "include/crisp_templates.h".
-Here is an example program written in Crisp's template style:
-```cpp
-  std::cout << Eval<Add<Int<1>, Int<2>>>::type::c_value();
-```
-
 ## Build and Dependency
+If you want to explore Crisp source code and run Crisp examples and tests, you need to:
 
-### Use Crisp in Your Project
-Crisp is a header-only library, users could use Crisp by including Crisp header files in their projects.
-
-1. Copy header files located at `crisp/include` into your project.
-2. Choose one style of API you prefer.
-    - To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
-    - To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
-3. Enjoy it.
-
-Notes:
-
-1. Your compiler must support C++11.
-2. Remember to set the `-ftemplate-depth-5000` flag to avoid insufficient template expansion depth.
-3. You'd better use Crisp headers as the last ones of your includes. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
-4. As mentioned above: **never mix macros and templates style together**.   
-
-### Build Examples and Tests
 1. Prepare "cmake" and "make" and a C++ compiler supports C++11 in your system.
 2. Clone this project.
 2. In the project root directory, run commands:
