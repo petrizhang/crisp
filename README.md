@@ -60,15 +60,6 @@ Notes:
 3. You'd better use Crisp headers as the last ones of your includes. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
 4. As mentioned above: **never mix macros and templates style together**.  
 
-## Essential Concepts
-### Encode values with templates
-
-### `eval` v.s. `run`
-```
-#define eval(expr) crisp::Eval<expr, crisp::Env<>>::type
-#define run(expr) crisp::Eval<expr, crisp::Env<>>::c_value()
-```
-
 ## Expressions
 
 ### Macro Style
