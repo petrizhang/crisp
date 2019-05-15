@@ -547,9 +547,15 @@ struct IsEqualImpl {
 
 /// ----------------------------------------------------------------------------
 /// Interpreter implementation
+/// ----------------------------------------------------------------------------
+
+
 template <typename Expr, typename Environ = Env<>>
 struct Eval;
 
+
+/// ----------------------------------------------------------------------------
+/// Evaluate value types.
 template <typename Environ, bool V>
 struct Eval<Bool<V>, Environ> {
   using env = Environ;
