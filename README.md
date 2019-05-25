@@ -37,7 +37,7 @@ int main() {
 ```
 
 As demonstrated above, Crisp provides two kinds of syntax: macro style and template style. You could build Crisp program with your preferred one. But you should **never mix these two styles together**, as it will lead to unexpected behaviors.
-For instance, in C++, `add(Var<'a',b'>)` will be recognized as `"add"("Var<'a'", "b'>")`, which will cause a compile error. 
+For instance, in C++, `add(Var<'a',b'>)` will be recognized as `add(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. 
 
 Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
 
