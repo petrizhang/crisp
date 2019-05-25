@@ -6,7 +6,7 @@ Crisp is a lisp-like DSL built upon C++ templates.
 Users could consider Crisp as a lisp interpreter that interprets lisp programs at C++ compile time.
 
 With Crisp, users could easily build compile-time programs by an extremely friendly syntax,
-rather than manually writing tedious C++ templates code. 
+rather than manually writing tedious C++ templates. 
 
 Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
 include immutable variables, lambdas, lexical scope and closures, and recursive functions.
