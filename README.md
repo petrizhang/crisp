@@ -60,28 +60,6 @@ Notes:
 3. You'd better use Crisp headers as the last ones of your includes. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
 4. As mentioned above: **never mix macros and templates style together**.  
 
-## Expressions
-
-### Macro Style
-Users could find a complete macro api list at "include/crisp_macros.h".
-  
-### Template Style
-- `Nil`: the Nil value is similar to null in other languages.
-- `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
-- `Char<C>`: a char value. e.g. `Char<'a'>, Char<'b'>`
-- `Int<N>` : an integer value. e.g. `Int<5>`
-- `Var<'c','c',...>`: a symbol/variable reference. e.g. `Var<'a'>, Var<'t','e','s','t'>`
-- `Pair<L,R>`: a pair value, it is very similar to `std::pair` in C++
-- `Lambda< ParamList< Var<..>, Var<..>... >, Body >`, e.g. :
-```cpp
-Lambda< ParamList<Var<'x'>,Var<'y'>>,
-    Add<Var<'x'>, Var<'y'>> >
-```
-- `Call`: calling user defined functions 
-- ...
-
-Users could find a complete template api list at "include/crisp_templates.h".
-
 ## Examples
 ### Println
 ```cpp
@@ -186,6 +164,28 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
 ```
 
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
+
+## API
+
+### Macro Style
+Users could find a complete macro api list at "include/crisp_macros.h".
+  
+### Template Style
+- `Nil`: the Nil value is similar to null in other languages.
+- `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
+- `Char<C>`: a char value. e.g. `Char<'a'>, Char<'b'>`
+- `Int<N>` : an integer value. e.g. `Int<5>`
+- `Var<'c','c',...>`: a symbol/variable reference. e.g. `Var<'a'>, Var<'t','e','s','t'>`
+- `Pair<L,R>`: a pair value, it is very similar to `std::pair` in C++
+- `Lambda< ParamList< Var<..>, Var<..>... >, Body >`, e.g. :
+```cpp
+Lambda< ParamList<Var<'x'>,Var<'y'>>,
+    Add<Var<'x'>, Var<'y'>> >
+```
+- `Call`: calling user defined functions 
+- ...
+
+Users could find a complete template api list at "include/crisp_templates.h".
 
 ## Build and Dependency
 If you want to explore Crisp source code and run Crisp examples and tests, you need to:
