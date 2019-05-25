@@ -197,3 +197,18 @@ If you want to explore Crisp source code and run Crisp examples and tests, you n
 cmake .
 make
 ```
+
+## Acknowledgements
+This project is inspired by [TemplatedPL](https://github.com/Cheukyin/TemplatedPL). Thanks for the author's great idea.
+
+The basic api of Crisp and TemplatedPL are quite similar. But there are still many differences between them:
+1. Crisp supports recursive functions but TemplatedPL doesn't.
+2. TemplatedPL supports call/cc but Crisp doesn't.
+3. ...
+
+In fact, the implementation of Crisp and TemplatedPL are **completely different**. You could easily find that when you read the source codes of these two projects. 
+
+I need to point out that **I have never used any code from the TemplatedPL project**. Because **I'm not able to understand them**, just like that, **I'm not able to unserstand my codes of Crisp**...
+
+What a interesting thing, when you wrote C++ templates, you could never understand them anymore...
+
