@@ -126,7 +126,7 @@ The value of the block is the value of the last expression.
     // true ? 1 : 2
     run(println(if_(v(true), v(1), v(2))));
 ```
-### Function definition and function call
+### Function Call
 ```cpp
     run(block(define(var('+'), lambda(params(var('x'), var('y')),
                                       add(var('x'), var('y')))),
