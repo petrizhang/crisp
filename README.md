@@ -73,9 +73,13 @@ Notes:
  
 ### Basic value types
 ```cpp
+    // int
     run(println(v(1)));
+    // bool
     run(println(v(true)));
+    // char
     run(println(v('c')));
+    // symbol (equivalent string in other languages)
     run(println(sym('s', 'y', 'm', 'b', 'o', 'l')));
 ```
 ### Block
