@@ -21,11 +21,11 @@ First let us see two simple but complete examples:
 #include "crisp_macros.h"
 
 int main() {
-  // The `println` part of the expression is evaluated at runtime rather than at compile time,  
+  // The `println` part of the expression is evaluated at runtime rather than at compile time. 
   // To strictly use compile time evaluation:
   //   - use `using Result = eval(add(v(1),v(1)));` to get the evaluation result type
   //   - use `constexpr auto value = Result::c_value();` to get the constexpr result value
-  run(println(add(v(1),v(1))));
+  run(println(add(v(1), v(1))));
   return 0;
 }
 ```
