@@ -23,7 +23,7 @@
 using crisp::Bool;
 using crisp::Char;
 using crisp::Int;
-using crisp::Symbol;
+using crisp::String;
 
 using crisp::Println;
 using crisp::Add;

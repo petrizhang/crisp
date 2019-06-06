@@ -88,7 +88,7 @@ Notes:
     // char
     run(println(v('c')));
     // symbol (equivalent string in other languages)
-    run(println(sym('s', 'y', 'm', 'b', 'o', 'l')));
+    run(println(str('s', 'y', 'm', 'b', 'o', 'l')));
 ```
 ### Block
 A block contains a sequence of expressions, and the result is also an expression. 

@@ -69,7 +69,7 @@ struct Int {
 
 /// ----------------------------------------------------------------------------
 /// quote, which will prevent the interpreter's evaluation for given `AST`.
-/// Note: Quote< Var<...> > is equivalent to Symbol<...>
+/// Note: Quote< Var<...> > is equivalent to String<...>
 // TODO print ast nodes prettily
 template <typename AST>
 struct Quote {
@@ -79,12 +79,12 @@ struct Quote {
 };
 
 /// ----------------------------------------------------------------------------
-/// Symbol value type.
+/// String value type.
 template <char... args>
-struct Symbol;
+struct String;
 
 template <char c>
-struct Symbol<c> {
+struct String<c> {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *repr = "symbol";
   using c_type = std::string;
@@ -92,17 +92,17 @@ struct Symbol<c> {
 };
 
 template <char c, char... args>
-struct Symbol<c, args...> {
+struct String<c, args...> {
   /// These members and methods are used for interacting with c++ at runtime.
   static constexpr const char *repr = "symbol";
   using c_type = std::string;
-  static const c_type c_value() { return std::string(1, c) + Symbol<args...>::c_value(); }
+  static const c_type c_value() { return std::string(1, c) + String<args...>::c_value(); }
 };
 
 /// ----------------------------------------------------------------------------
 /// Variable reference or an identifier used in function parameters and variable definition.
 template <char... args>
-struct Var : Symbol<args...> {};
+struct Var : String<args...> {};
 /// ----------------------------------------------------------------------------
 /// Pair(tuple2) value type.
 template <typename L, typename R>
@@ -623,9 +623,9 @@ struct Eval<Int<V>, Environ> {
 };
 
 template <typename Environ, char... chars>
-struct Eval<Symbol<chars...>, Environ> {
+struct Eval<String<chars...>, Environ> {
   using env = Environ;
-  using type = Symbol<chars...>;
+  using type = String<chars...>;
   static std::string Run() {
     return type::c_value();
   }
@@ -759,9 +759,9 @@ struct Eval<Add<L, R, Args...>, Environ> {
     typedef typename OpName##Impl<typename LEval::type,                 \
                                   typename REval::type>::type type;     \
                                                                         \
-    static decltype(type::c_value()) Run() {                        \
-      LEval::Run();                                                 \
-      REval::Run();                                                 \
+    static decltype(type::c_value()) Run() {                            \
+      LEval::Run();                                                     \
+      REval::Run();                                                     \
       return type::c_value();                                           \
     }                                                                   \
   };                                                                    \
@@ -778,10 +778,10 @@ struct Eval<Add<L, R, Args...>, Environ> {
     using env = Environ;                                                \
     using type = typename OpName##Impl<LT, RT>::type;                   \
                                                                         \
-    static decltype(type::c_value()) Run() {                        \
-      LEval::Run();                                                 \
-      REval::Run();                                                 \
-      TailEval::Run();                                              \
+    static decltype(type::c_value()) Run() {                            \
+      LEval::Run();                                                     \
+      REval::Run();                                                     \
+      TailEval::Run();                                                  \
       return type::c_value();                                           \
     }                                                                   \
   };
@@ -822,9 +822,9 @@ struct Eval<IsEqual<L, R>, Environ> {
     using type = typename OpName##Impl<typename LEval::type,        \
                                        typename REval::type>::type; \
                                                                     \
-    static decltype(type::c_value()) Run() {                    \
-      LEval::Run();                                             \
-      REval::Run();                                             \
+    static decltype(type::c_value()) Run() {                        \
+      LEval::Run();                                                 \
+      REval::Run();                                                 \
       return type::c_value();                                       \
     }                                                               \
   };
@@ -1014,9 +1014,46 @@ struct Eval<Quote<AST>, Environ> {
   }
 };
 
-template <typename... Args>
+/// ----------------------------------------------------------------------------
+/// Implementation for match expression.
+template <typename Environ, typename... Args>
 struct MatchImpl {
-  using type = int;
+  static_assert(Error<Args...>::always_false, "");
+};
+
+template <typename Environ, template <typename...> class Op, typename... Args>
+struct MatchImpl<Environ, Op<Args...>> {
+};
+
+template <typename Environ, typename Source, typename Target>
+struct MatchCase {
+  static const bool matched = false;
+  using env = Environ;
+};
+
+template <typename Environ, typename Source>
+struct MatchCase<Environ, Source, _> {
+  static const bool matched = true;
+  using env = Environ;
+};
+
+template <typename Environ, typename Source, char... chars>
+struct MatchCase<Environ, Source, Var<chars...>> {
+  static const bool matched = true;
+  using env = typename EnvPut<Environ, Var<chars...>, Quote<Source>>::type;
+};
+
+template <typename Environ,
+          template <typename...> class T,
+          typename SourceHead, typename TargetHead,
+          typename... SourceArgs, typename... TargetArgs>
+struct MatchCase<Environ, T<SourceHead, SourceArgs...>, T<TargetHead, TargetArgs...>> {
+};
+
+template <typename Environ,
+          template <typename...> class Source, typename... SourceArgs,
+          template <typename...> class Target, typename... TargetArgs>
+struct MatchCase<Environ, Source<SourceArgs...>, Target<TargetArgs...>> {
 };
 
 /// ----------------------------------------------------------------------------

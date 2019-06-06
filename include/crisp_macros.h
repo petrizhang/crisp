@@ -20,7 +20,7 @@
 #include "crisp.hpp"
 
 #define v(x) crisp::PackToType<decltype(x), x>::type
-#define sym(args...) crisp::Symbol<args>
+#define str(args...) crisp::String<args>
 #define add(args...) crisp::Add<args>
 #define sub(args...) crisp::Sub<args>
 #define mul(args...) crisp::Mul<args>

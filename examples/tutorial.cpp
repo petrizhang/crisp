@@ -29,7 +29,7 @@ int main() {
     run(println(v(1)));
     run(println(v(true)));
     run(println(v('c')));
-    run(println(sym('s', 'y', 'm', 'b', 'o', 'l')));
+    run(println(str('s', 'y', 'm', 'b', 'o', 'l')));
   }
   // Block
   {
