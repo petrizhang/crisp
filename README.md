@@ -21,6 +21,10 @@ First let us see two simple but complete examples:
 #include "crisp_macros.h"
 
 int main() {
+  // The `println` part of the expression is evluated at runtime rather than at compile time,  
+  // To strictly use compile time evaluation:
+  //   - use `using Result = eval(add(v(1),v(1)));` to get the evaluation result type
+  //   - use `constexpr auto value = Result::c_value();` to get the constexpr result value
   run(println(add(v(1),v(1))));
   return 0;
 }
@@ -31,7 +35,11 @@ int main() {
 #include "crisp_templates.h"
 
 int main() {
-  Eval<Println<Add<Int<1>, Int<1>>>>::c_value();
+  // The `Println` part of the expression is evluated at runtime rather than at compile time.  
+  // To strictly use compile time evaluation:
+  //   - use `using Result = Eval<Add<Int<1>, Int<1>>>::type;` to get the result type
+  //   - use `constexpr auto value = Result::c_value();` to get the constexpr result value
+  Eval<Println<Add<Int<1>, Int<1>>>>::Run();
   return 0;
 }
 ```

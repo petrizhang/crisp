@@ -41,6 +41,6 @@
 #define block(args...) crisp::Block<args>
 #define println(args...) crisp::Println<args>
 #define eval(expr) crisp::Eval<expr, crisp::Env<>>::type
-#define run(expr) crisp::Eval<expr, crisp::Env<>>::c_value()
+#define run(expr) crisp::Eval<expr, crisp::Env<>>::Run()
 
 #endif  //CRISP_MACROS_H

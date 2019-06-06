@@ -68,6 +68,17 @@ struct Int {
 };
 
 /// ----------------------------------------------------------------------------
+/// quote, which will prevent the interpreter's evaluation for given `AST`.
+/// Note: Quote< Var<...> > is equivalent to Symbol<...>
+// TODO print ast nodes prettily
+template <typename AST>
+struct Quote {
+  static constexpr const char *repr = "quote";
+  using c_type = std::string;
+  static c_type c_value() { return "#quote"; };
+};
+
+/// ----------------------------------------------------------------------------
 /// Symbol value type.
 template <char... args>
 struct Symbol;
@@ -92,7 +103,6 @@ struct Symbol<c, args...> {
 /// Variable reference or an identifier used in function parameters and variable definition.
 template <char... args>
 struct Var : Symbol<args...> {};
-
 /// ----------------------------------------------------------------------------
 /// Pair(tuple2) value type.
 template <typename L, typename R>
@@ -249,6 +259,34 @@ struct IsGreaterEqual {
 template <typename L, typename R>
 struct IsLessEqual {
   static constexpr const char *repr = "<=";
+};
+
+/// ----------------------------------------------------------------------------
+/// Placeholder used in match expression which will match any value
+struct _ {};
+
+/// ----------------------------------------------------------------------------
+/// Placeholder used in match expression which will match any sequence
+/// e.g.
+/// ```
+///    Match< List<Int<1>, Int<2>, Int<3>, Int<4> >,
+///           Case< List<___, Var<'l','a','s','t'> >, Var<'l','a','s','t'> >
+/// ```
+/// will be ```Int<4>```
+struct ___ {};
+
+/// ----------------------------------------------------------------------------
+/// case branch used in `Match` expression
+template <typename Cond, typename Result>
+struct Case {
+  static constexpr const char *repr = "case";
+};
+
+/// ----------------------------------------------------------------------------
+/// match, e.g. Match< Add< Int<1>, Int<2> >, Case< Add<_,_>, 1> >
+template <typename AST, typename... Branches>
+struct Match {
+  static constexpr const char *repr = "match";
 };
 
 /// ****************************************************************************
@@ -433,6 +471,8 @@ using EnvPushFront = ArrayPushFront<env, dict>;
 template <typename env>
 using EnvPopFront = ArrayPopFront<env>;
 
+/// ----------------------------------------------------------------------------
+/// Bind a variable name `K` with a value `V` in current scope
 template <typename env, typename K, typename V>
 struct EnvPut;
 
@@ -446,6 +486,8 @@ struct EnvPut<Env<dict, Tail...>, K, V> {
   using type = Env<typename DictPut<dict, Pair<K, V>>::type, Tail...>;
 };
 
+/// ----------------------------------------------------------------------------
+/// Lookup a variable by name `K` in current environment
 template <typename env, typename K>
 struct EnvLookup {
   using type = Undefined;
@@ -557,7 +599,7 @@ template <typename Environ, bool V>
 struct Eval<Bool<V>, Environ> {
   using env = Environ;
   using type = Bool<V>;
-  static constexpr bool c_value() {
+  static constexpr bool Run() {
     return V;
   }
 };
@@ -566,7 +608,7 @@ template <typename Environ, char V>
 struct Eval<Char<V>, Environ> {
   using env = Environ;
   using type = Char<V>;
-  static constexpr char c_value() {
+  static constexpr char Run() {
     return V;
   }
 };
@@ -575,7 +617,7 @@ template <typename Environ, int V>
 struct Eval<Int<V>, Environ> {
   using env = Environ;
   using type = Int<V>;
-  static constexpr int c_value() {
+  static constexpr int Run() {
     return V;
   }
 };
@@ -584,7 +626,7 @@ template <typename Environ, char... chars>
 struct Eval<Symbol<chars...>, Environ> {
   using env = Environ;
   using type = Symbol<chars...>;
-  static std::string c_value() {
+  static std::string Run() {
     return type::c_value();
   }
 };
@@ -596,7 +638,7 @@ struct Eval<Var<args...>, Environ> {
   using env = Environ;
   using type = typename EnvLookup<Environ, Var<args...>>::type;
 
-  static decltype(type::c_value()) c_value() {
+  static decltype(type::c_value()) Run() {
     return type::c_value();
   }
 };
@@ -608,7 +650,7 @@ struct Eval<Lambda<ParamL, Body>, Environ> {
   using env = Environ;
   using type = Closure<Environ, Lambda<ParamL, Body>>;
 
-  static constexpr const char *c_value() {
+  static constexpr const char *Run() {
     return "#closure";
   }
 };
@@ -617,11 +659,11 @@ struct Eval<Lambda<ParamL, Body>, Environ> {
 /// Evaluate println
 template <typename Environ, typename Head, typename... Args>
 struct Eval<Println<Head, Args...>, Environ> {
-  static const char *c_value() {
-    auto value = Eval<Head, Environ>::c_value();
+  static const char *Run() {
+    auto value = Eval<Head, Environ>::Run();
     output(value);
     std::cout << " ";
-    Eval<Println<Args...>, Environ>::c_value();
+    Eval<Println<Args...>, Environ>::Run();
     return "#undefined";
   };
 
@@ -631,8 +673,8 @@ struct Eval<Println<Head, Args...>, Environ> {
 
 template <typename Environ, typename Head>
 struct Eval<Println<Head>, Environ> {
-  static const char *c_value() {
-    auto value = Eval<Head, Environ>::c_value();
+  static const char *Run() {
+    auto value = Eval<Head, Environ>::Run();
     output(value);
     std::cout << std::endl;
     return "#undefined";
@@ -644,7 +686,7 @@ struct Eval<Println<Head>, Environ> {
 
 template <typename Environ>
 struct Eval<Println<>, Environ> {
-  static const char *c_value() {
+  static const char *Run() {
     std::cout << std::endl;
     return "#undefined";
   };
@@ -662,8 +704,8 @@ struct Eval<Define<Ident, Value>, Environ> {
   using env = typename EnvPut<Environ, Ident, typename ValueEval::type>::type;
   using type = Undefined;
 
-  static decltype(type::c_value()) c_value() {
-    ValueEval::c_value();
+  static decltype(type::c_value()) Run() {
+    ValueEval::Run();
     return type::c_value();
   }
 };
@@ -678,9 +720,9 @@ struct Eval<Add<L, R>, Environ> {
   typedef typename AddImpl<typename LEval::type,
                            typename REval::type>::type type;
 
-  static decltype(type::c_value()) c_value() {
-    LEval::c_value();
-    REval::c_value();
+  static decltype(type::c_value()) Run() {
+    LEval::Run();
+    REval::Run();
     return type::c_value();
   }
 };
@@ -698,10 +740,10 @@ struct Eval<Add<L, R, Args...>, Environ> {
   using env = Environ;
   using type = typename AddImpl<LT, RT>::type;
 
-  static decltype(type::c_value()) c_value() {
-    LEval::c_value();
-    REval::c_value();
-    TailEval::c_value();
+  static decltype(type::c_value()) Run() {
+    LEval::Run();
+    REval::Run();
+    TailEval::Run();
     return type::c_value();
   }
 };
@@ -717,9 +759,9 @@ struct Eval<Add<L, R, Args...>, Environ> {
     typedef typename OpName##Impl<typename LEval::type,                 \
                                   typename REval::type>::type type;     \
                                                                         \
-    static decltype(type::c_value()) c_value() {                        \
-      LEval::c_value();                                                 \
-      REval::c_value();                                                 \
+    static decltype(type::c_value()) Run() {                        \
+      LEval::Run();                                                 \
+      REval::Run();                                                 \
       return type::c_value();                                           \
     }                                                                   \
   };                                                                    \
@@ -736,10 +778,10 @@ struct Eval<Add<L, R, Args...>, Environ> {
     using env = Environ;                                                \
     using type = typename OpName##Impl<LT, RT>::type;                   \
                                                                         \
-    static decltype(type::c_value()) c_value() {                        \
-      LEval::c_value();                                                 \
-      REval::c_value();                                                 \
-      TailEval::c_value();                                              \
+    static decltype(type::c_value()) Run() {                        \
+      LEval::Run();                                                 \
+      REval::Run();                                                 \
+      TailEval::Run();                                              \
       return type::c_value();                                           \
     }                                                                   \
   };
@@ -762,9 +804,9 @@ struct Eval<IsEqual<L, R>, Environ> {
   using type = typename IsEqualImpl<typename LEval::type,
                                     typename REval::type>::type;
 
-  static decltype(type::c_value()) c_value() {
-    LEval::c_value();
-    REval::c_value();
+  static decltype(type::c_value()) Run() {
+    LEval::Run();
+    REval::Run();
     return type::c_value();
   }
 };
@@ -780,9 +822,9 @@ struct Eval<IsEqual<L, R>, Environ> {
     using type = typename OpName##Impl<typename LEval::type,        \
                                        typename REval::type>::type; \
                                                                     \
-    static decltype(type::c_value()) c_value() {                    \
-      LEval::c_value();                                             \
-      REval::c_value();                                             \
+    static decltype(type::c_value()) Run() {                    \
+      LEval::Run();                                             \
+      REval::Run();                                             \
       return type::c_value();                                       \
     }                                                               \
   };
@@ -799,8 +841,8 @@ struct DelayIf {
   using BodyEval = Eval<Body, Environ>;
   using type = typename BodyEval::type;
 
-  static decltype(type::c_value()) c_value() {
-    BodyEval::c_value();
+  static decltype(type::c_value()) Run() {
+    BodyEval::Run();
     return type::c_value();
   }
 };
@@ -810,9 +852,9 @@ struct DelayIf<Environ, Bool<false>, Body, ElseBody> {
   using ElseBodyEval = Eval<ElseBody, Environ>;
   using type = typename ElseBodyEval::type;
 
-  static decltype(type::c_value()) c_value() {
+  static decltype(type::c_value()) Run() {
     ElseBodyEval::c_value();
-    return type::c_value();
+    return type::Run();
   }
 };
 
@@ -826,9 +868,9 @@ struct Eval<If<Cond, Body, ElseBody>, Environ> {
   using DelayIfEval = DelayIf<Environ, CondValue, Body, ElseBody>;
   using type = typename DelayIfEval::type;
 
-  static decltype(type::c_value()) c_value() {
-    CondEval::c_value();
-    DelayIfEval::c_value();
+  static decltype(type::c_value()) Run() {
+    CondEval::Run();
+    DelayIfEval::Run();
     return type::c_value();
   }
 };
@@ -845,9 +887,9 @@ struct Eval<Block<Head, Tail...>, Environ> {
   using TailEval = Eval<Block<Tail...>, typename HeadEval::env>;
   using type = typename TailEval::type;
 
-  static decltype(type::c_value()) c_value() {
-    HeadEval::c_value();
-    TailEval::c_value();
+  static decltype(type::c_value()) Run() {
+    HeadEval::Run();
+    TailEval::Run();
     return type::c_value();
   }
 };
@@ -859,8 +901,8 @@ struct Eval<Block<Head>, Environ> {
   using env = typename HeadEval::env;
   using type = typename HeadEval::type;
 
-  static decltype(type::c_value()) c_value() {
-    HeadEval::c_value();
+  static decltype(type::c_value()) Run() {
+    HeadEval::Run();
     return type::c_value();
   }
 };
@@ -872,7 +914,7 @@ struct Eval<Array<>, Environ> {
   using env = Environ;
   using type = Array<>;
 
-  static constexpr const char *c_value() {
+  static constexpr const char *Run() {
     return "#undefined";
   }
 };
@@ -888,9 +930,9 @@ struct Eval<Array<Head, Tail...>, Environ> {
   using env = Environ;
   using type = typename ArrayPushFront<TailValue, HeadValue>::type;
 
-  static const char *c_value() {
-    HeadEval::c_value();
-    TailEval::c_value();
+  static const char *Run() {
+    HeadEval::Run();
+    TailEval::Run();
     return "#undefined";
   }
 };
@@ -922,8 +964,8 @@ struct CallClosure<CallSiteEnviron, Closure<ClosureEnviron, Lambda<ParamList<Par
   using BodyEval = Eval<Body, executionEnv>;
   using type = typename BodyEval::type;
 
-  static decltype(type::c_value()) c_value() {
-    BodyEval::c_value();
+  static decltype(type::c_value()) Run() {
+    BodyEval::Run();
     return type::c_value();
   }
 };
@@ -943,9 +985,9 @@ struct Eval<Call<Func, Args...>, Environ> {
   // Call the closure.
   using type = typename CallClosure<Environ, ClosureValue, ArgValues>::type;
 
-  static decltype(type::c_value()) c_value() {
-    ClosureEval::c_value();
-    ArgEval::c_value();
+  static decltype(type::c_value()) Run() {
+    ClosureEval::Run();
+    ArgEval::Run();
     return type::c_value();
   }
 };
@@ -955,9 +997,44 @@ struct Eval<Closure<Args...>, Environ> {
   using env = Environ;
   using type = Closure<Args...>;
 
-  static constexpr const char *c_value() {
+  static constexpr const char *Run() {
     return "#closure";
   }
 };
+
+/// ----------------------------------------------------------------------------
+/// Evaluate quote expression.
+template <typename Environ, typename AST>
+struct Eval<Quote<AST>, Environ> {
+  using env = Environ;
+  using type = Quote<AST>;
+
+  static decltype(type::c_value()) *Run() {
+    return type::c_value();
+  }
+};
+
+template <typename... Args>
+struct MatchImpl {
+  using type = int;
+};
+
+/// ----------------------------------------------------------------------------
+/// Evaluate match expression.
+template <typename Environ, typename Expr, typename... Branches>
+struct Eval<Match<Expr, Branches...>, Environ> {
+  using env = Environ;
+  using ExprEval = Eval<Expr, Environ>;
+  using ResultExpr = typename MatchImpl<typename ExprEval::type, Environ>::type;
+  using ResultEval = Eval<ResultExpr, Environ>;
+  using type = typename ResultEval::type;
+
+  static decltype(type::c_value()) *Run() {
+    ExprEval::Run();
+    ResultEval::Run();
+    return type::c_value();
+  }
+};
+
 }  // namespace crisp
 #endif  // CRISP_HPP
