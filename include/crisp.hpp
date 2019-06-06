@@ -1043,11 +1043,35 @@ struct MatchCase<Environ, Source, Var<chars...>> {
   using env = typename EnvPut<Environ, Var<chars...>, Quote<Source>>::type;
 };
 
+/// ----------------------------------------------------------------------------
+/// Implementation for match expression.
+template <bool cond,
+          typename Body, typename BodyArgArray,
+          typename ElseBody, typename ElseBodyArgArray>
+struct InternalIf;
+
+template <template <typename...> class Body, typename... BodyArgs,
+          template <typename...> class ElseBody, typename... ElseBodyArgs>
+struct InternalIf<true, Body<>, Array<BodyArgs...>, ElseBody<>, Array<ElseBodyArgs...>> {
+  using type = Body<BodyArgs...>;
+};
+
+template <template <typename...> class Body, typename... BodyArgs,
+          template <typename...> class ElseBody, typename... ElseBodyArgs>
+struct InternalIf<false, Body<>, Array<BodyArgs...>, ElseBody<>, Array<ElseBodyArgs...>> {
+  using type = ElseBody<ElseBodyArgs...>;
+};
+
 template <typename Environ,
           template <typename...> class T,
           typename SourceHead, typename TargetHead,
-          typename... SourceArgs, typename... TargetArgs>
-struct MatchCase<Environ, T<SourceHead, SourceArgs...>, T<TargetHead, TargetArgs...>> {
+          typename... SourceTail, typename... TargetTail>
+struct MatchCase<Environ, T<SourceHead, SourceTail...>, T<TargetHead, TargetTail...>> {
+  using HeadMatch = MatchCase<Environ, SourceHead, TargetHead>;
+  using TailMatch = MatchCase<Environ, T<SourceTail...>, T<TargetTail...>>;
+  static constexpr bool matched = HeadMatch::matched
+                                      ? TailMatch::matched
+                                      : false;
 };
 
 template <typename Environ,

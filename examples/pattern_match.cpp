@@ -16,7 +16,18 @@
 
 #include "crisp_macros.h"
 
+template <typename... Args>
+struct M {};
+
+template <typename T = int>
+struct N {};
+
 int main() {
-    run(println(add(v(1),v(1))));
-    return 0;
+  using namespace crisp;
+  using type = InternalIf<true,
+                          M<>,
+                          Array<Int<1>, Int<2>>,
+                          N<>,
+                          Array<Int<3>, Int<4>>>::type;
+  return 0;
 }
