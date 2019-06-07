@@ -1,6 +1,8 @@
 # Crisp
 Crisp: ***C***ompile Time Interprete***r*** for L***isp*** Written in C++ Templates
 
+https://img.shields.io/badge/{license}-{Apache2}-{green}.svg
+
 ## About Crisp
 Crisp is a lisp-like and turing-complete DSL built upon C++ templates.
 Users could consider Crisp as a lisp interpreter that interprets lisp programs at C++ compile time.
@@ -9,8 +11,15 @@ With Crisp, users could easily build compile-time programs by an extremely frien
 rather than manually writing tedious C++ templates. 
 
 Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
-include **Immutable Variable**, **Lambda**, **Lexical Closure**, **Fractional Number**,
-**Recursive Function**, **Quote**, **Pattern Match**, and **Code as Data**.
+include:
+- **Immutable Variable**
+- **Lambda**
+- **Lexical Closure**
+- **Fractional Number**
+- **Recursive Function**
+- **Quote**
+- **Pattern Match**
+- **Code as Data**.
 
 What's more, **all operations in Crisp are accomplished at compile time**. It is the most awesome feature of Crisp.
 
