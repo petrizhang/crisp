@@ -21,6 +21,7 @@ include:
 - [x] **Lexical Closure**
 - [x] **Fractional Number**
 - [x] **Recursive Function**
+- [x] **Rich Collection Operations**
 - [x] **Quote**
 - [x] **Pattern Match**
 - [x] **Code as Data**
