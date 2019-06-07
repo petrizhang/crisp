@@ -9,7 +9,8 @@ With Crisp, users could easily build compile-time programs by an extremely frien
 rather than manually writing tedious C++ templates. 
 
 Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
-include **Immutable variable**, **Lambda**, **Lexical Scope**, **Closure**, **Patten Match**, and **Recursive Function**.
+include **Immutable Variable**, **Lambda**, **Lexical Closure**, **Fractional Number**,
+**Recursive Function**, **Quote**, **Pattern Match**, and **Code as Data**.
 
 What's more, **all operations in Crisp are accomplished at compile time**. It is the most awesome feature of Crisp.
 
