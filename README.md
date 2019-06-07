@@ -9,7 +9,7 @@ With Crisp, users could easily build compile-time programs by an extremely frien
 rather than manually writing tedious C++ templates. 
 
 Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
-include immutable variables, lambdas, lexical scope and closures, and recursive functions.
+include **immutable variables**, **lambdas**, **lexical scope and closures**, and **recursive functions**.
 
 What's more, **all operations in Crisp are accomplished at compile time**. It is the most awesome feature of Crisp.
 
@@ -218,9 +218,10 @@ The basic api of Crisp and TemplatedPL are quite similar. But there are still ma
 2. TemplatedPL supports call/cc but Crisp doesn't.
 3. ...
 
-In fact, the implementation of Crisp and TemplatedPL are **completely different**. You could easily find that when you read the source codes of these two projects. 
+In fact, the implementation of Crisp and TemplatedPL are **completely different**.
+The whole TemplatedPL interpreter is written in CPS style thus it could support call/cc.
+But Crisp is only a recursive evaluator and doesn't support call/cc.
 
-I need to point out that **I have never used any code from the TemplatedPL project**. Because **I'm not able to understand them**, just like that, **I'm not able to unserstand my codes of Crisp**...
-
-What a interesting thing, when you wrote C++ templates, you could never understand them anymore...
-
+I have also considered to support call/cc in Crisp, but C++ templates are stupid and tedious enough.
+It is too hard to maintain Crisp interpreter when writing it with CPS style.
+Thus I decided to focus on other common used features, such as recursive function, pattern match, etc.

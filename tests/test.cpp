@@ -76,11 +76,43 @@ void TestEvalBinaryOp() {
   static_assert((Eval<Add<Int<1>, Int<2>, Int<3>, Int<4>>>::type::c_value() == 10), "");
 }
 
+void TestConditionalApply() {
+  using t1 = ConditionalApply<When<Bool<false>, LazyApply<Array, Int<1>>>,
+                              Else<LazyApply<Array, Int<2>>>>;
+  static_assert((std::is_same<t1::type, Array<Int<2>>>::value), "");
+
+  using t2 = ConditionalApply<When<Bool<true>, LazyApply<Array, Int<1>>>,
+                              Else<LazyApply<Array, Int<2>>>>;
+  static_assert((std::is_same<t2::type, Array<Int<1>>>::value), "");
+
+  using t3 = ConditionalApply<When<Bool<true>, LazyApply<Array, Int<1>>>,
+                              When<Bool<true>, LazyApply<Array, Int<2>>>,
+                              Else<LazyApply<Array, Int<3>>>>;
+  static_assert((std::is_same<t3::type, Array<Int<1>>>::value), "");
+
+  using t4 = ConditionalApply<When<Bool<false>, LazyApply<Array, Int<1>>>,
+                              When<Bool<true>, LazyApply<Array, Int<2>>>,
+                              Else<LazyApply<Array, Int<3>>>>;
+  static_assert((std::is_same<t4::type, Array<Int<2>>>::value), "");
+
+  using t5 = ConditionalApply<When<Bool<false>, LazyApply<Array, Int<1>>>,
+                              When<Bool<false>, LazyApply<Array, Int<2>>>,
+                              Else<LazyApply<Array, Int<3>>>>;
+  static_assert((std::is_same<t5::type, Array<Int<3>>>::value), "");
+};
+
+//void TestPatternMatch1() {
+//  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<_, _>>::matched), "");
+//  static_assert((!QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Mul<_, _>>::matched), "");
+//  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<Var<'a'>, _>>::matched), "");
+//  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<Var<'a'>, Var<'b'>>>::matched), "");
+//}
+
 int main() {
-  std::cout << Eval<Add<Int<1>, Int<2>>>::type::c_value();
   TestDict();
   TestEnv();
   TestBinaryOpImpl();
   TestEvalBinaryOp();
+  // TestPatternMatch1();
   return 0;
 }

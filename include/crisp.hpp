@@ -277,16 +277,49 @@ struct ___ {};
 
 /// ----------------------------------------------------------------------------
 /// case branch used in `Match` expression
-template <typename Cond, typename Result>
+template <typename Condition, typename Result>
 struct Case {
   static constexpr const char *repr = "case";
 };
 
 /// ----------------------------------------------------------------------------
-/// match, e.g. Match< Add< Int<1>, Int<2> >, Case< Add<_,_>, 1> >
+/// default branch used in `Match` and `Cond` expression
+template <typename Expr>
+struct Default {
+  static constexpr const char *repr = "default";
+};
+
+/// ----------------------------------------------------------------------------
+/// when, branch used in `Match` expression
+template <typename Condition, typename Result>
+struct When {
+  static constexpr const char *repr = "when";
+};
+
+/// ----------------------------------------------------------------------------
+/// else, branch used in `Match` and `Cond` expression
+template <typename Expr>
+struct Else {
+  static constexpr const char *repr = "else";
+};
+
+/// ----------------------------------------------------------------------------
+/// match, e.g. Match< Add< Int<1>, Int<2> >,
+///                    Case< Add<_,_>, Str<'+'> >,
+///                    Case< Mul<_,_>, Str<'*'> >,
+///                    Default< Str<' '>> >
 template <typename AST, typename... Branches>
 struct Match {
   static constexpr const char *repr = "match";
+};
+
+/// ----------------------------------------------------------------------------
+/// cond, e.g. Cond< When<true, Int<1>>,
+///                  When<false, Int<2>>,
+///                  Else<Int<3>> >
+template <typename... Branches>
+struct Cond {
+  static constexpr const char *repr = "cond";
 };
 
 /// ****************************************************************************
@@ -294,10 +327,53 @@ struct Match {
 /// ****************************************************************************
 
 /// ----------------------------------------------------------------------------
-/// Use this type in static_assert to trigger a compiling error.
+/// Use this type in static_assert to trigger a compile error.
 template <typename...>
 struct Error {
   static const bool always_false = false;
+};
+
+/// ----------------------------------------------------------------------------
+/// Check if given type `T` is a instance of template `C`
+/// e.g. IsTemplate<Array, Array<Int<1>,Int<2>>>::value will be true
+template <template <typename...> class C, typename T>
+struct IsTemplateOf {
+  static const bool value = false;
+};
+
+template <template <typename...> class C, typename... Args>
+struct IsTemplateOf<C, C<Args...>> {
+  static const bool value = true;
+};
+
+/// ----------------------------------------------------------------------------
+/// Merge two argument list into one.
+/// e.g. MergeArgs< Array<Int<1>>, Array<Int<2>> >::type
+/// will be Array<Int<1>,Int<2>>`
+template <typename...>
+struct MergeArgs;
+
+template <template <typename...> class C, typename... LeftArgs, typename... RightArgs>
+struct MergeArgs<C<LeftArgs...>, C<RightArgs...>> {
+  using type = C<LeftArgs..., RightArgs...>;
+};
+
+/// ----------------------------------------------------------------------------
+/// Merge the argument list of a template.
+/// e.g. ReverseArgs< Array<Int<1>,Int<2>> >::type
+/// will be Array<Int<2>,Int<1>>`
+template <typename T>
+struct ReverseArgs;
+
+template <template <typename...> class C>
+struct ReverseArgs<C<>> {
+  using type = C<>;
+};
+
+template <template <typename...> class C, typename Head, typename... Tail>
+struct ReverseArgs<C<Head, Tail...>> {
+  using type = typename MergeArgs<typename ReverseArgs<C<Tail...>>::type,
+                                  C<Head>>::type;
 };
 
 /// ----------------------------------------------------------------------------
@@ -454,6 +530,63 @@ struct DictGet<Dict<Pair<K, V>, Tail...>, K> {
 template <typename K, typename V, typename T, typename... Tail>
 struct DictGet<Dict<Pair<T, V>, Tail...>, K> {
   using type = typename DictGet<Dict<Tail...>, K>::type;
+};
+
+/// ----------------------------------------------------------------------------
+/// Save the context of a template `C` and it's arguments `Args`
+/// and instantiate it later.
+template <template <typename...> class C, typename... Args>
+struct LazyApply {
+  template <typename...>
+  struct apply {
+    using type = C<Args...>;
+  };
+};
+
+/// ----------------------------------------------------------------------------
+/**
+ * Apply a `LazyApply` expression according to branches' condition
+ * @code
+ * ConditionalApply<When<Bool<true>, LazyApply<Array, Int<1>>>,
+ *                  Else<LazyApply<Array, Int<2>>>>;
+ * @endcode
+ *
+ */
+template <typename Branch1, typename Branch2, typename... Branches>
+struct ConditionalApply;
+
+template <typename Body, typename ElseBody>
+struct ConditionalApply<When<Bool<true>, Body>, Else<ElseBody>> {
+  using type = typename Body::template apply<>::type;
+};
+
+template <typename Body, typename ElseBody>
+struct ConditionalApply<When<Bool<false>, Body>, Else<ElseBody>> {
+  using type = typename ElseBody::template apply<>::type;
+};
+
+template <typename Branch, typename ElseBranch>
+struct ConditionalApply<Branch, ElseBranch> {
+  static_assert(Error<Branch>::always_false,
+                "expected a valid `When` instantiation.");
+  static_assert(Error<ElseBranch>::always_false,
+                "expected a valid `Else` instantiation.");
+};
+
+template <typename Body1, typename Branch2, typename Branch3, typename... Tail>
+struct ConditionalApply<When<Bool<true>, Body1>, Branch2, Branch3, Tail...> {
+  using type = typename Body1::template apply<>::type;
+};
+
+template <typename Body1, typename Branch2, typename Branch3, typename... Tail>
+struct ConditionalApply<When<Bool<false>, Body1>, Branch2, Branch3, Tail...> {
+  using type = typename ConditionalApply<Branch2, Branch3, Tail...>::type;
+};
+
+template <typename Branch1, typename Branch2, typename Branch3, typename... Tail>
+struct ConditionalApply<Branch1, Branch2, Branch3, Tail...> {
+  static_assert(Error<Branch1>::always_false,
+                "expected a valid `When` instantiation.");
 };
 
 /// ----------------------------------------------------------------------------
@@ -1016,6 +1149,14 @@ struct Eval<Quote<AST>, Environ> {
 
 /// ----------------------------------------------------------------------------
 /// Implementation for match expression.
+
+/// This namespace is used for internal evaluation
+/// Never use this namespace in user code!
+namespace internal {
+template <typename... Args>
+struct MatchList {};
+}  // namespace internal
+
 template <typename Environ, typename... Args>
 struct MatchImpl {
   static_assert(Error<Args...>::always_false, "");
@@ -1023,61 +1164,6 @@ struct MatchImpl {
 
 template <typename Environ, template <typename...> class Op, typename... Args>
 struct MatchImpl<Environ, Op<Args...>> {
-};
-
-template <typename Environ, typename Source, typename Target>
-struct MatchCase {
-  static const bool matched = false;
-  using env = Environ;
-};
-
-template <typename Environ, typename Source>
-struct MatchCase<Environ, Source, _> {
-  static const bool matched = true;
-  using env = Environ;
-};
-
-template <typename Environ, typename Source, char... chars>
-struct MatchCase<Environ, Source, Var<chars...>> {
-  static const bool matched = true;
-  using env = typename EnvPut<Environ, Var<chars...>, Quote<Source>>::type;
-};
-
-/// ----------------------------------------------------------------------------
-/// Implementation for match expression.
-template <bool cond,
-          typename Body, typename BodyArgArray,
-          typename ElseBody, typename ElseBodyArgArray>
-struct InternalIf;
-
-template <template <typename...> class Body, typename... BodyArgs,
-          template <typename...> class ElseBody, typename... ElseBodyArgs>
-struct InternalIf<true, Body<>, Array<BodyArgs...>, ElseBody<>, Array<ElseBodyArgs...>> {
-  using type = Body<BodyArgs...>;
-};
-
-template <template <typename...> class Body, typename... BodyArgs,
-          template <typename...> class ElseBody, typename... ElseBodyArgs>
-struct InternalIf<false, Body<>, Array<BodyArgs...>, ElseBody<>, Array<ElseBodyArgs...>> {
-  using type = ElseBody<ElseBodyArgs...>;
-};
-
-template <typename Environ,
-          template <typename...> class T,
-          typename SourceHead, typename TargetHead,
-          typename... SourceTail, typename... TargetTail>
-struct MatchCase<Environ, T<SourceHead, SourceTail...>, T<TargetHead, TargetTail...>> {
-  using HeadMatch = MatchCase<Environ, SourceHead, TargetHead>;
-  using TailMatch = MatchCase<Environ, T<SourceTail...>, T<TargetTail...>>;
-  static constexpr bool matched = HeadMatch::matched
-                                      ? TailMatch::matched
-                                      : false;
-};
-
-template <typename Environ,
-          template <typename...> class Source, typename... SourceArgs,
-          template <typename...> class Target, typename... TargetArgs>
-struct MatchCase<Environ, Source<SourceArgs...>, Target<TargetArgs...>> {
 };
 
 /// ----------------------------------------------------------------------------
