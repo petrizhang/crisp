@@ -218,10 +218,5 @@ The basic api of Crisp and TemplatedPL are quite similar. But there are still ma
 2. TemplatedPL supports call/cc but Crisp doesn't.
 3. ...
 
-In fact, the implementation of Crisp and TemplatedPL are **completely different**.
-The whole TemplatedPL interpreter is written in CPS style thus it could support call/cc.
-But Crisp is only a recursive evaluator and doesn't support call/cc.
-
-I have also considered to support call/cc in Crisp, but C++ templates are stupid and tedious enough.
-It is too hard to maintain Crisp interpreter when writing it with CPS style.
-Thus I decided to focus on other common used features, such as recursive function, pattern match, etc.
+In fact, the code structure of Crisp and TemplatedPL are **completely different**,
+i.e., Crisp is a fully clean-room implementation.
