@@ -101,6 +101,11 @@ void TestConditionalApply() {
   static_assert((std::is_same<t5::type, Array<Int<3>>>::value), "");
 };
 
+void TestIsTemplateOf() {
+  static_assert((IsVTemplateOf<bool, Bool, Bool<true>>::value), "");
+  static_assert((!IsVTemplateOf<bool, Bool, Int<1>>::value), "");
+}
+
 //void TestPatternMatch1() {
 //  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<_, _>>::matched), "");
 //  static_assert((!QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Mul<_, _>>::matched), "");

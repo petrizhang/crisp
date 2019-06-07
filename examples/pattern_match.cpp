@@ -23,10 +23,14 @@ struct QuoteMatchCase {
   using env = Environ;
 };
 
-template <typename Environ, typename Source, char... chars>
-struct QuoteMatchCase<Environ, Source, Var<chars...>> {
+template <typename Environ, typename Source>
+struct QuoteMatchCase<Environ, Source, Source> {
   static const bool matched = true;
-  using env = typename EnvPut<Environ, Var<chars...>, Quote<Source>>::type;
+
+  using env = typename ConditionalApply<
+      When<Bool<IsVar<Source>::value>,
+           typename EnvPut<Environ, Source, Quote<Source>>::type>,
+      Else<LazyApply<Env>>>::type;
 };
 
 //template <typename Environ>

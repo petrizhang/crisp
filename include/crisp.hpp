@@ -347,6 +347,22 @@ struct IsTemplateOf<C, C<Args...>> {
 };
 
 /// ----------------------------------------------------------------------------
+/// Check if given type `T` is a instance of template `C`
+/// e.g. IsTemplate<Array, Array<Int<1>,Int<2>>>::value will be true
+template <typename T, template <T...> class C, typename R>
+struct IsVTemplateOf {
+  static const bool value = false;
+};
+
+template <typename T, template <T...> class C, T... Args>
+struct IsVTemplateOf<T, C, C<Args...>> {
+  static const bool value = true;
+};
+
+template <typename T>
+using IsVar = IsVTemplateOf<char, Var, T>;
+
+/// ----------------------------------------------------------------------------
 /// Merge two argument list into one.
 /// e.g. MergeArgs< Array<Int<1>>, Array<Int<2>> >::type
 /// will be Array<Int<1>,Int<2>>`
