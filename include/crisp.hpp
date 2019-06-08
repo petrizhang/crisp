@@ -360,7 +360,10 @@ struct IsValueTemplateOf<ValueType, C, C<Args...>> {
 };
 
 template <typename T>
-using IsVar = IsValueTemplateOf<char, Var, T>;
+struct IsVar : IsValueTemplateOf<char, Var, T> {};
+
+template <typename T>
+struct IsNil : std::is_same<T, Nil> {};
 
 /// -------------------------------------------------------------------------------------------
 /// Merge two argument list into one.
@@ -570,6 +573,17 @@ struct DeferApply {
   template <typename...>
   struct apply {
     using type = typename C<Args...>::type;
+  };
+};
+
+/// -------------------------------------------------------------------------------------------
+/// Save the context of a template `C` and it's arguments `Args`
+/// and instantiate it later.
+template <template <typename...> class C, typename... Args>
+struct DeferConstruct {
+  template <typename...>
+  struct apply {
+    using type = C<Args...>;
   };
 };
 
@@ -1212,13 +1226,6 @@ struct Eval<Quote<AST>, Environ> {
 
 /// -------------------------------------------------------------------------------------------
 /// Implementation for match expression.
-
-/// This namespace is used for internal evaluation
-/// Never use this namespace in user code!
-namespace internal {
-template <typename... Args>
-struct MatchList {};
-}  // namespace internal
 
 template <typename Environ, typename... Args>
 struct MatchImpl {

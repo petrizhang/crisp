@@ -17,6 +17,33 @@
 #include "crisp_macros.h"
 using namespace crisp;
 
+/// This namespace is used for internal evaluation.
+/// Never use it in user code!!!
+namespace internal {
+template <typename... Args>
+struct MatchList {};
+}  // namespace internal
+
+template <typename T>
+struct GetArgsToMatchList {
+  using type = internal::MatchList<>;
+};
+
+template <template <typename...> class C, typename... Args>
+struct GetArgsToMatchList<C<Args...>> {
+  using type = internal::MatchList<Args...>;
+};
+
+template <typename T>
+struct IsSecondOrderTemplate {
+  static const bool value = false;
+};
+
+template <template <typename...> class C, typename... Args>
+struct IsSecondOrderTemplate<C<Args...>> {
+  static const bool value = true;
+};
+
 template <typename Target, typename VarName>
 struct Capture {
   static constexpr const char* repr = "capture";
@@ -61,6 +88,36 @@ struct IsCaptureAny<Capture<___, VarName>> {
 };
 
 template <typename T>
+struct IsCaptureAnySingle {
+  static const bool value = false;
+};
+
+template <typename VarName>
+struct IsCaptureAnySingle<Capture<_, VarName>> {
+  static const bool value = true;
+};
+
+template <typename VarName>
+struct IsCaptureAnySingle<Capture<___, VarName>> {
+  static const bool value = false;
+};
+
+template <typename T>
+struct IsCaptureAnyList {
+  static const bool value = false;
+};
+
+template <typename VarName>
+struct IsCaptureAnyList<Capture<_, VarName>> {
+  static const bool value = false;
+};
+
+template <typename VarName>
+struct IsCaptureAnyList<Capture<___, VarName>> {
+  static const bool value = true;
+};
+
+template <typename T>
 struct IsCaptureSpecific {
   static const bool value = false;
 };
@@ -80,28 +137,77 @@ struct IsCaptureSpecific<Capture<___, VarName>> {
   static const bool value = false;
 };
 
+template <typename Environ, typename...>
+struct QuoteMatchInternal {
+  static const bool matched = false;
+  using env = Environ;
+};
+
 template <typename Environ, typename Source, typename Target>
 struct QuoteMatchCase {
   static const bool matched = false;
+  using MaybeEnv = Environ;
+};
+
+template <typename Environ>
+struct MatchFailure {
+  static const bool matched = false;
+  using env = Environ;
+};
+
+template <typename Environ>
+struct MatchSuccess {
+  static const bool matched = true;
   using env = Environ;
 };
 
 template <typename Environ, typename Source>
 struct QuoteMatchCase<Environ, Source, Source> {
-  // when match Capture<A, Var<...>> with Capture<A, Var<...>>
-  // we regard it as a match failure (because Capture<A, B> != A).
-  // If you what to match Capture<A, Var<...>>, use Capture<_, Var<...> > instead.
-  static constexpr bool matched = !IsCaptureSpecific<Source>::value;
-
-  // when match Capture<_, Var<...> > with Capture<_, Var<...> >,
-  // capture the expression to current environment
-  using MayBeVarName = typename ConditionalApply<When<Bool<IsCaptureAny<Source>::value>,
+  // When match Capture<_, Var<...> > with Capture<_, Var<...> >,
+  // get `Var<...>` from given expression.
+  using MaybeVarName = typename ConditionalApply<When<Bool<IsCaptureAny<Source>::value>,
                                                       DeferApply<GetCaptureVarName, Source>>,
                                                  Else<DeferApply<NilF>>>::type;
+  // When match Capture<_, Var<...> > with Capture<_, Var<...> >,
+  // put `Capture<_, Var<...> >` to current environment.
+  // When match Capture<___, Var<...> > with Capture<___, Var<...> >,
+  // put `Array< Capture<_, Var<...>> >` to current environment.
+  using MaybeEnv = typename ConditionalApply<When<Bool<IsCaptureAnySingle<Source>::value>,
+                                                  DeferApply<EnvPut, Environ, MaybeVarName, Quote<Source>>>,
+                                             When<Bool<IsCaptureAnyList<Source>::value>,
+                                                  DeferApply<EnvPut, Environ, MaybeVarName, Quote<Array<Source>>>>,
+                                             Else<DeferApply<NilF>>>::type;
 
-  using env = typename ConditionalApply<When<Bool<std::is_same<Nil, MayBeVarName>::value>,
-                                             DeferApply<Id, Environ>>,
-                                        Else<DeferApply<EnvPut, Environ, MayBeVarName, Quote<Source>>>>::type;
+  // If `Source` a second order template(C<Args...>) but not `Capture<_/___, Var<...> >`,
+  using _IsSecondOrderTemplateButNotCaptureAny = Bool<IsSecondOrderTemplate<Source>::value && !IsCaptureAny<Source>::value>;
+
+  // If `Source` a second order template(C<Args...>) but not `Capture<_/___, Var<...> >`,
+  // pack it's arguments into `internal::MatchList`.
+  using MaybeMatchList = typename ConditionalApply<When<_IsSecondOrderTemplateButNotCaptureAny,
+                                                        DeferApply<GetArgsToMatchList, Source>>,
+                                                   Else<DeferApply<NilF>>>::type;
+
+  // If `Source` a second order template(C<Args...>) but not `Capture<_/___, Var<...> >`,
+  // match it recursively.
+  using MatchResult = typename ConditionalApply<When<_IsSecondOrderTemplateButNotCaptureAny,
+                                                     DeferConstruct<QuoteMatchInternal, Environ, MaybeMatchList, MaybeMatchList>>,
+                                                Else<DeferConstruct<MatchFailure, Environ>>>::type;
+
+  /*
+   * 1. When match Capture<A, Var<...>> with Capture<A, Var<...>>,
+   * we regard it as a match failure (because Capture<A, B> != A).
+   * If you what to match Capture<A, Var<...>>, use Capture<_, Var<...> > instead.
+   *
+   * 2. When match C<Args...> with C<Args...>, we still need to match them recursively.
+   * Consider the follow instance:
+   *   QuoteMatchCase< T, Array< Capture<A, Var<'a'>> >
+   * Users use this line to match a single element array and capture it's first element `A` to `Var<'a'>`.
+   * But when the given `T` is `Array< Capture<A, Var<'a'> >`.
+   * we got `QuoteMatchCase< Array< Capture<_, Var<'a'> >, Array< Capture<A, Var<'a'>> > >`
+   * In this case, we regard it as a match failure, because the first element of the array is
+   * `Capture<_, Var<'a'>`, and it doesn't match `A`.
+   */
+  static constexpr bool matched = !IsCaptureSpecific<Source>::value;
 };
 
 //template <typename Environ>
@@ -232,5 +338,7 @@ void TestPatternMatch1() {
 };
 
 int main() {
+  using x = Var<'x'>;
+  using t = QuoteMatchCase<Env<>, Array<_, x>, Array<_, x>>;
   return 0;
 }
