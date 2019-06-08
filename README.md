@@ -195,20 +195,6 @@ In this example, we define a recursive function `factorial` which calls itself t
 Users could find a complete macro api list at "include/crisp_macros.h".
   
 ### Template Style
-- `Nil`: the Nil value is similar to null in other languages.
-- `Bool<B>`: a boolean value. e.g. `Bool<true>, Bool<false>`
-- `Char<C>`: a char value. e.g. `Char<'a'>, Char<'b'>`
-- `Int<N>` : an integer value. e.g. `Int<5>`
-- `Var<'c','c',...>`: a symbol/variable reference. e.g. `Var<'a'>, Var<'t','e','s','t'>`
-- `Pair<L,R>`: a pair value, it is very similar to `std::pair` in C++
-- `Lambda< ParamList< Var<..>, Var<..>... >, Body >`, e.g. :
-```cpp
-Lambda< ParamList<Var<'x'>,Var<'y'>>,
-    Add<Var<'x'>, Var<'y'>> >
-```
-- `Call`: calling user defined functions 
-- ...
-
 Users could find a complete template api list at "include/crisp_templates.h".
 
 ## Build and Dependency
