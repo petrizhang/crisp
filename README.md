@@ -7,7 +7,7 @@ Crisp: ***C***ompile Time Interprete***r*** for L***isp*** Written in C++ Templa
 ![std](https://img.shields.io/badge/c++->=11-blue.svg)
 
 ## About Crisp
-Crisp is a lisp-like and turing-complete DSL built upon C++ templates.
+Crisp is a lisp-like and Turing-complete DSL built upon C++ templates.
 Users could consider Crisp as a lisp interpreter that interprets lisp programs at C++ compile time.
 
 With Crisp, users could easily build compile-time programs by an extremely friendly syntax,
@@ -29,7 +29,7 @@ include:
 What's more, **all operations in Crisp are accomplished at compile time**. It is the most awesome feature of Crisp.
 
 ## How to Use
-First let us see two simple but complete examples:
+First, let us see two simple but complete examples:
 
 1. Crisp Macro Style
 ```cpp
@@ -61,8 +61,7 @@ int main() {
 
 As demonstrated above, Crisp provides two kinds of syntax: macro style and template style. You could build Crisp program with your preferred one. 
 
-Generally, to express the same program, the macro style will be shorter, more readable 
-and more friendly to IDE highlighting. Thus **we recommend the macro style**.  
+Generally, to express the same program, the macro style will be shorter, more readable and more friendly to IDE highlighting. Thus **we recommend the macro style**.  
 
 ### Use Crisp in Your Project
 Crisp is a header-only library, users could use Crisp by including Crisp header files in their projects.
@@ -78,7 +77,7 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
 1. Your compiler must support **C++11**.
 2. Remember to set the **`-ftemplate-depth-5000`** flag to avoid insufficient template expansion depth.
 3. You'd better **use Crisp headers as the last ones of your includes**. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
-4. **Never mix macros and templates style together**. In C++, `println(Var<'a', 'b'>)` will be recognized as `println(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
+4. **Never mix macros and templates style together**. In C++, expressions like `println(Var<'a', 'b'>)` will be recognized as `println(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
 
 
 ## Examples
@@ -224,9 +223,9 @@ make
 ```
 
 ## Acknowledgements
-This project is inspired by [TemplatedPL](https://github.com/Cheukyin/TemplatedPL). Thanks for the author's great idea.
+This project is inspired by [TemplatedPL](https://github.com/Cheukyin/TemplatedPL). Thanks to the author's great idea.
 
-The basic api of Crisp and TemplatedPL are quite similar. But there are still many differences between them:
+The basic API of Crisp and TemplatedPL are quite similar. But there are still many differences between them:
 1. Crisp supports recursive functions but TemplatedPL doesn't.
 2. TemplatedPL supports call/cc but Crisp doesn't.
 3. ...
