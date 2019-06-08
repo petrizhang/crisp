@@ -211,10 +211,4 @@ make
 ## Acknowledgements
 This project is inspired by [TemplatedPL](https://github.com/Cheukyin/TemplatedPL). Thanks to the author's great idea.
 
-The basic API of Crisp and TemplatedPL are quite similar. But there are still many differences between them:
-1. Crisp supports recursive functions but TemplatedPL doesn't.
-2. TemplatedPL supports call/cc but Crisp doesn't.
-3. ...
-
-In fact, the code structure of Crisp and TemplatedPL are **completely different**,
-i.e., Crisp is a fully clean-room implementation.
+Some basic API of Crisp and TemplatedPL look similar, but these 2 projects are implemented with **completly different techniques**.
