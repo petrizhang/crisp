@@ -549,25 +549,39 @@ struct DictGet<Dict<Pair<T, V>, Tail...>, K> {
 };
 
 /// -------------------------------------------------------------------------------------------
+/// A template receives a type T and return it unchanged.
+template <typename T>
+struct Id {
+  using type = T;
+};
+
+/// -------------------------------------------------------------------------------------------
+/// A template receives a type T and return it unchanged.
+template <typename...>
+struct NilF {
+  using type = Nil;
+};
+
+/// -------------------------------------------------------------------------------------------
 /// Save the context of a template `C` and it's arguments `Args`
 /// and instantiate it later.
 template <template <typename...> class C, typename... Args>
-struct LazyApply {
+struct DeferApply {
   template <typename...>
   struct apply {
-    using type = C<Args...>;
+    using type = typename C<Args...>::type;
   };
 };
 
 /// -------------------------------------------------------------------------------------------
 /// Check if given type `T` is an instantiation of `LazyApply`
 template <typename T>
-struct IsLazyApply {
+struct IsDeferApply {
   static const bool value = false;
 };
 
 template <template <typename...> class C, typename... Args>
-struct IsLazyApply<LazyApply<C, Args...>> {
+struct IsDeferApply<DeferApply<C, Args...>> {
   static const bool value = true;
 };
 

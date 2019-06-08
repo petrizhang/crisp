@@ -77,34 +77,35 @@ void TestEvalBinaryOp() {
 }
 
 void TestConditionalApply() {
-  using t1 = ConditionalApply<When<Bool<false>, LazyApply<Array, Int<1>>>,
-                              Else<LazyApply<Array, Int<2>>>>;
-  static_assert((std::is_same<t1::type, Array<Int<2>>>::value), "");
+  using t1 = ConditionalApply<When<Bool<false>, DeferApply<Id, Int<1>>>,
+                              Else<DeferApply<Id, Int<2>>>>;
+  static_assert((std::is_same<t1::type, Int<2>>::value), "");
 
-  using t2 = ConditionalApply<When<Bool<true>, LazyApply<Array, Int<1>>>,
-                              Else<LazyApply<Array, Int<2>>>>;
-  static_assert((std::is_same<t2::type, Array<Int<1>>>::value), "");
+  using t2 = ConditionalApply<When<Bool<true>, DeferApply<Id, Int<1>>>,
+                              Else<DeferApply<Id, Int<2>>>>;
+  static_assert((std::is_same<t2::type, Int<1>>::value), "");
 
-  using t3 = ConditionalApply<When<Bool<true>, LazyApply<Array, Int<1>>>,
-                              When<Bool<true>, LazyApply<Array, Int<2>>>,
-                              Else<LazyApply<Array, Int<3>>>>;
-  static_assert((std::is_same<t3::type, Array<Int<1>>>::value), "");
+  using t3 = ConditionalApply<When<Bool<true>, DeferApply<Id, Int<1>>>,
+                              When<Bool<true>, DeferApply<Id, Int<2>>>,
+                              Else<DeferApply<Id, Int<3>>>>;
+  static_assert((std::is_same<t3::type, Int<1>>::value), "");
 
-  using t4 = ConditionalApply<When<Bool<false>, LazyApply<Array, Int<1>>>,
-                              When<Bool<true>, LazyApply<Array, Int<2>>>,
-                              Else<LazyApply<Array, Int<3>>>>;
-  static_assert((std::is_same<t4::type, Array<Int<2>>>::value), "");
+  using t4 = ConditionalApply<When<Bool<false>, DeferApply<Id, Int<1>>>,
+                              When<Bool<true>, DeferApply<Id, Int<2>>>,
+                              Else<DeferApply<Id, Int<3>>>>;
+  static_assert((std::is_same<t4::type, Int<2>>::value), "");
 
-  using t5 = ConditionalApply<When<Bool<false>, LazyApply<Array, Int<1>>>,
-                              When<Bool<false>, LazyApply<Array, Int<2>>>,
-                              Else<LazyApply<Array, Int<3>>>>;
-  static_assert((std::is_same<t5::type, Array<Int<3>>>::value), "");
+  using t5 = ConditionalApply<When<Bool<false>, DeferApply<Id, Int<1>>>,
+                              When<Bool<false>, DeferApply<Id, Int<2>>>,
+                              Else<DeferApply<Id, Int<3>>>>;
+  static_assert((std::is_same<t5::type, Int<3>>::value), "");
 };
 
 void TestIsTemplateOf() {
   static_assert((IsValueTemplateOf<bool, Bool, Bool<true>>::value), "");
   static_assert((!IsValueTemplateOf<bool, Bool, Int<1>>::value), "");
 }
+
 
 //void TestPatternMatch1() {
 //  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<_, _>>::matched), "");

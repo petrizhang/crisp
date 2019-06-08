@@ -18,7 +18,67 @@
 using namespace crisp;
 
 template <typename Target, typename VarName>
-struct Capture {};
+struct Capture {
+  static constexpr const char* repr = "capture";
+};
+
+template <typename T>
+struct GetCaptureTarget {
+  using type = Undefined;
+};
+
+template <typename Target, typename VarName>
+struct GetCaptureTarget<Capture<Target, VarName>> {
+  using type = Target;
+};
+
+template <typename T>
+struct GetCaptureVarName {
+  using type = Undefined;
+};
+
+template <typename Target, typename VarName>
+struct GetCaptureVarName<Capture<Target, VarName>> {
+  using type = VarName;
+};
+
+template <typename T>
+struct IsCapture : IsTemplateOf<Capture, T> {};
+
+template <typename T>
+struct IsCaptureAny {
+  static const bool value = false;
+};
+
+template <typename VarName>
+struct IsCaptureAny<Capture<_, VarName>> {
+  static const bool value = true;
+};
+
+template <typename VarName>
+struct IsCaptureAny<Capture<___, VarName>> {
+  static const bool value = true;
+};
+
+template <typename T>
+struct IsCaptureSpecific {
+  static const bool value = false;
+};
+
+template <typename Target, typename VarName>
+struct IsCaptureSpecific<Capture<Target, VarName>> {
+  static const bool value = true;
+};
+
+template <typename VarName>
+struct IsCaptureSpecific<Capture<_, VarName>> {
+  static const bool value = false;
+};
+
+template <typename VarName>
+struct IsCaptureSpecific<Capture<___, VarName>> {
+  static const bool value = false;
+};
 
 template <typename Environ, typename Source, typename Target>
 struct QuoteMatchCase {
@@ -28,12 +88,20 @@ struct QuoteMatchCase {
 
 template <typename Environ, typename Source>
 struct QuoteMatchCase<Environ, Source, Source> {
-  static const bool matched = true;
+  // when match Capture<A, Var<...>> with Capture<A, Var<...>>
+  // we regard it as a match failure (because Capture<A, B> != A).
+  // If you what to match Capture<A, Var<...>>, use Capture<_, Var<...> > instead.
+  static constexpr bool matched = !IsCaptureSpecific<Source>::value;
 
-  using env = typename ConditionalImpl<
-      When<Bool<IsVar<Source>::value>,
-           typename EnvPut<Environ, Source, Quote<Source>>::type>,
-      Else<LazyApply<Env>>>::type;
+  // when match Capture<_, Var<...> > with Capture<_, Var<...> >,
+  // capture the expression to current environment
+  using MayBeVarName = typename ConditionalApply<When<Bool<IsCaptureAny<Source>::value>,
+                                                      DeferApply<GetCaptureVarName, Source>>,
+                                                 Else<DeferApply<NilF>>>::type;
+
+  using env = typename ConditionalApply<When<Bool<std::is_same<Nil, MayBeVarName>::value>,
+                                             DeferApply<Id, Environ>>,
+                                        Else<DeferApply<EnvPut, Environ, MayBeVarName, Quote<Source>>>>::type;
 };
 
 //template <typename Environ>
@@ -155,6 +223,13 @@ struct QuoteMatchCase<Environ, Source, Source> {
 //                             typename ReverseArgs<internal::MatchList<SourceArgs...>>::type,
 //                             typename ReverseArgs<internal::MatchList<TargetArgs...>>::type> {
 //};
+void TestPatternMatch1() {
+  using x = Var<'x'>;
+  static_assert((QuoteMatchCase<Env<>, Capture<_, x>, Capture<_, x>>::matched), "");
+  static_assert((!QuoteMatchCase<Env<>, Capture<_, x>, Capture<x, x>>::matched), "");
+
+  static_assert((QuoteMatchCase<Env<>, int, int>::matched), "");
+};
 
 int main() {
   return 0;
