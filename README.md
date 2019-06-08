@@ -192,10 +192,10 @@ In this example, we define a recursive function `factorial` which calls itself t
 ## API
 
 ### Macro Style
-Users could find a complete macro api list at "include/crisp_macros.h".
+Users could find a complete macro api list at [include/crisp_macros.h](https://github.com/pzque/crisp/blob/master/include/crisp_macros.h).
   
 ### Template Style
-Users could find a complete template api list at "include/crisp_templates.h".
+Users could find a complete template api list at [include/crisp_templates.h](https://github.com/pzque/crisp/blob/master/include/crisp_templates.h)..
 
 ## Build and Dependency
 If you want to explore Crisp source code and run Crisp examples and tests, you need to:
