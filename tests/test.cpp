@@ -102,8 +102,8 @@ void TestConditionalApply() {
 };
 
 void TestIsTemplateOf() {
-  static_assert((IsVTemplateOf<bool, Bool, Bool<true>>::value), "");
-  static_assert((!IsVTemplateOf<bool, Bool, Int<1>>::value), "");
+  static_assert((IsValueTemplateOf<bool, Bool, Bool<true>>::value), "");
+  static_assert((!IsValueTemplateOf<bool, Bool, Int<1>>::value), "");
 }
 
 //void TestPatternMatch1() {

@@ -17,6 +17,9 @@
 #include "crisp_macros.h"
 using namespace crisp;
 
+template <typename Target, typename VarName>
+struct Capture {};
+
 template <typename Environ, typename Source, typename Target>
 struct QuoteMatchCase {
   static const bool matched = false;
@@ -27,7 +30,7 @@ template <typename Environ, typename Source>
 struct QuoteMatchCase<Environ, Source, Source> {
   static const bool matched = true;
 
-  using env = typename ConditionalApply<
+  using env = typename ConditionalImpl<
       When<Bool<IsVar<Source>::value>,
            typename EnvPut<Environ, Source, Quote<Source>>::type>,
       Else<LazyApply<Env>>>::type;
@@ -95,7 +98,7 @@ struct QuoteMatchCase<Environ, Source, Source> {
 //  using HeadMatch = QuoteMatchCase<Environ, SourceHead, TargetHead>;
 //  using HeadMatchEnv = typename HeadMatch::env;
 //
-//  using MatchResult = typename ConditionalApply<HeadMatch::matched,
+//  using MatchResult = typename ConditionalImpl<HeadMatch::matched,
 //                                                QuoteMatchInternal,
 //                                                Array<HeadMatchEnv,
 //                                                      internal::MatchList<SourceTail...>,
@@ -129,7 +132,7 @@ struct QuoteMatchCase<Environ, Source, Source> {
 //  using RTailMatch = QuoteMatchCase<Environ, SourceRTail, TargetRTail>;
 //  using RTailMatchEnv = typename RTailMatch::env;
 //
-//  using MatchResult = typename ConditionalApply<RTailMatch::matched,
+//  using MatchResult = typename ConditionalImpl<RTailMatch::matched,
 //                                                QuoteMatchReversedTail,
 //                                                Array<RTailMatchEnv,
 //                                                      internal::MatchList<SourceRHead...>,

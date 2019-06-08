@@ -33,11 +33,11 @@ inline void output(bool v) {
   std::cout << (v ? "true" : "false");
 }
 
-/// ****************************************************************************
+/// *******************************************************************************************
 /// * AST nodes.
-/// ****************************************************************************
+/// *******************************************************************************************
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Boolean value type.
 template <bool V>
 struct Bool {
@@ -47,7 +47,7 @@ struct Bool {
   static constexpr c_type c_value() { return V; };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Char value type.
 template <char V>
 struct Char {
@@ -57,7 +57,7 @@ struct Char {
   static constexpr c_type c_value() { return V; };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Int value type.
 template <int V>
 struct Int {
@@ -67,7 +67,7 @@ struct Int {
   static constexpr c_type c_value() { return V; };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// quote, which will prevent the interpreter's evaluation for given `AST`.
 /// Note: Quote< Var<...> > is equivalent to String<...>
 // TODO print ast nodes prettily
@@ -78,7 +78,7 @@ struct Quote {
   static c_type c_value() { return "#quote"; };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// String value type.
 template <char... args>
 struct String;
@@ -99,16 +99,16 @@ struct String<c, args...> {
   static const c_type c_value() { return std::string(1, c) + String<args...>::c_value(); }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Variable reference or an identifier used in function parameters and variable definition.
 template <char... args>
 struct Var : String<args...> {};
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Pair(tuple2) value type.
 template <typename L, typename R>
 struct Pair {};
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Nil type. It likes the `void` type in C++.
 struct Nil {
   static constexpr const char *repr = "Nil";
@@ -116,7 +116,7 @@ struct Nil {
   static constexpr const char *c_value() { return "#nil"; };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Undefined type. We use this value when we cannot resolve a variable reference.
 struct Undefined {
   static constexpr const char *repr = "Undefined";
@@ -124,7 +124,7 @@ struct Undefined {
   static constexpr const char *c_value() { return "#undefined"; };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Closure type. We use this type to represent a function value
 template <typename Environ, typename Func>
 struct Closure {
@@ -132,7 +132,7 @@ struct Closure {
   static constexpr const char *c_value() { return "#closure"; };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// We use this type to represent a `println` event
 template <typename... Args>
 struct Println {};
@@ -155,7 +155,7 @@ struct Call {};
 template <typename Params, typename Body>
 struct Lambda {};
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// List(x,x,x,...)
 /// e.g. List<Int<1>, Int<2>> will be Pair<Int<1>,Pair<Int<2>, Nil>>.
 template <typename T, typename... Args>
@@ -163,109 +163,109 @@ struct List {
   static constexpr const char *repr = "list";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// cons: construct Pair<L,R> from L and R.
 template <typename L, typename R>
 struct Cons {
   static constexpr const char *repr = "cons";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// car: get the first element of a Pair, e.g. Car<Pair<L,R>> will be L.
 template <typename T>
 struct Car {
   static constexpr const char *repr = "car";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// cdr: get the second element of a Pair, e.g. Cdr<Pair<L,R>> will be R.
 template <typename T>
 struct Cdr {
   static constexpr const char *repr = "cdr";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// +
 template <typename L, typename R, typename... Args>
 struct Add {
   static constexpr const char *repr = "+";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// -
 template <typename L, typename R, typename... Args>
 struct Sub {
   static constexpr const char *repr = "-";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// *
 template <typename L, typename R, typename... Args>
 struct Mul {
   static constexpr const char *repr = "*";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// /
 template <typename L, typename R, typename... Args>
 struct Mod {
   static constexpr const char *repr = "/";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// &&
 template <typename L, typename R, typename... Args>
 struct And {
   static constexpr const char *repr = "and";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// ||
 template <typename L, typename R, typename... Args>
 struct Or {
   static constexpr const char *repr = "or";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// ==
 template <typename L, typename R>
 struct IsEqual {
   static constexpr const char *repr = "==";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// >
 template <typename L, typename R>
 struct IsGreaterThan {
   static constexpr const char *repr = ">";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// <
 template <typename L, typename R>
 struct IsLessThan {
   static constexpr const char *repr = "<";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// >=
 template <typename L, typename R>
 struct IsGreaterEqual {
   static constexpr const char *repr = ">=";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// <=
 template <typename L, typename R>
 struct IsLessEqual {
   static constexpr const char *repr = "<=";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Placeholder used in match expression which will match any value
 struct _ {};
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Placeholder used in match expression which will match any sequence
 /// e.g.
 /// ```
@@ -275,35 +275,35 @@ struct _ {};
 /// will be ```Int<4>```
 struct ___ {};
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// case branch used in `Match` expression
 template <typename Condition, typename Result>
 struct Case {
   static constexpr const char *repr = "case";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// default branch used in `Match` and `Cond` expression
 template <typename Expr>
 struct Default {
   static constexpr const char *repr = "default";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// when, branch used in `Match` expression
 template <typename Condition, typename Result>
 struct When {
   static constexpr const char *repr = "when";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// else, branch used in `Match` and `Cond` expression
 template <typename Expr>
 struct Else {
   static constexpr const char *repr = "else";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// match, e.g. Match< Add< Int<1>, Int<2> >,
 ///                    Case< Add<_,_>, Str<'+'> >,
 ///                    Case< Mul<_,_>, Str<'*'> >,
@@ -313,7 +313,7 @@ struct Match {
   static constexpr const char *repr = "match";
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// cond, e.g. Cond< When<true, Int<1>>,
 ///                  When<false, Int<2>>,
 ///                  Else<Int<3>> >
@@ -322,18 +322,18 @@ struct Cond {
   static constexpr const char *repr = "cond";
 };
 
-/// ****************************************************************************
+/// *******************************************************************************************
 /// * Utilities
-/// ****************************************************************************
+/// *******************************************************************************************
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Use this type in static_assert to trigger a compile error.
 template <typename...>
 struct Error {
   static const bool always_false = false;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Check if given type `T` is a instance of template `C`
 /// e.g. IsTemplate<Array, Array<Int<1>,Int<2>>>::value will be true
 template <template <typename...> class C, typename T>
@@ -346,23 +346,23 @@ struct IsTemplateOf<C, C<Args...>> {
   static const bool value = true;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Check if given type `T` is a instance of template `C`
 /// e.g. IsTemplate<Array, Array<Int<1>,Int<2>>>::value will be true
-template <typename T, template <T...> class C, typename R>
-struct IsVTemplateOf {
+template <typename ValueType, template <ValueType...> class C, typename T>
+struct IsValueTemplateOf {
   static const bool value = false;
 };
 
-template <typename T, template <T...> class C, T... Args>
-struct IsVTemplateOf<T, C, C<Args...>> {
+template <typename ValueType, template <ValueType...> class C, ValueType... Args>
+struct IsValueTemplateOf<ValueType, C, C<Args...>> {
   static const bool value = true;
 };
 
 template <typename T>
-using IsVar = IsVTemplateOf<char, Var, T>;
+using IsVar = IsValueTemplateOf<char, Var, T>;
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Merge two argument list into one.
 /// e.g. MergeArgs< Array<Int<1>>, Array<Int<2>> >::type
 /// will be Array<Int<1>,Int<2>>`
@@ -374,7 +374,7 @@ struct MergeArgs<C<LeftArgs...>, C<RightArgs...>> {
   using type = C<LeftArgs..., RightArgs...>;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Merge the argument list of a template.
 /// e.g. ReverseArgs< Array<Int<1>,Int<2>> >::type
 /// will be Array<Int<2>,Int<1>>`
@@ -392,7 +392,7 @@ struct ReverseArgs<C<Head, Tail...>> {
                                   C<Head>>::type;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Pack a const value(int/char/bool) into Value type.
 /// e.g. PackToValue<int, 1>::packed_type will be Value<Int<1>>.
 template <typename T, T V>
@@ -413,7 +413,7 @@ struct PackToType<int, V> {
   using type = Int<V>;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Check if an expression is callable or not.
 template <typename... Args>
 struct IsCallable {
@@ -425,7 +425,7 @@ struct IsCallable<Closure<Args...>> {
   static const bool value = true;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Get the size of a parameter list.
 template <typename... Args>
 struct Size;
@@ -440,7 +440,7 @@ struct Size<Head, Tails...> {
   static const u_long value = 1 + Size<Tails...>::value;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// A array-like collection type.
 template <typename... Elements>
 struct Array {};
@@ -520,7 +520,7 @@ struct Zip<Array<>, Array<>> {
   using type = Array<>;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// A map-like collection type.
 template <typename... Pairs>
 using Dict = Array<Pairs...>;
@@ -548,7 +548,7 @@ struct DictGet<Dict<Pair<T, V>, Tail...>, K> {
   using type = typename DictGet<Dict<Tail...>, K>::type;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Save the context of a template `C` and it's arguments `Args`
 /// and instantiate it later.
 template <template <typename...> class C, typename... Args>
@@ -559,30 +559,45 @@ struct LazyApply {
   };
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
+/// Check if given type `T` is an instantiation of `LazyApply`
+template <typename T>
+struct IsLazyApply {
+  static const bool value = false;
+};
+
+template <template <typename...> class C, typename... Args>
+struct IsLazyApply<LazyApply<C, Args...>> {
+  static const bool value = true;
+};
+
+/// -------------------------------------------------------------------------------------------
 /**
- * Apply a `LazyApply` expression according to branches' condition
+ * Get result from branches according to branches' condition.
+ * It is very similar to switch statement in C++.
+ * e.g.
  * @code
- * ConditionalApply<When<Bool<true>, LazyApply<Array, Int<1>>>,
- *                  Else<LazyApply<Array, Int<2>>>>;
+ * ConditionalImpl<When<Bool<true>, Int<1>>,
+ *                 When<Bool<false>, Int<1>>,
+ *                 Else<Int<2>> >;
  * @endcode
  *
  */
 template <typename Branch1, typename Branch2, typename... Branches>
-struct ConditionalApply;
+struct ConditionalImpl;
 
 template <typename Body, typename ElseBody>
-struct ConditionalApply<When<Bool<true>, Body>, Else<ElseBody>> {
-  using type = typename Body::template apply<>::type;
+struct ConditionalImpl<When<Bool<true>, Body>, Else<ElseBody>> {
+  using type = Body;
 };
 
 template <typename Body, typename ElseBody>
-struct ConditionalApply<When<Bool<false>, Body>, Else<ElseBody>> {
-  using type = typename ElseBody::template apply<>::type;
+struct ConditionalImpl<When<Bool<false>, Body>, Else<ElseBody>> {
+  using type = ElseBody;
 };
 
 template <typename Branch, typename ElseBranch>
-struct ConditionalApply<Branch, ElseBranch> {
+struct ConditionalImpl<Branch, ElseBranch> {
   static_assert(Error<Branch>::always_false,
                 "expected a valid `When` instantiation.");
   static_assert(Error<ElseBranch>::always_false,
@@ -590,22 +605,40 @@ struct ConditionalApply<Branch, ElseBranch> {
 };
 
 template <typename Body1, typename Branch2, typename Branch3, typename... Tail>
-struct ConditionalApply<When<Bool<true>, Body1>, Branch2, Branch3, Tail...> {
-  using type = typename Body1::template apply<>::type;
+struct ConditionalImpl<When<Bool<true>, Body1>, Branch2, Branch3, Tail...> {
+  using type = Body1;
 };
 
 template <typename Body1, typename Branch2, typename Branch3, typename... Tail>
-struct ConditionalApply<When<Bool<false>, Body1>, Branch2, Branch3, Tail...> {
-  using type = typename ConditionalApply<Branch2, Branch3, Tail...>::type;
+struct ConditionalImpl<When<Bool<false>, Body1>, Branch2, Branch3, Tail...> {
+  using type = typename ConditionalImpl<Branch2, Branch3, Tail...>::type;
 };
 
 template <typename Branch1, typename Branch2, typename Branch3, typename... Tail>
-struct ConditionalApply<Branch1, Branch2, Branch3, Tail...> {
+struct ConditionalImpl<Branch1, Branch2, Branch3, Tail...> {
   static_assert(Error<Branch1>::always_false,
                 "expected a valid `When` instantiation.");
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
+/**
+ * As same as @see ConditionalImpl,
+ * except that we will expand the template context saved in `LazyApply`.
+ * e.g.
+ * @code
+ * ConditionalApply<When<Bool<true>, LazyApply<Array, Int<1>> >,
+ *                  When<Bool<false>, LazyApply<Array, Int<2>> >,
+ *                  Else<LazyApply<Array, Int<3>>> >;
+ * @endcode
+ *
+ */
+template <typename Branch1, typename Branch2, typename... Branches>
+struct ConditionalApply {
+  using Result = typename ConditionalImpl<Branch1, Branch2, Branches...>::type;
+  using type = typename Result::template apply<>::type;
+};
+
+/// -------------------------------------------------------------------------------------------
 /// Environment stack implementation.
 /// Every element in the stack is a symbol table for a specific lexical scope.
 template <typename... Dicts>
@@ -620,7 +653,7 @@ using EnvPushFront = ArrayPushFront<env, dict>;
 template <typename env>
 using EnvPopFront = ArrayPopFront<env>;
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Bind a variable name `K` with a value `V` in current scope
 template <typename env, typename K, typename V>
 struct EnvPut;
@@ -635,7 +668,7 @@ struct EnvPut<Env<dict, Tail...>, K, V> {
   using type = Env<typename DictPut<dict, Pair<K, V>>::type, Tail...>;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Lookup a variable by name `K` in current environment
 template <typename env, typename K>
 struct EnvLookup {
@@ -658,7 +691,7 @@ struct EnvLookup<Env<dict, Tail...>, K> {
                                          current_scope_value>::type;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Implementation for `Car`
 template <typename T>
 struct CarImpl;
@@ -668,7 +701,7 @@ struct CarImpl<Pair<L, R>> {
   using type = L;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Implementation for `Cdr`
 template <typename T>
 struct CdrImpl;
@@ -678,7 +711,7 @@ struct CdrImpl<Pair<L, R>> {
   using type = R;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Implementation for `List`
 template <typename T, typename... Args>
 struct ListImpl {
@@ -690,7 +723,7 @@ struct ListImpl<T> {
   using type = Pair<T, Nil>;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Implementation for `Add`
 template <typename L, typename R>
 struct AddImpl {
@@ -727,7 +760,7 @@ BinaryOperator(IsLessThan, <, int, Int, int, Int, Bool);
 BinaryOperator(IsGreaterEqual, >=, int, Int, int, Int, Bool);
 BinaryOperator(IsLessEqual, <=, int, Int, int, Int, Bool);
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Implementation for `IsEqual`
 /// If two types are the same, then the values they represent are the same.
 template <typename L, typename R>
@@ -735,14 +768,14 @@ struct IsEqualImpl {
   using type = Bool<std::is_same<L, R>::value>;
 };
 
-/// ****************************************************************************
+/// *******************************************************************************************
 /// * Interpreter implementation
-/// ****************************************************************************
+/// *******************************************************************************************
 
 template <typename Expr, typename Environ = Env<>>
 struct Eval;
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate value types.
 template <typename Environ, bool V>
 struct Eval<Bool<V>, Environ> {
@@ -780,7 +813,7 @@ struct Eval<String<chars...>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate variable reference. e.g. Var<'n'>
 template <char... args, typename Environ>
 struct Eval<Var<args...>, Environ> {
@@ -792,7 +825,7 @@ struct Eval<Var<args...>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate lambda instantiation.
 template <typename Environ, typename Body, typename ParamL>
 struct Eval<Lambda<ParamL, Body>, Environ> {
@@ -804,7 +837,7 @@ struct Eval<Lambda<ParamL, Body>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate println
 template <typename Environ, typename Head, typename... Args>
 struct Eval<Println<Head, Args...>, Environ> {
@@ -844,7 +877,7 @@ struct Eval<Println<>, Environ> {
   using type = Undefined;
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate variable definition. e.g. Define<Var<'a'>,Int<1>>
 template <typename Environ, typename Ident, typename Value>
 struct Eval<Define<Ident, Value>, Environ> {
@@ -859,7 +892,7 @@ struct Eval<Define<Ident, Value>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Eval Add<n1,n2,n3,...>
 template <typename Environ, typename L, typename R>
 struct Eval<Add<L, R>, Environ> {
@@ -897,7 +930,7 @@ struct Eval<Add<L, R, Args...>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Eval chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
 #define EvalForChainOperator(OpName)                                    \
   template <typename Environ, typename L, typename R>                   \
@@ -941,7 +974,7 @@ EvalForChainOperator(Mod);
 EvalForChainOperator(And);
 EvalForChainOperator(Or);
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Eval IsEqual<L,R>
 template <typename Environ, typename L, typename R>
 struct Eval<IsEqual<L, R>, Environ> {
@@ -983,7 +1016,7 @@ EvalForBinaryOperator(IsLessThan);
 EvalForBinaryOperator(IsGreaterEqual);
 EvalForBinaryOperator(IsLessEqual);
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate if-then-else expression
 template <typename Environ, typename CondEvaluated, typename Body, typename ElseBody>
 struct DelayIf {
@@ -1024,7 +1057,7 @@ struct Eval<If<Cond, Body, ElseBody>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate a sequence of expressions. e.g Block< Define<Var<'n'>,1>, Var<'n'>>
 /// The result of a block is the result of the last expression int this block
 template <typename Environ, typename Head, typename... Tail>
@@ -1056,7 +1089,7 @@ struct Eval<Block<Head>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate argument list for function calls.
 template <typename Environ>
 struct Eval<Array<>, Environ> {
@@ -1086,7 +1119,7 @@ struct Eval<Array<Head, Tail...>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate function calls.
 template <typename CallSiteEnviron, typename ClosureV, typename... Args>
 struct CallClosure;
@@ -1151,7 +1184,7 @@ struct Eval<Closure<Args...>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate quote expression.
 template <typename Environ, typename AST>
 struct Eval<Quote<AST>, Environ> {
@@ -1163,7 +1196,7 @@ struct Eval<Quote<AST>, Environ> {
   }
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Implementation for match expression.
 
 /// This namespace is used for internal evaluation
@@ -1182,7 +1215,7 @@ template <typename Environ, template <typename...> class Op, typename... Args>
 struct MatchImpl<Environ, Op<Args...>> {
 };
 
-/// ----------------------------------------------------------------------------
+/// -------------------------------------------------------------------------------------------
 /// Evaluate match expression.
 template <typename Environ, typename Expr, typename... Branches>
 struct Eval<Match<Expr, Branches...>, Environ> {
