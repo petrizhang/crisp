@@ -59,29 +59,27 @@ int main() {
 }
 ```
 
-As demonstrated above, Crisp provides two kinds of syntax: macro style and template style. You could build Crisp program with your preferred one. But you should **never mix these two styles together**, as it will lead to unexpected behaviors.
-For instance, in C++, `println(Var<'a', 'b'>)` will be recognized as `println(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. 
-
-Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
+As demonstrated above, Crisp provides two kinds of syntax: macro style and template style. You could build Crisp program with your preferred one. 
 
 Generally, to express the same program, the macro style will be shorter, more readable 
-and more friendly to IDE highlighting. Thus **we recommend the macro style**. 
+and more friendly to IDE highlighting. Thus **we recommend the macro style**.  
 
 ### Use Crisp in Your Project
 Crisp is a header-only library, users could use Crisp by including Crisp header files in their projects.
 
-1. Copy header files located at `crisp/include` into your project.
-2. Choose one style of API you prefer.
-    - To use Crisp macro api, add `#include "crisp_macros.h"` to your c++ source code.
-    - To use Crisp template api, add`#include "crisp_templates.h"` to c++ source code.
-3. Enjoy it.
+1. **Copy `crisp/include` into your project**.
+2. 
+    - To use **Crisp macro api**, **`#include "crisp_macros.h"`**.
+    - To use **Crisp template api**, **`#include "crisp_templates.h"`**.
+3. **Enjoy it**.
 
-Notes:
+### Notes
 
-1. Your compiler must support C++11.
-2. Remember to set the `-ftemplate-depth-5000` flag to avoid insufficient template expansion depth.
-3. You'd better use Crisp headers as the last ones of your includes. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
-4. As mentioned above: **never mix macros and templates style together**.  
+1. Your compiler must support **C++11**.
+2. Remember to set the **`-ftemplate-depth-5000`** flag to avoid insufficient template expansion depth.
+3. You'd better **use Crisp headers as the last ones of your includes**. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
+4. **Never mix macros and templates style together**. In C++, `println(Var<'a', 'b'>)` will be recognized as `println(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
+
 
 ## Examples
 ### Println
