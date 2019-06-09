@@ -26,9 +26,13 @@ int main() {
   }
   // Basic value types
   {
+    // int
     run(println(v(1)));
+    // bool
     run(println(v(true)));
+    // char
     run(println(v('c')));
+    // string
     run(println(str('s', 'y', 'm', 'b', 'o', 'l')));
   }
   // Block
@@ -41,12 +45,14 @@ int main() {
 
   // Basic operations
   {
-    // 1+2 = 3
+    // 1+2 -> 3
     run(println(add(v(1), v(2))));
-    // 1-2 = -1
+    // 1-2 -> -1
     run(println(sub(v(1), v(2))));
-    // 1*2 = 2
+    // 1*2 -> 2
     run(println(mul(v(1), v(2))));
+    // 10 % 3 -> 1
+    run(println(mod(v(1), v(2))));
     // 1 == 2 -> false
     run(println(eq_(v(1), v(2))));
     // 1 > 2 -> false
@@ -57,6 +63,10 @@ int main() {
     run(println(lt(v(1), v(2))));
     // 1 <= 2 -> true
     run(println(le(v(1), v(2))));
+    // true && false -> false
+    run(println(and_(v(true), v(false))));
+    // true || false -> true
+    run(println(or_(v(true), v(false))));
   }
   // Variable definition
   {
@@ -107,5 +117,29 @@ int main() {
                                            v(1),
                                            mul(n, call(factorial, sub(n, v(1))))))),
               println(call(factorial, v(10)))));
+  }
+  // Pattern Match
+  {
+    using x = var('x');
+    using y = var('y');
+
+    /*
+     * Add(1, 2) match {
+     *   case Sub(_, _) => '-'
+     *   case Add(_, _) => '0'
+     *   case _ => '?'
+     * }
+     */
+    run(println(match(quote(add(v(1), v(2))),
+                      case_(sub(_, _), v('-')),
+                      case_(add(_, _), v('+')),
+                      default_(v('?')))));
+
+    /*
+     *
+     */
+    run(println(match(quote(add(v(1), v(2))),
+                      case_(add(capture(_, x), _), x),
+                      default_(v('?')))));
   }
 }

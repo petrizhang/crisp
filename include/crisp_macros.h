@@ -19,7 +19,11 @@
 
 #include "crisp.hpp"
 
+using crisp::_;
+// TODO using crisp::___;
+
 #define v(x) crisp::PackToType<decltype(x), x>::type
+#define quote(e) crisp::Quote<e>
 #define str(args...) crisp::String<args>
 #define add(args...) crisp::Add<args>
 #define sub(args...) crisp::Sub<args>
@@ -40,7 +44,11 @@
 #define call(f, args...) crisp::Call<f, args>
 #define block(args...) crisp::Block<args>
 #define println(args...) crisp::Println<args>
-#define eval(expr) crisp::Eval<expr, crisp::Env<>>::type
-#define run(expr) crisp::Eval<expr, crisp::Env<>>::Run()
+#define match(args...) crisp::Match<args>
+#define case_(C, E) crisp::Case<C, E>
+#define default_(E) crisp::Default<E>
+#define capture(T, V) crisp::Capture<T, V>
+#define eval(expr) crisp::Interp<expr, crisp::Env<>>::type
+#define run(expr) crisp::Interp<expr, crisp::Env<>>::Run()
 
 #endif  //CRISP_MACROS_H

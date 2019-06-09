@@ -72,8 +72,8 @@ void TestBinaryOpImpl() {
   static_assert((IsEqualImpl<i5, Int<5>>::type::c_value()), "");
 }
 
-void TestEvalBinaryOp() {
-  static_assert((Eval<Add<Int<1>, Int<2>, Int<3>, Int<4>>>::type::c_value() == 10), "");
+void TestInterpBinaryOp() {
+  static_assert((Interp<Add<Int<1>, Int<2>, Int<3>, Int<4>>>::type::c_value() == 10), "");
 }
 
 void TestConditionalApply() {
@@ -164,12 +164,12 @@ void TestQuoteMatchCase1() {
 
 void TestPatternMatch1() {
   using x = Var<'x'>;
-  using t0 = typename Eval<Match<Quote<Add<Int<1>, Int<2>>>,
+  using t0 = typename Interp<Match<Quote<Add<Int<1>, Int<2>>>,
                                  Case<Add<Capture<_, x>, _>, x>,
                                  Default<Char<'1'>>>>::type;
   static_assert((std::is_same<t0, Quote<Int<1>>>::value), "");
 
-  using t1 = typename Eval<
+  using t1 = typename Interp<
       Match<Quote<Add<Int<1>, Int<2>>>,
             Case<Sub<_, _>, Char<'1'>>,
             Case<Add<_, _>, Char<'2'>>,

@@ -37,18 +37,18 @@ using namespace util;
 /// This class is used to bypass the compiler's type checking
 /// when we need to evaluate an expression depends on some specific conditions.
 template <typename...>
-struct EmptyEval {
+struct EmptyInterp {
   using env = void;
   static void Run(){};
 };
 
 template <typename Expr, typename Environ = Env<>>
-struct Eval;
+struct Interp;
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate value types.
+/// Interpuate value types.
 template <typename Environ, bool V>
-struct Eval<Bool<V>, Environ> {
+struct Interp<Bool<V>, Environ> {
   using env = Environ;
   using type = Bool<V>;
   static constexpr bool Run() {
@@ -57,7 +57,7 @@ struct Eval<Bool<V>, Environ> {
 };
 
 template <typename Environ, char V>
-struct Eval<Char<V>, Environ> {
+struct Interp<Char<V>, Environ> {
   using env = Environ;
   using type = Char<V>;
   static constexpr char Run() {
@@ -66,7 +66,7 @@ struct Eval<Char<V>, Environ> {
 };
 
 template <typename Environ, int V>
-struct Eval<Int<V>, Environ> {
+struct Interp<Int<V>, Environ> {
   using env = Environ;
   using type = Int<V>;
   static constexpr int Run() {
@@ -75,7 +75,7 @@ struct Eval<Int<V>, Environ> {
 };
 
 template <typename Environ, char... chars>
-struct Eval<String<chars...>, Environ> {
+struct Interp<String<chars...>, Environ> {
   using env = Environ;
   using type = String<chars...>;
   static std::string Run() {
@@ -84,9 +84,9 @@ struct Eval<String<chars...>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate variable reference. e.g. Var<'n'>
+/// Interpuate variable reference. e.g. Var<'n'>
 template <char... args, typename Environ>
-struct Eval<Var<args...>, Environ> {
+struct Interp<Var<args...>, Environ> {
   using env = Environ;
   using type = typename EnvLookup<Environ, Var<args...>>::type;
 
@@ -96,9 +96,9 @@ struct Eval<Var<args...>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate lambda instantiation.
+/// Interpuate lambda instantiation.
 template <typename Environ, typename Body, typename ParamL>
-struct Eval<Lambda<ParamL, Body>, Environ> {
+struct Interp<Lambda<ParamL, Body>, Environ> {
   using env = Environ;
   using type = Closure<Environ, Lambda<ParamL, Body>>;
 
@@ -108,14 +108,14 @@ struct Eval<Lambda<ParamL, Body>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate println
+/// Interpuate println
 template <typename Environ, typename Head, typename... Args>
-struct Eval<Println<Head, Args...>, Environ> {
+struct Interp<Println<Head, Args...>, Environ> {
   static const char *Run() {
-    auto value = Eval<Head, Environ>::Run();
+    auto value = Interp<Head, Environ>::Run();
     output(value);
     std::cout << " ";
-    Eval<Println<Args...>, Environ>::Run();
+    Interp<Println<Args...>, Environ>::Run();
     return "#undefined";
   };
 
@@ -124,9 +124,9 @@ struct Eval<Println<Head, Args...>, Environ> {
 };
 
 template <typename Environ, typename Head>
-struct Eval<Println<Head>, Environ> {
+struct Interp<Println<Head>, Environ> {
   static const char *Run() {
-    auto value = Eval<Head, Environ>::Run();
+    auto value = Interp<Head, Environ>::Run();
     output(value);
     std::cout << std::endl;
     return "#undefined";
@@ -137,7 +137,7 @@ struct Eval<Println<Head>, Environ> {
 };
 
 template <typename Environ>
-struct Eval<Println<>, Environ> {
+struct Interp<Println<>, Environ> {
   static const char *Run() {
     std::cout << std::endl;
     return "#undefined";
@@ -148,221 +148,221 @@ struct Eval<Println<>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate variable definition. e.g. Define<Var<'a'>,Int<1>>
+/// Interpuate variable definition. e.g. Define<Var<'a'>,Int<1>>
 template <typename Environ, typename Ident, typename Value>
-struct Eval<Define<Ident, Value>, Environ> {
-  using ValueEval = Eval<Value, Environ>;
+struct Interp<Define<Ident, Value>, Environ> {
+  using ValueInterp = Interp<Value, Environ>;
 
-  using env = typename EnvPut<Environ, Ident, typename ValueEval::type>::type;
+  using env = typename EnvPut<Environ, Ident, typename ValueInterp::type>::type;
   using type = Undefined;
 
   static decltype(type::c_value()) Run() {
-    ValueEval::Run();
+    ValueInterp::Run();
     return type::c_value();
   }
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Eval Add<n1,n2,n3,...>
+/// Interp Add<n1,n2,n3,...>
 template <typename Environ, typename L, typename R>
-struct Eval<Add<L, R>, Environ> {
+struct Interp<Add<L, R>, Environ> {
   using env = Environ;
-  using LEval = Eval<L, Environ>;
-  using REval = Eval<R, Environ>;
-  typedef typename AddImpl<typename LEval::type,
-                           typename REval::type>::type type;
+  using LInterp = Interp<L, Environ>;
+  using RInterp = Interp<R, Environ>;
+  typedef typename AddImpl<typename LInterp::type,
+                           typename RInterp::type>::type type;
 
   static decltype(type::c_value()) Run() {
-    LEval::Run();
-    REval::Run();
+    LInterp::Run();
+    RInterp::Run();
     return type::c_value();
   }
 };
 
 template <typename Environ, typename L, typename R, typename... Args>
-struct Eval<Add<L, R, Args...>, Environ> {
-  using LEval = Eval<L, Environ>;
-  using REval = Eval<R, Environ>;
-  using LT = typename AddImpl<typename LEval::type,
-                              typename REval::type>::type;
+struct Interp<Add<L, R, Args...>, Environ> {
+  using LInterp = Interp<L, Environ>;
+  using RInterp = Interp<R, Environ>;
+  using LT = typename AddImpl<typename LInterp::type,
+                              typename RInterp::type>::type;
 
-  using TailEval = Eval<Add<Args...>, Environ>;
-  using RT = typename TailEval::type;
+  using TailInterp = Interp<Add<Args...>, Environ>;
+  using RT = typename TailInterp::type;
 
   using env = Environ;
   using type = typename AddImpl<LT, RT>::type;
 
   static decltype(type::c_value()) Run() {
-    LEval::Run();
-    REval::Run();
-    TailEval::Run();
+    LInterp::Run();
+    RInterp::Run();
+    TailInterp::Run();
     return type::c_value();
   }
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Eval chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
-#define EvalForChainOperator(OpName)                                    \
+/// Interp chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
+#define InterpForChainOperator(OpName)                                    \
   template <typename Environ, typename L, typename R>                   \
-  struct Eval<OpName<L, R>, Environ> {                                  \
+  struct Interp<OpName<L, R>, Environ> {                                  \
     using env = Environ;                                                \
-    using LEval = Eval<L, Environ>;                                     \
-    using REval = Eval<R, Environ>;                                     \
-    typedef typename OpName##Impl<typename LEval::type,                 \
-                                  typename REval::type>::type type;     \
+    using LInterp = Interp<L, Environ>;                                     \
+    using RInterp = Interp<R, Environ>;                                     \
+    typedef typename OpName##Impl<typename LInterp::type,                 \
+                                  typename RInterp::type>::type type;     \
                                                                         \
     static decltype(type::c_value()) Run() {                            \
-      LEval::Run();                                                     \
-      REval::Run();                                                     \
+      LInterp::Run();                                                     \
+      RInterp::Run();                                                     \
       return type::c_value();                                           \
     }                                                                   \
   };                                                                    \
                                                                         \
   template <typename Environ, typename L, typename R, typename... Args> \
-  struct Eval<OpName<L, R, Args...>, Environ> {                         \
-    using LEval = Eval<L, Environ>;                                     \
-    using REval = Eval<R, Environ>;                                     \
-    using LT = typename OpName##Impl<typename LEval::type,              \
-                                     typename REval::type>::type;       \
-    using TailEval = Eval<Add<Args...>, Environ>;                       \
-    using RT = typename Eval<OpName<Args...>, Environ>::type;           \
+  struct Interp<OpName<L, R, Args...>, Environ> {                         \
+    using LInterp = Interp<L, Environ>;                                     \
+    using RInterp = Interp<R, Environ>;                                     \
+    using LT = typename OpName##Impl<typename LInterp::type,              \
+                                     typename RInterp::type>::type;       \
+    using TailInterp = Interp<Add<Args...>, Environ>;                       \
+    using RT = typename Interp<OpName<Args...>, Environ>::type;           \
                                                                         \
     using env = Environ;                                                \
     using type = typename OpName##Impl<LT, RT>::type;                   \
                                                                         \
     static decltype(type::c_value()) Run() {                            \
-      LEval::Run();                                                     \
-      REval::Run();                                                     \
-      TailEval::Run();                                                  \
+      LInterp::Run();                                                     \
+      RInterp::Run();                                                     \
+      TailInterp::Run();                                                  \
       return type::c_value();                                           \
     }                                                                   \
   };
 
-EvalForChainOperator(Sub);
-EvalForChainOperator(Mul);
-EvalForChainOperator(Mod);
-EvalForChainOperator(And);
-EvalForChainOperator(Or);
+InterpForChainOperator(Sub);
+InterpForChainOperator(Mul);
+InterpForChainOperator(Mod);
+InterpForChainOperator(And);
+InterpForChainOperator(Or);
 
 /// -------------------------------------------------------------------------------------------
-/// Eval IsEqual<L,R>
+/// Interp IsEqual<L,R>
 template <typename Environ, typename L, typename R>
-struct Eval<IsEqual<L, R>, Environ> {
+struct Interp<IsEqual<L, R>, Environ> {
   using env = Environ;
 
-  using LEval = Eval<L, Environ>;
-  using REval = Eval<R, Environ>;
+  using LInterp = Interp<L, Environ>;
+  using RInterp = Interp<R, Environ>;
 
-  using type = typename IsEqualImpl<typename LEval::type,
-                                    typename REval::type>::type;
+  using type = typename IsEqualImpl<typename LInterp::type,
+                                    typename RInterp::type>::type;
 
   static decltype(type::c_value()) Run() {
-    LEval::Run();
-    REval::Run();
+    LInterp::Run();
+    RInterp::Run();
     return type::c_value();
   }
 };
 
-#define EvalForBinaryOperator(OpName)                               \
+#define InterpForBinaryOperator(OpName)                               \
   template <typename Environ, typename L, typename R>               \
-  struct Eval<OpName<L, R>, Environ> {                              \
+  struct Interp<OpName<L, R>, Environ> {                              \
     using env = Environ;                                            \
                                                                     \
-    using LEval = Eval<L, Environ>;                                 \
-    using REval = Eval<R, Environ>;                                 \
+    using LInterp = Interp<L, Environ>;                                 \
+    using RInterp = Interp<R, Environ>;                                 \
                                                                     \
-    using type = typename OpName##Impl<typename LEval::type,        \
-                                       typename REval::type>::type; \
+    using type = typename OpName##Impl<typename LInterp::type,        \
+                                       typename RInterp::type>::type; \
                                                                     \
     static decltype(type::c_value()) Run() {                        \
-      LEval::Run();                                                 \
-      REval::Run();                                                 \
+      LInterp::Run();                                                 \
+      RInterp::Run();                                                 \
       return type::c_value();                                       \
     }                                                               \
   };
 
-EvalForBinaryOperator(IsGreaterThan);
-EvalForBinaryOperator(IsLessThan);
-EvalForBinaryOperator(IsGreaterEqual);
-EvalForBinaryOperator(IsLessEqual);
+InterpForBinaryOperator(IsGreaterThan);
+InterpForBinaryOperator(IsLessThan);
+InterpForBinaryOperator(IsGreaterEqual);
+InterpForBinaryOperator(IsLessEqual);
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate if-then-else expression
-template <typename Environ, typename CondEvaluated, typename Body, typename ElseBody>
+/// Interpuate if-then-else expression
+template <typename Environ, typename CondInterpuated, typename Body, typename ElseBody>
 struct DelayIf {
-  using BodyEval = Eval<Body, Environ>;
-  using type = typename BodyEval::type;
+  using BodyInterp = Interp<Body, Environ>;
+  using type = typename BodyInterp::type;
 
   static decltype(type::c_value()) Run() {
-    BodyEval::Run();
+    BodyInterp::Run();
     return type::c_value();
   }
 };
 
 template <typename Environ, typename Body, typename ElseBody>
 struct DelayIf<Environ, Bool<false>, Body, ElseBody> {
-  using ElseBodyEval = Eval<ElseBody, Environ>;
-  using type = typename ElseBodyEval::type;
+  using ElseBodyInterp = Interp<ElseBody, Environ>;
+  using type = typename ElseBodyInterp::type;
 
   static decltype(type::c_value()) Run() {
-    ElseBodyEval::c_value();
+    ElseBodyInterp::c_value();
     return type::Run();
   }
 };
 
 template <typename Environ, typename Cond, typename Body, typename ElseBody>
-struct Eval<If<Cond, Body, ElseBody>, Environ> {
+struct Interp<If<Cond, Body, ElseBody>, Environ> {
   using env = Environ;
 
-  using CondEval = Eval<Cond, Environ>;
-  using CondValue = typename CondEval::type;
+  using CondInterp = Interp<Cond, Environ>;
+  using CondValue = typename CondInterp::type;
 
-  using DelayIfEval = DelayIf<Environ, CondValue, Body, ElseBody>;
-  using type = typename DelayIfEval::type;
+  using DelayIfInterp = DelayIf<Environ, CondValue, Body, ElseBody>;
+  using type = typename DelayIfInterp::type;
 
   static decltype(type::c_value()) Run() {
-    CondEval::Run();
-    DelayIfEval::Run();
+    CondInterp::Run();
+    DelayIfInterp::Run();
     return type::c_value();
   }
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate a sequence of expressions. e.g Block< Define<Var<'n'>,1>, Var<'n'>>
+/// Interpuate a sequence of expressions. e.g Block< Define<Var<'n'>,1>, Var<'n'>>
 /// The result of a block is the result of the last expression int this block
 template <typename Environ, typename Head, typename... Tail>
-struct Eval<Block<Head, Tail...>, Environ> {
+struct Interp<Block<Head, Tail...>, Environ> {
   using env = Environ;
 
-  using HeadEval = Eval<Head, Environ>;
+  using HeadInterp = Interp<Head, Environ>;
   // Pass the resulted env from `Head` to the next expression's execution
-  using TailEval = Eval<Block<Tail...>, typename HeadEval::env>;
-  using type = typename TailEval::type;
+  using TailInterp = Interp<Block<Tail...>, typename HeadInterp::env>;
+  using type = typename TailInterp::type;
 
   static decltype(type::c_value()) Run() {
-    HeadEval::Run();
-    TailEval::Run();
+    HeadInterp::Run();
+    TailInterp::Run();
     return type::c_value();
   }
 };
 
 template <typename Environ, typename Head>
-struct Eval<Block<Head>, Environ> {
-  using HeadEval = Eval<Head, Environ>;
+struct Interp<Block<Head>, Environ> {
+  using HeadInterp = Interp<Head, Environ>;
 
-  using env = typename HeadEval::env;
-  using type = typename HeadEval::type;
+  using env = typename HeadInterp::env;
+  using type = typename HeadInterp::type;
 
   static decltype(type::c_value()) Run() {
-    HeadEval::Run();
+    HeadInterp::Run();
     return type::c_value();
   }
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate argument list for function calls.
+/// Interpuate argument list for function calls.
 template <typename Environ>
-struct Eval<Array<>, Environ> {
+struct Interp<Array<>, Environ> {
   using env = Environ;
   using type = Array<>;
 
@@ -372,25 +372,25 @@ struct Eval<Array<>, Environ> {
 };
 
 template <typename Environ, typename Head, typename... Tail>
-struct Eval<Array<Head, Tail...>, Environ> {
-  using HeadEval = Eval<Head, Environ>;
-  using HeadValue = typename HeadEval::type;
+struct Interp<Array<Head, Tail...>, Environ> {
+  using HeadInterp = Interp<Head, Environ>;
+  using HeadValue = typename HeadInterp::type;
 
-  using TailEval = Eval<Array<Tail...>, Environ>;
-  using TailValue = typename TailEval::type;
+  using TailInterp = Interp<Array<Tail...>, Environ>;
+  using TailValue = typename TailInterp::type;
 
   using env = Environ;
   using type = typename ArrayPushFront<TailValue, HeadValue>::type;
 
   static const char *Run() {
-    HeadEval::Run();
-    TailEval::Run();
+    HeadInterp::Run();
+    TailInterp::Run();
     return "#undefined";
   }
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate function calls.
+/// Interpuate function calls.
 template <typename CallSiteEnviron, typename ClosureV, typename... Args>
 struct CallClosure;
 
@@ -412,25 +412,25 @@ struct CallClosure<CallSiteEnviron, Closure<ClosureEnviron, Lambda<ParamList<Par
   using executionEnv = typename ArrayExtendBack<executionEnv0, CallSiteEnviron>::type;
 
   using env = CallSiteEnviron;
-  // Evaluate function body
-  using BodyEval = Eval<Body, executionEnv>;
-  using type = typename BodyEval::type;
+  // Interpuate function body
+  using BodyInterp = Interp<Body, executionEnv>;
+  using type = typename BodyInterp::type;
 
   static decltype(type::c_value()) Run() {
-    BodyEval::Run();
+    BodyInterp::Run();
     return type::c_value();
   }
 };
 
 template <typename Environ, typename Func, typename... Args>
-struct Eval<Call<Func, Args...>, Environ> {
-  // Evaluate the expression to get a closure value.
-  using ClosureEval = Eval<Func, Environ>;
-  using ClosureValue = typename ClosureEval::type;
+struct Interp<Call<Func, Args...>, Environ> {
+  // Interpuate the expression to get a closure value.
+  using ClosureInterp = Interp<Func, Environ>;
+  using ClosureValue = typename ClosureInterp::type;
 
-  // Evaluate argument list.
-  using ArgEval = Eval<Array<Args...>, Environ>;
-  using ArgValues = typename ArgEval::type;
+  // Interpuate argument list.
+  using ArgInterp = Interp<Array<Args...>, Environ>;
+  using ArgValues = typename ArgInterp::type;
   static_assert(IsCallable<ClosureValue>::value, "Expected a callable function/closure.");
 
   using env = Environ;
@@ -438,14 +438,14 @@ struct Eval<Call<Func, Args...>, Environ> {
   using type = typename CallClosure<Environ, ClosureValue, ArgValues>::type;
 
   static decltype(type::c_value()) Run() {
-    ClosureEval::Run();
-    ArgEval::Run();
+    ClosureInterp::Run();
+    ArgInterp::Run();
     return type::c_value();
   }
 };
 
 template <typename Environ, typename... Args>
-struct Eval<Closure<Args...>, Environ> {
+struct Interp<Closure<Args...>, Environ> {
   using env = Environ;
   using type = Closure<Args...>;
 
@@ -455,9 +455,9 @@ struct Eval<Closure<Args...>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate quote expression.
+/// Interpuate quote expression.
 template <typename Environ, typename AST>
-struct Eval<Quote<AST>, Environ> {
+struct Interp<Quote<AST>, Environ> {
   using env = Environ;
   using type = Quote<AST>;
 
@@ -467,17 +467,17 @@ struct Eval<Quote<AST>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Evaluate match expression.
+/// Interpuate match expression.
 template <typename Environ, typename Expr,
           typename CaseBranch, typename DefaultBranch>
-struct Eval<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
+struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
   static_assert(IsTemplateOf<Quote, Expr>::value, "only quote matches are supported now");
   static_assert(IsTemplateOf<Case, CaseBranch>::value, "expected a valid case branch");
   static_assert(IsTemplateOf<Default, DefaultBranch>::value, "expected a default branch");
 
   using AST = typename GetQuoteAST<Expr>::type;
-  //  using ExprEval = Eval<Expr, Environ>;
-  //  using ExprEvalResult = typename ExprEval::type;
+  //  using ExprInterp = Interp<Expr, Environ>;
+  //  using ExprInterpResult = typename ExprInterp::type;
 
   using CaseCondition = typename GetCaseCondition<CaseBranch>::type;
   using CaseResult = typename GetCaseResult<CaseBranch>::type;
@@ -494,19 +494,19 @@ struct Eval<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
       When<_CaseBranchMatched, typename CaseBranchMatch::env>,
       Else<Environ>>::type;
 
-  using ResultEval = Eval<Result, MatchedEnv>;
-  using type = typename ResultEval::type;
-  using env = typename ResultEval::env;
+  using ResultInterp = Interp<Result, MatchedEnv>;
+  using type = typename ResultInterp::type;
+  using env = typename ResultInterp::env;
 
   static decltype(type::c_value()) Run() {
-    ResultEval::Run();
+    ResultInterp::Run();
     return type::c_value();
   }
 };
 
 template <typename Environ, typename Expr,
           typename Branch1, typename Branch2, typename Branch3, typename... Branches>
-struct Eval<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
+struct Interp<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
   static_assert(IsTemplateOf<Quote, Expr>::value, "only quote matches are supported now");
   static_assert(IsTemplateOf<Case, Branch1>::value, "expected a valid case branch");
   static_assert(IsTemplateOf<Case, Branch2>::value, "expected a valid case branch");
@@ -527,16 +527,16 @@ struct Eval<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
       When<_CaseBranchMatched, typename CaseBranchMatch::env>,
       Else<Environ>>::type;
 
-  using ResultEval = typename ConditionalApply<
+  using ResultInterp = typename ConditionalApply<
       When<_CaseBranchMatched,
-           DeferConstruct<Eval, Result, MatchedEnv>>,
-      Else<DeferConstruct<Eval, Match<Expr, Branch2, Branch3, Branches...>, Environ>>>::type;
+           DeferConstruct<Interp, Result, MatchedEnv>>,
+      Else<DeferConstruct<Interp, Match<Expr, Branch2, Branch3, Branches...>, Environ>>>::type;
 
-  using type = typename ResultEval::type;
-  using env = typename ResultEval::env;
+  using type = typename ResultInterp::type;
+  using env = typename ResultInterp::env;
 
   static decltype(type::c_value()) Run() {
-    ResultEval::Run();
+    ResultInterp::Run();
     return type::c_value();
   }
 };

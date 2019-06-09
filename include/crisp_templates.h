@@ -47,6 +47,6 @@ using crisp::Define;
 using crisp::Call;
 using crisp::Block;
 
-using crisp::Eval;
+using crisp::Interp;
 
 #endif  //CRISP_TEMPLATES_H

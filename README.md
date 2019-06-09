@@ -19,9 +19,9 @@ include:
 - [x] **Immutable Variable**
 - [x] **Lambda**
 - [x] **Lexical Closure**
-- [x] **Fractional Number**
+- [ ] **Fractional Number**
 - [x] **Recursive Function**
-- [x] **Rich Collection Operations**
+- [ ] **Rich Collection Operations**
 - [x] **Quote**
 - [x] **Pattern Match**
 - [x] **Code as Data**
@@ -52,9 +52,9 @@ int main() {
 int main() {
   // The `Println` part of the expression is evaluated at runtime rather than at compile time.  
   // To strictly use compile time evaluation:
-  //   - use `using Result = Eval<Add<Int<1>, Int<1>>>::type;` to get the result type
+  //   - use `using Result = Interp<Add<Int<1>, Int<1>>>::type;` to get the result type
   //   - use `constexpr auto value = Result::c_value();` to get the constexpr result value
-  Eval<Println<Add<Int<1>, Int<1>>>>::Run();
+  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
   return 0;
 }
 ```
@@ -114,12 +114,14 @@ The value of the block is the value of the last expression.
 
 ### Basic operations
 ```cpp
-    // 1+2 = 3
+    // 1+2 -> 3
     run(println(add(v(1), v(2))));
-    // 1-2 = -1
+    // 1-2 -> -1
     run(println(sub(v(1), v(2))));
-    // 1*2 = 2
+    // 1*2 -> 2
     run(println(mul(v(1), v(2))));
+    // 10 % 3 -> 1
+    run(println(mod(v(1), v(2))));
     // 1 == 2 -> false
     run(println(eq_(v(1), v(2))));
     // 1 > 2 -> false
@@ -130,6 +132,10 @@ The value of the block is the value of the last expression.
     run(println(lt(v(1), v(2))));
     // 1 <= 2 -> true
     run(println(le(v(1), v(2))));
+    // true && false -> false
+    run(println(and_(v(true), v(false))));
+    // true || false -> true
+    run(println(or_(v(true), v(false))));
 ```
 ### Variable definition
 ```cpp
@@ -188,6 +194,11 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
 ```
 
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
+
+### Pattern Match
+```cpp
+
+```
 
 ## API
 

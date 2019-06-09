@@ -17,6 +17,6 @@
 #include "crisp_templates.h"
 
 int main() {
-  Eval<Println<Add<Int<1>, Int<1>>>>::Run();
+  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
   return 0;
 }
