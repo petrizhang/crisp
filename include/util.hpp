@@ -38,6 +38,16 @@ struct Error {
 };
 
 /// -------------------------------------------------------------------------------------------
+/// Convert A<Args...> to B<Args...>
+template <typename A, template <typename...> class B>
+struct Convert;
+
+template <template <typename...> class A, template <typename...> class B, typename... Args>
+struct Convert<A<Args...>, B> {
+  using type = B<Args...>;
+};
+
+/// -------------------------------------------------------------------------------------------
 /// Test if given type is a template
 template <typename T>
 struct IsTemplate {

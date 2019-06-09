@@ -103,6 +103,31 @@ struct Quote {
 };
 
 /// -------------------------------------------------------------------------------------------
+/// quotef, which will prevent the interpreter's evaluation for outside evaluation.
+/// e.g quotef( mul( add(1,2), add(2,2) ) ) will be quote(mul(3,4))
+template <typename AST>
+struct QuoteF {
+  static constexpr const char *repr = "QuoteF";
+  static constexpr const char *c_value() { return "#quotef"; };
+};
+
+/// -------------------------------------------------------------------------------------------
+/// unquote, get the original AST from `Quote<AST>`
+template <typename T>
+struct Unquote {
+  static constexpr const char *repr = "Unquote";
+  static constexpr const char *c_value() { return "#unquote"; };
+};
+
+/// -------------------------------------------------------------------------------------------
+/// evaluate a quoted expression in current environment
+template <typename QuotedExpr>
+struct Eval {
+  static constexpr const char *repr = "Eval";
+  static constexpr const char *c_value() { return "#eval"; };
+};
+
+/// -------------------------------------------------------------------------------------------
 /// Closure type. We use this type to represent a function value
 template <typename Environ, typename Func>
 struct Closure {
@@ -115,36 +140,43 @@ struct Closure {
 template <typename... Args>
 struct Println {
   static constexpr const char *repr = "Println";
+  static constexpr const char *c_value() { return "#println"; };
 };
 
 template <typename... Args>
 struct Block {
   static constexpr const char *repr = "Block";
+  static constexpr const char *c_value() { return "#block"; };
 };
 
 template <typename... Params>
 struct ParamList {
   static constexpr const char *repr = "ParamList";
+  static constexpr const char *c_value() { return "#paramList"; };
 };
 
 template <typename Cond, typename Body, typename ElseBody>
 struct If {
   static constexpr const char *repr = "If";
+  static constexpr const char *c_value() { return "#if"; };
 };
 
 template <typename... Args>
 struct Define {
   static constexpr const char *repr = "Define";
+  static constexpr const char *c_value() { return "#define"; };
 };
 
 template <typename... Args>
 struct Call {
   static constexpr const char *repr = "Call";
+  static constexpr const char *c_value() { return "#call"; };
 };
 
 template <typename Params, typename Body>
 struct Lambda {
   static constexpr const char *repr = "Lambda";
+  static constexpr const char *c_value() { return "#lambda"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -153,6 +185,7 @@ struct Lambda {
 template <typename T, typename... Args>
 struct List {
   static constexpr const char *repr = "List";
+  static constexpr const char *c_value() { return "#list"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -160,6 +193,7 @@ struct List {
 template <typename L, typename R>
 struct Cons {
   static constexpr const char *repr = "Cons";
+  static constexpr const char *c_value() { return "#cons"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -167,6 +201,7 @@ struct Cons {
 template <typename T>
 struct Car {
   static constexpr const char *repr = "Car";
+  static constexpr const char *c_value() { return "#car"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -174,6 +209,7 @@ struct Car {
 template <typename T>
 struct Cdr {
   static constexpr const char *repr = "Cdr";
+  static constexpr const char *c_value() { return "#cdr"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -181,6 +217,7 @@ struct Cdr {
 template <typename L, typename R, typename... Args>
 struct Add {
   static constexpr const char *repr = "+";
+  static constexpr const char *c_value() { return "#+"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -188,6 +225,7 @@ struct Add {
 template <typename L, typename R, typename... Args>
 struct Sub {
   static constexpr const char *repr = "-";
+  static constexpr const char *c_value() { return "#-"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -195,6 +233,7 @@ struct Sub {
 template <typename L, typename R, typename... Args>
 struct Mul {
   static constexpr const char *repr = "*";
+  static constexpr const char *c_value() { return "#*"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -202,6 +241,7 @@ struct Mul {
 template <typename L, typename R, typename... Args>
 struct Mod {
   static constexpr const char *repr = "/";
+  static constexpr const char *c_value() { return "#/"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -209,6 +249,7 @@ struct Mod {
 template <typename L, typename R, typename... Args>
 struct And {
   static constexpr const char *repr = "and";
+  static constexpr const char *c_value() { return "#and"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -216,6 +257,7 @@ struct And {
 template <typename L, typename R, typename... Args>
 struct Or {
   static constexpr const char *repr = "or";
+  static constexpr const char *c_value() { return "#or"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -223,6 +265,7 @@ struct Or {
 template <typename L, typename R>
 struct IsEqual {
   static constexpr const char *repr = "==";
+  static constexpr const char *c_value() { return "#=="; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -230,6 +273,7 @@ struct IsEqual {
 template <typename L, typename R>
 struct IsGreaterThan {
   static constexpr const char *repr = ">";
+  static constexpr const char *c_value() { return "#>"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -237,6 +281,7 @@ struct IsGreaterThan {
 template <typename L, typename R>
 struct IsLessThan {
   static constexpr const char *repr = "<";
+  static constexpr const char *c_value() { return "#<"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -251,12 +296,14 @@ struct IsGreaterEqual {
 template <typename L, typename R>
 struct IsLessEqual {
   static constexpr const char *repr = "<=";
+  static constexpr const char *c_value() { return "#<="; };
 };
 
 /// -------------------------------------------------------------------------------------------
 /// Placeholder used in match expression which will match any value
 struct _ {
   static constexpr const char *repr = "_";
+  static constexpr const char *c_value() { return "#_"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -269,6 +316,7 @@ struct _ {
 /// will be ```Int<4>```
 struct ___ {
   static constexpr const char *repr = "___";
+  static constexpr const char *c_value() { return "#___"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -276,6 +324,7 @@ struct ___ {
 template <typename Condition, typename Result>
 struct Case {
   static constexpr const char *repr = "Case";
+  static constexpr const char *c_value() { return "#case"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -283,6 +332,7 @@ struct Case {
 template <typename Expr>
 struct Default {
   static constexpr const char *repr = "Default";
+  static constexpr const char *c_value() { return "#default"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -290,6 +340,7 @@ struct Default {
 template <typename Condition, typename Result>
 struct When {
   static constexpr const char *repr = "When";
+  static constexpr const char *c_value() { return "#when"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -297,6 +348,7 @@ struct When {
 template <typename Expr>
 struct Else {
   static constexpr const char *repr = "Else";
+  static constexpr const char *c_value() { return "#else"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -307,6 +359,7 @@ struct Else {
 template <typename AST, typename Branch1, typename Branch2, typename... Branches>
 struct Match {
   static constexpr const char *repr = "Match";
+  static constexpr const char *c_value() { return "#match"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -314,6 +367,7 @@ struct Match {
 template <typename Target, typename VarName>
 struct Capture {
   static constexpr const char *repr = "capture";
+  static constexpr const char *c_value() { return "#capture"; };
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -323,6 +377,7 @@ struct Capture {
 template <typename Branch1, typename Branch2, typename... Branches>
 struct Cond {
   static constexpr const char *repr = "Cond";
+  static constexpr const char *c_value() { return "#cond"; };
 };
 }  // namespace ast
 

@@ -195,9 +195,50 @@ We could find that calling `add1(10)` we will get `11` and calling `add2(10)` we
 
 In this example, we define a recursive function `factorial` which calls itself to calculate the product from 1 to `n`.
 
-### Pattern Match
+### Quote, QuoteF, Unquote and Eval
+```cpp
+    // quote
+    using quoted_add = quote(add(v(1), v(2)));
+    // eval
+    run(println(eval(quoted_add)));
+
+    // quotef
+    // e.g. quotef(f( args...))
+    // here `args` will be evaluated to `evaluatedArgs`
+    // and the result will be `quote(f(evaluatedArgs...))`
+    run(println(eval(quotef(mul(unquote(quoted_add), unquote(quoted_add))))));
 ```cpp
 
+### Pattern Match
+```cpp
+    using x = var('x');
+    using y = var('y');
+
+    /*
+     * Add(1, 2) match {
+     *   case Sub(_, _) => '-'
+     *   case Add(_, _) => '0'
+     *   case _ => '?'
+     * }
+     *
+     * Note: In order to prevent Crisp interpreter's evaluation,
+     *       you need to quote an expression before match it.
+     * Here we quote the expression `add(v(1), v(2))` before match it.
+     */
+    // the result is '+'
+    run(println(match(quote(add(v(1), v(2))),
+                      case_(sub(_, _), v('-')),
+                      case_(add(_, _), v('+')),
+                      default_(v('?')))));
+
+    // Capture the first parameter of an `add` expression with `x`.
+    // Note: When match a quoted expression, the value of captured variables
+    //       are also quoted expressions.
+    // Here the expressioin `v(1)` is captured as `quote(v(1))`,
+    // thus we need use `unquote` to get the orginal AST `v(1)`.
+    run(println(match(quote(add(v(1), v(2))),
+                      case_(add(capture(_, x), _), unquote(x)),
+                      default_(v('?')))));
 ```
 
 ## API

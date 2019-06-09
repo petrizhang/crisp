@@ -24,6 +24,9 @@ using crisp::_;
 
 #define v(x) crisp::PackToType<decltype(x), x>::type
 #define quote(e) crisp::Quote<e>
+#define quotef(e) crisp::QuoteF<e>
+#define unquote(e) crisp::Unquote<e>
+#define eval(expr) crisp::Eval<expr>
 #define str(args...) crisp::String<args>
 #define add(args...) crisp::Add<args>
 #define sub(args...) crisp::Sub<args>
@@ -48,7 +51,7 @@ using crisp::_;
 #define case_(C, E) crisp::Case<C, E>
 #define default_(E) crisp::Default<E>
 #define capture(T, V) crisp::Capture<T, V>
-#define eval(expr) crisp::Interp<expr, crisp::Env<>>::type
+#define interp(expr) crisp::Interp<expr, crisp::Env<>>::type
 #define run(expr) crisp::Interp<expr, crisp::Env<>>::Run()
 
 #endif  //CRISP_MACROS_H

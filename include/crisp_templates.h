@@ -47,6 +47,15 @@ using crisp::Define;
 using crisp::Call;
 using crisp::Block;
 
+using crisp::Match;
+using crisp::Capture;
+using crisp::Case;
+using crisp::Default;
+
+using crisp::Quote;
+using crisp::QuoteF;
+using crisp::Eval;
+
 using crisp::Interp;
 
 #endif  //CRISP_TEMPLATES_H

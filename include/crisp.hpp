@@ -46,7 +46,7 @@ template <typename Expr, typename Environ = Env<>>
 struct Interp;
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate value types.
+/// Interpret value types.
 template <typename Environ, bool V>
 struct Interp<Bool<V>, Environ> {
   using env = Environ;
@@ -84,7 +84,7 @@ struct Interp<String<chars...>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate variable reference. e.g. Var<'n'>
+/// Interpret variable reference. e.g. Var<'n'>
 template <char... args, typename Environ>
 struct Interp<Var<args...>, Environ> {
   using env = Environ;
@@ -96,7 +96,75 @@ struct Interp<Var<args...>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate lambda instantiation.
+/// Interpret quote expression.
+template <typename Environ, typename AST>
+struct Interp<Quote<AST>, Environ> {
+  using env = Environ;
+  using type = Quote<AST>;
+
+  static decltype(type::c_value()) Run() {
+    return type::c_value();
+  }
+};
+
+// TODO think deeper for how to save quoted expression
+/// -------------------------------------------------------------------------------------------
+/// Interpret quote expression.
+template <typename Environ, template <typename...> class F, typename... Args>
+struct Interp<QuoteF<F<Args...>>, Environ> {
+  using ArgsInterp = Interp<Array<Args...>, Environ>;
+
+  using type = Quote<typename Convert<typename ArgsInterp::type, F>::type>;
+  using env = typename ArgsInterp::env;
+
+  static decltype(type::c_value()) Run() {
+    ArgsInterp ::Run();
+    return type::c_value();
+  }
+};
+
+/// -------------------------------------------------------------------------------------------
+/// Interpret unquote expression.
+template <typename Environ, typename Expr>
+struct Interp<Unquote<Expr>, Environ> {
+  using ExprInterp = Interp<Expr, Environ>;
+  using InterpEnv = typename ExprInterp::env;
+  using InterpResult = typename ExprInterp::type;
+
+  static_assert(IsTemplateOf<Quote, InterpResult>::value, "unquote could only be applied to a quoted expression");
+  using env = Environ;
+  using type = typename GetQuoteAST<InterpResult>::type;
+
+  static decltype(type::c_value()) Run() {
+    ExprInterp::Run();
+    return type::c_value();
+  }
+};
+
+/// -------------------------------------------------------------------------------------------
+/// Interpret eval expression (evaluate an expression with current environment).
+template <typename Environ, typename Expr>
+struct Interp<Eval<Expr>, Environ> {
+  using ExprInterp = Interp<Expr, Environ>;
+  using InterpEnv = typename ExprInterp::env;
+  using InterpResult = typename ExprInterp::type;
+
+  static_assert(IsTemplateOf<Quote, InterpResult>::value, "eval could only be applied to a quoted expression");
+  using AST = typename GetQuoteAST<InterpResult>::type;
+  using ASTInterp = Interp<AST, Environ>;
+
+  using type = typename ASTInterp::type;
+  using env = typename ASTInterp::env;
+
+  static decltype(type::c_value()) Run() {
+    ExprInterp::Run();
+    ASTInterp::Run();
+    return type::c_value();
+  }
+};
+
+/// -------------------------------------------------------------------------------------------
+/// Interpret lambda instantiation.
 template <typename Environ, typename Body, typename ParamL>
 struct Interp<Lambda<ParamL, Body>, Environ> {
   using env = Environ;
@@ -108,7 +176,7 @@ struct Interp<Lambda<ParamL, Body>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate println
+/// Interpret println
 template <typename Environ, typename Head, typename... Args>
 struct Interp<Println<Head, Args...>, Environ> {
   static const char *Run() {
@@ -148,7 +216,7 @@ struct Interp<Println<>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate variable definition. e.g. Define<Var<'a'>,Int<1>>
+/// Interpret variable definition. e.g. Define<Var<'a'>,Int<1>>
 template <typename Environ, typename Ident, typename Value>
 struct Interp<Define<Ident, Value>, Environ> {
   using ValueInterp = Interp<Value, Environ>;
@@ -202,38 +270,38 @@ struct Interp<Add<L, R, Args...>, Environ> {
 
 /// -------------------------------------------------------------------------------------------
 /// Interp chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
-#define InterpForChainOperator(OpName)                                    \
+#define InterpForChainOperator(OpName)                                  \
   template <typename Environ, typename L, typename R>                   \
-  struct Interp<OpName<L, R>, Environ> {                                  \
+  struct Interp<OpName<L, R>, Environ> {                                \
     using env = Environ;                                                \
-    using LInterp = Interp<L, Environ>;                                     \
-    using RInterp = Interp<R, Environ>;                                     \
-    typedef typename OpName##Impl<typename LInterp::type,                 \
-                                  typename RInterp::type>::type type;     \
+    using LInterp = Interp<L, Environ>;                                 \
+    using RInterp = Interp<R, Environ>;                                 \
+    typedef typename OpName##Impl<typename LInterp::type,               \
+                                  typename RInterp::type>::type type;   \
                                                                         \
     static decltype(type::c_value()) Run() {                            \
-      LInterp::Run();                                                     \
-      RInterp::Run();                                                     \
+      LInterp::Run();                                                   \
+      RInterp::Run();                                                   \
       return type::c_value();                                           \
     }                                                                   \
   };                                                                    \
                                                                         \
   template <typename Environ, typename L, typename R, typename... Args> \
-  struct Interp<OpName<L, R, Args...>, Environ> {                         \
-    using LInterp = Interp<L, Environ>;                                     \
-    using RInterp = Interp<R, Environ>;                                     \
-    using LT = typename OpName##Impl<typename LInterp::type,              \
-                                     typename RInterp::type>::type;       \
-    using TailInterp = Interp<Add<Args...>, Environ>;                       \
-    using RT = typename Interp<OpName<Args...>, Environ>::type;           \
+  struct Interp<OpName<L, R, Args...>, Environ> {                       \
+    using LInterp = Interp<L, Environ>;                                 \
+    using RInterp = Interp<R, Environ>;                                 \
+    using LT = typename OpName##Impl<typename LInterp::type,            \
+                                     typename RInterp::type>::type;     \
+    using TailInterp = Interp<Add<Args...>, Environ>;                   \
+    using RT = typename Interp<OpName<Args...>, Environ>::type;         \
                                                                         \
     using env = Environ;                                                \
     using type = typename OpName##Impl<LT, RT>::type;                   \
                                                                         \
     static decltype(type::c_value()) Run() {                            \
-      LInterp::Run();                                                     \
-      RInterp::Run();                                                     \
-      TailInterp::Run();                                                  \
+      LInterp::Run();                                                   \
+      RInterp::Run();                                                   \
+      TailInterp::Run();                                                \
       return type::c_value();                                           \
     }                                                                   \
   };
@@ -264,21 +332,21 @@ struct Interp<IsEqual<L, R>, Environ> {
 };
 
 #define InterpForBinaryOperator(OpName)                               \
-  template <typename Environ, typename L, typename R>               \
+  template <typename Environ, typename L, typename R>                 \
   struct Interp<OpName<L, R>, Environ> {                              \
-    using env = Environ;                                            \
-                                                                    \
-    using LInterp = Interp<L, Environ>;                                 \
-    using RInterp = Interp<R, Environ>;                                 \
-                                                                    \
+    using env = Environ;                                              \
+                                                                      \
+    using LInterp = Interp<L, Environ>;                               \
+    using RInterp = Interp<R, Environ>;                               \
+                                                                      \
     using type = typename OpName##Impl<typename LInterp::type,        \
                                        typename RInterp::type>::type; \
-                                                                    \
-    static decltype(type::c_value()) Run() {                        \
+                                                                      \
+    static decltype(type::c_value()) Run() {                          \
       LInterp::Run();                                                 \
       RInterp::Run();                                                 \
-      return type::c_value();                                       \
-    }                                                               \
+      return type::c_value();                                         \
+    }                                                                 \
   };
 
 InterpForBinaryOperator(IsGreaterThan);
@@ -287,8 +355,8 @@ InterpForBinaryOperator(IsGreaterEqual);
 InterpForBinaryOperator(IsLessEqual);
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate if-then-else expression
-template <typename Environ, typename CondInterpuated, typename Body, typename ElseBody>
+/// Interpret if-then-else expression
+template <typename Environ, typename CondInterpretd, typename Body, typename ElseBody>
 struct DelayIf {
   using BodyInterp = Interp<Body, Environ>;
   using type = typename BodyInterp::type;
@@ -328,7 +396,7 @@ struct Interp<If<Cond, Body, ElseBody>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate a sequence of expressions. e.g Block< Define<Var<'n'>,1>, Var<'n'>>
+/// Interpret a sequence of expressions. e.g Block< Define<Var<'n'>,1>, Var<'n'>>
 /// The result of a block is the result of the last expression int this block
 template <typename Environ, typename Head, typename... Tail>
 struct Interp<Block<Head, Tail...>, Environ> {
@@ -360,7 +428,7 @@ struct Interp<Block<Head>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate argument list for function calls.
+/// Interpret argument list for function calls.
 template <typename Environ>
 struct Interp<Array<>, Environ> {
   using env = Environ;
@@ -390,7 +458,7 @@ struct Interp<Array<Head, Tail...>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate function calls.
+/// Interpret function calls.
 template <typename CallSiteEnviron, typename ClosureV, typename... Args>
 struct CallClosure;
 
@@ -412,7 +480,7 @@ struct CallClosure<CallSiteEnviron, Closure<ClosureEnviron, Lambda<ParamList<Par
   using executionEnv = typename ArrayExtendBack<executionEnv0, CallSiteEnviron>::type;
 
   using env = CallSiteEnviron;
-  // Interpuate function body
+  // Interpret function body
   using BodyInterp = Interp<Body, executionEnv>;
   using type = typename BodyInterp::type;
 
@@ -424,11 +492,11 @@ struct CallClosure<CallSiteEnviron, Closure<ClosureEnviron, Lambda<ParamList<Par
 
 template <typename Environ, typename Func, typename... Args>
 struct Interp<Call<Func, Args...>, Environ> {
-  // Interpuate the expression to get a closure value.
+  // Interpret the expression to get a closure value.
   using ClosureInterp = Interp<Func, Environ>;
   using ClosureValue = typename ClosureInterp::type;
 
-  // Interpuate argument list.
+  // Interpret argument list.
   using ArgInterp = Interp<Array<Args...>, Environ>;
   using ArgValues = typename ArgInterp::type;
   static_assert(IsCallable<ClosureValue>::value, "Expected a callable function/closure.");
@@ -455,19 +523,7 @@ struct Interp<Closure<Args...>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Interpuate quote expression.
-template <typename Environ, typename AST>
-struct Interp<Quote<AST>, Environ> {
-  using env = Environ;
-  using type = Quote<AST>;
-
-  static decltype(type::c_value()) *Run() {
-    return type::c_value();
-  }
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Interpuate match expression.
+/// Interpret match expression.
 template <typename Environ, typename Expr,
           typename CaseBranch, typename DefaultBranch>
 struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {

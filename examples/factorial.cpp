@@ -26,9 +26,9 @@ using factorialDef = define(factorial, lambda(params(n),
                                                   mul(n, call(factorial, sub(n, v(1)))))));
 
 int main() {
-  constexpr auto r0 = eval(block(factorialDef,
+  constexpr auto r0 = interp(block(factorialDef,
                                  call(factorial, v(3))))::c_value();
-  constexpr auto r1 = eval(block(factorialDef,
+  constexpr auto r1 = interp(block(factorialDef,
                                  call(factorial, v(10))))::c_value();
 
   // factorial(3) = 6
