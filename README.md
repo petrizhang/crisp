@@ -99,7 +99,7 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
     run(println(v(true)));
     // char
     run(println(v('c')));
-    // symbol (equivalent string in other languages)
+    // string
     run(println(str('s', 'y', 'm', 'b', 'o', 'l')));
 ```
 ### Block

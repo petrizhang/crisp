@@ -35,12 +35,12 @@ struct GetArgsToMatchList<C<Args...>> {
 };
 
 template <typename T>
-struct IsSecondOrderTemplate {
+struct IsTemplate {
   static const bool value = false;
 };
 
 template <template <typename...> class C, typename... Args>
-struct IsSecondOrderTemplate<C<Args...>> {
+struct IsTemplate<C<Args...>> {
   static const bool value = true;
 };
 
@@ -168,6 +168,7 @@ struct QuoteMatchCase<Environ, Source, Source> {
   using MaybeVarName = typename ConditionalApply<When<Bool<IsCaptureAny<Source>::value>,
                                                       DeferApply<GetCaptureVarName, Source>>,
                                                  Else<DeferApply<NilF>>>::type;
+
   // When match Capture<_, Var<...> > with Capture<_, Var<...> >,
   // put `Capture<_, Var<...> >` to current environment.
   // When match Capture<___, Var<...> > with Capture<___, Var<...> >,
@@ -178,18 +179,18 @@ struct QuoteMatchCase<Environ, Source, Source> {
                                                   DeferApply<EnvPut, Environ, MaybeVarName, Quote<Array<Source>>>>,
                                              Else<DeferApply<NilF>>>::type;
 
-  // If `Source` a second order template(C<Args...>) but not `Capture<_/___, Var<...> >`,
-  using _IsSecondOrderTemplateButNotCaptureAny = Bool<IsSecondOrderTemplate<Source>::value && !IsCaptureAny<Source>::value>;
+  // If `Source` a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
+  using _IsTemplateButNotCaptureAny = Bool<IsTemplate<Source>::value && !IsCaptureAny<Source>::value>;
 
-  // If `Source` a second order template(C<Args...>) but not `Capture<_/___, Var<...> >`,
+  // If `Source` a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
   // pack it's arguments into `internal::MatchList`.
-  using MaybeMatchList = typename ConditionalApply<When<_IsSecondOrderTemplateButNotCaptureAny,
+  using MaybeMatchList = typename ConditionalApply<When<_IsTemplateButNotCaptureAny,
                                                         DeferApply<GetArgsToMatchList, Source>>,
                                                    Else<DeferApply<NilF>>>::type;
 
-  // If `Source` a second order template(C<Args...>) but not `Capture<_/___, Var<...> >`,
+  // If `Source` a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
   // match it recursively.
-  using MatchResult = typename ConditionalApply<When<_IsSecondOrderTemplateButNotCaptureAny,
+  using MatchResult = typename ConditionalApply<When<_IsTemplateButNotCaptureAny,
                                                      DeferConstruct<QuoteMatchInternal, Environ, MaybeMatchList, MaybeMatchList>>,
                                                 Else<DeferConstruct<MatchFailure, Environ>>>::type;
 
@@ -198,16 +199,16 @@ struct QuoteMatchCase<Environ, Source, Source> {
    * we regard it as a match failure (because Capture<A, B> != A).
    * If you what to match Capture<A, Var<...>>, use Capture<_, Var<...> > instead.
    *
-   * 2. When match C<Args...> with C<Args...>, we still need to match them recursively.
-   * Consider the follow instance:
+   * 2. When match C<Args...> with C<Args...>, we still need to match `Args` recursively.
+   * Consider the follow example:
    *   QuoteMatchCase< T, Array< Capture<A, Var<'a'>> >
    * Users use this line to match a single element array and capture it's first element `A` to `Var<'a'>`.
    * But when the given `T` is `Array< Capture<A, Var<'a'> >`.
-   * we got `QuoteMatchCase< Array< Capture<_, Var<'a'> >, Array< Capture<A, Var<'a'>> > >`
+   * we got `QuoteMatchCase< Array< Capture<A, Var<'a'> >, Array< Capture<A, Var<'a'>> > >`
    * In this case, we regard it as a match failure, because the first element of the array is
    * `Capture<_, Var<'a'>`, and it doesn't match `A`.
    */
-  static constexpr bool matched = !IsCaptureSpecific<Source>::value;
+  static const bool matched = !IsCaptureSpecific<Source>::value;
 };
 
 //template <typename Environ>
