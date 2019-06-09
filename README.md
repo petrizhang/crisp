@@ -207,7 +207,7 @@ In this example, we define a recursive function `factorial` which calls itself t
     // here `args` will be evaluated to `evaluatedArgs`
     // and the result will be `quote(f(evaluatedArgs...))`
     run(println(eval(quotef(mul(unquote(quoted_add), unquote(quoted_add))))));
-```cpp
+```
 
 ### Pattern Match
 ```cpp
