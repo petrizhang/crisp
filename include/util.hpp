@@ -526,6 +526,46 @@ struct IsEqualImpl {
   using type = Bool<std::is_same<L, R>::value>;
 };
 
+/// -------------------------------------------------------------------------------------------
+/// Get `Condition` in `Case<Condition,Result>`
+template <typename>
+struct GetCaseCondition;
+
+template <typename Condition, typename Result>
+struct GetCaseCondition<Case<Condition, Result>> {
+  using type = Condition;
+};
+
+/// -------------------------------------------------------------------------------------------
+/// Get `Result` in `Case<Condition,Result>`
+template <typename>
+struct GetCaseResult;
+
+template <typename Condition, typename Result>
+struct GetCaseResult<Case<Condition, Result>> {
+  using type = Result;
+};
+
+/// -------------------------------------------------------------------------------------------
+/// Get `Result` in `Default<Result>`
+template <typename>
+struct GetDefaultResult;
+
+template <typename Result>
+struct GetDefaultResult<Default<Result>> {
+  using type = Result;
+};
+
+/// -------------------------------------------------------------------------------------------
+/// Get `AST` from `Quote<AST>`
+template <typename>
+struct GetQuoteAST;
+
+template <typename AST>
+struct GetQuoteAST<Quote<AST>> {
+  using type = AST;
+};
+
 /// This namespace is used for internal evaluation.
 /// Never use it in user code!!!
 namespace internal {

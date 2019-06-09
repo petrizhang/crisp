@@ -33,6 +33,15 @@ using namespace util;
 /// * Interpreter implementation
 /// *******************************************************************************************
 
+/// -------------------------------------------------------------------------------------------
+/// This class is used to bypass the compiler's type checking
+/// when we need to evaluate an expression depends on some specific conditions.
+template <typename...>
+struct EmptyEval {
+  using env = void;
+  static void Run(){};
+};
+
 template <typename Expr, typename Environ = Env<>>
 struct Eval;
 
@@ -458,29 +467,75 @@ struct Eval<Quote<AST>, Environ> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// Implementation for match expression.
-
-template <typename Environ, typename... Args>
-struct MatchImpl {
-  static_assert(Error<Args...>::always_false, "");
-};
-
-template <typename Environ, template <typename...> class Op, typename... Args>
-struct MatchImpl<Environ, Op<Args...>> {
-};
-
-/// -------------------------------------------------------------------------------------------
 /// Evaluate match expression.
-template <typename Environ, typename Expr, typename... Branches>
-struct Eval<Match<Expr, Branches...>, Environ> {
-  using env = Environ;
-  using ExprEval = Eval<Expr, Environ>;
-  using ResultExpr = typename MatchImpl<typename ExprEval::type, Environ>::type;
-  using ResultEval = Eval<ResultExpr, Environ>;
-  using type = typename ResultEval::type;
+template <typename Environ, typename Expr,
+          typename CaseBranch, typename DefaultBranch>
+struct Eval<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
+  static_assert(IsTemplateOf<Quote, Expr>::value, "only quote matches are supported now");
+  static_assert(IsTemplateOf<Case, CaseBranch>::value, "expected a valid case branch");
+  static_assert(IsTemplateOf<Default, DefaultBranch>::value, "expected a default branch");
 
-  static decltype(type::c_value()) *Run() {
-    ExprEval::Run();
+  using AST = typename GetQuoteAST<Expr>::type;
+  //  using ExprEval = Eval<Expr, Environ>;
+  //  using ExprEvalResult = typename ExprEval::type;
+
+  using CaseCondition = typename GetCaseCondition<CaseBranch>::type;
+  using CaseResult = typename GetCaseResult<CaseBranch>::type;
+  using DefaultResult = typename GetDefaultResult<DefaultBranch>::type;
+
+  using CaseBranchMatch = QuoteMatchCase<Environ, AST, CaseCondition>;
+  using _CaseBranchMatched = Bool<CaseBranchMatch::matched>;
+
+  using Result = typename ConditionalImpl<
+      When<_CaseBranchMatched, CaseResult>,
+      Else<DefaultResult>>::type;
+
+  using MatchedEnv = typename ConditionalImpl<
+      When<_CaseBranchMatched, typename CaseBranchMatch::env>,
+      Else<Environ>>::type;
+
+  using ResultEval = Eval<Result, MatchedEnv>;
+  using type = typename ResultEval::type;
+  using env = typename ResultEval::env;
+
+  static decltype(type::c_value()) Run() {
+    ResultEval::Run();
+    return type::c_value();
+  }
+};
+
+template <typename Environ, typename Expr,
+          typename Branch1, typename Branch2, typename Branch3, typename... Branches>
+struct Eval<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
+  static_assert(IsTemplateOf<Quote, Expr>::value, "only quote matches are supported now");
+  static_assert(IsTemplateOf<Case, Branch1>::value, "expected a valid case branch");
+  static_assert(IsTemplateOf<Case, Branch2>::value, "expected a valid case branch");
+
+  using AST = typename GetQuoteAST<Expr>::type;
+
+  using CaseCondition = typename GetCaseCondition<Branch1>::type;
+  using CaseResult = typename GetCaseResult<Branch1>::type;
+
+  using CaseBranchMatch = QuoteMatchCase<Environ, AST, CaseCondition>;
+  using _CaseBranchMatched = Bool<CaseBranchMatch::matched>;
+
+  using Result = typename ConditionalImpl<
+      When<_CaseBranchMatched, CaseResult>,
+      Else<Nil>>::type;
+
+  using MatchedEnv = typename ConditionalImpl<
+      When<_CaseBranchMatched, typename CaseBranchMatch::env>,
+      Else<Environ>>::type;
+
+  using ResultEval = typename ConditionalApply<
+      When<_CaseBranchMatched,
+           DeferConstruct<Eval, Result, MatchedEnv>>,
+      Else<DeferConstruct<Eval, Match<Expr, Branch2, Branch3, Branches...>, Environ>>>::type;
+
+  using type = typename ResultEval::type;
+  using env = typename ResultEval::env;
+
+  static decltype(type::c_value()) Run() {
     ResultEval::Run();
     return type::c_value();
   }

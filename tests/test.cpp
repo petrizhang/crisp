@@ -162,18 +162,22 @@ void TestQuoteMatchCase1() {
                 "");
 }
 
-//void TestPatternMatch1() {
-//  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<_, _>>::matched), "");
-//  static_assert((!QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Mul<_, _>>::matched), "");
-//  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<Var<'a'>, _>>::matched), "");
-//  static_assert((QuoteMatchCase<Env<>, Add<Int<1>, Int<2>>, Add<Var<'a'>, Var<'b'>>>::matched), "");
-//}
+void TestPatternMatch1() {
+  using x = Var<'x'>;
+  using t0 = typename Eval<Match<Quote<Add<Int<1>, Int<2>>>,
+                                 Case<Add<Capture<_, x>, _>, x>,
+                                 Default<Char<'1'>>>>::type;
+  static_assert((std::is_same<t0, Quote<Int<1>>>::value), "");
+
+  using t1 = typename Eval<
+      Match<Quote<Add<Int<1>, Int<2>>>,
+            Case<Sub<_, _>, Char<'1'>>,
+            Case<Add<_, _>, Char<'2'>>,
+            Default<Char<'3'>>>>::type;
+  static_assert((std::is_same<t1, Char<'2'>>::value), "");
+}
 
 int main() {
-  TestDict();
-  TestEnv();
-  TestBinaryOpImpl();
-  TestEvalBinaryOp();
-  // TestPatternMatch1();
+  TestPatternMatch1();
   return 0;
 }

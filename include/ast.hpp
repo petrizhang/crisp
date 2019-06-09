@@ -304,7 +304,7 @@ struct Else {
 ///                    Case< Add<_,_>, Str<'+'> >,
 ///                    Case< Mul<_,_>, Str<'*'> >,
 ///                    Default< Str<' '>> >
-template <typename AST, typename... Branches>
+template <typename AST, typename Branch1, typename Branch2, typename... Branches>
 struct Match {
   static constexpr const char *repr = "Match";
 };
@@ -320,7 +320,7 @@ struct Capture {
 /// cond, e.g. Cond< When<true, Int<1>>,
 ///                  When<false, Int<2>>,
 ///                  Else<Int<3>> >
-template <typename... Branches>
+template <typename Branch1, typename Branch2, typename... Branches>
 struct Cond {
   static constexpr const char *repr = "Cond";
 };
