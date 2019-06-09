@@ -26,6 +26,7 @@ template <bool V>
 struct Bool {
   static constexpr const char *repr = "Bool";
   static constexpr bool c_value() { return V; };
+  static const bool value = V;
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -34,6 +35,7 @@ template <char V>
 struct Char {
   static constexpr const char *repr = "Char";
   static constexpr char c_value() { return V; };
+  static const char value = V;
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -42,6 +44,7 @@ template <int V>
 struct Int {
   static constexpr const char *repr = "Int";
   static constexpr int c_value() { return V; };
+  static const int value = V;
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -304,6 +307,13 @@ struct Else {
 template <typename AST, typename... Branches>
 struct Match {
   static constexpr const char *repr = "Match";
+};
+
+/// -------------------------------------------------------------------------------------------
+/// capture in match expression
+template <typename Target, typename VarName>
+struct Capture {
+  static constexpr const char *repr = "capture";
 };
 
 /// -------------------------------------------------------------------------------------------
