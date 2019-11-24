@@ -24,8 +24,6 @@ using crisp::_;
 
 #define v(x) crisp::PackToType<decltype(x), x>::type
 #define quote(e) crisp::Quote<e>
-#define quotef(e) crisp::QuoteF<e>
-#define unquote(e) crisp::Unquote<e>
 #define eval(expr) crisp::Eval<expr>
 #define str(args...) crisp::String<args>
 #define add(args...) crisp::Add<args>

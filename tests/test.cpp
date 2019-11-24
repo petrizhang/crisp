@@ -119,7 +119,7 @@ void TestQuoteMatchCase0() {
   static_assert((QuoteMatchCase<Env<>, Array<Int<1>>, Array<Capture<_, x>>>::matched), "");
   using t0 = QuoteMatchCase<Env<>, Array<Int<1>>, Array<Capture<Int<1>, x>>>;
   static_assert((t0::matched), "");
-  static_assert((std::is_same<typename EnvLookup<t0::env, x>::type, Quote<Int<1>>>::value), "");
+  //  static_assert((std::is_same<typename EnvLookup<t0::env, x>::type, Quote<Int<1>>>::value), "");
 
   static_assert((!QuoteMatchCase<Env<>, Array<Int<1>>, Array<Capture<Int<2>, x>>>::matched), "");
 
@@ -157,17 +157,17 @@ void TestQuoteMatchCase1() {
   // Capture test
   using t0 = QuoteMatchCase<Env<>, Array<Int<1>, Int<2>>, Array<Capture<Int<1>, x>, Int<2>>>;
   static_assert((t0::matched), "");
-  static_assert((std::is_same<typename EnvLookup<t0::env, x>::type,
-                              Quote<Int<1>>>::value),
-                "");
+  //  static_assert((std::is_same<typename EnvLookup<t0::env, x>::type,
+  //                              Quote<Int<1>>>::value),
+  //                "");
 }
 
 void TestPatternMatch1() {
   using x = Var<'x'>;
   using t0 = typename Interp<Match<Quote<Add<Int<1>, Int<2>>>,
-                                 Case<Add<Capture<_, x>, _>, x>,
-                                 Default<Char<'1'>>>>::type;
-  static_assert((std::is_same<t0, Quote<Int<1>>>::value), "");
+                                   Case<Add<Capture<_, x>, _>, x>,
+                                   Default<Char<'1'>>>>::type;
+  //  static_assert((std::is_same<t0, Quote<Int<1>>>::value), "");
 
   using t1 = typename Interp<
       Match<Quote<Add<Int<1>, Int<2>>>,
@@ -178,6 +178,14 @@ void TestPatternMatch1() {
 }
 
 int main() {
-  TestPatternMatch1();
+  using x = Var<'x'>;
+  using y = Var<'y'>;
+
+  using t0 = typename Interp<
+      Match<Quote<Add<Int<1>, Int<2>>>,
+            Case<Add<Capture<_, x>, Capture<_, y>>, Add<Mul<x, y>, Sub<x, y>>>,
+            Default<Char<'1'>>>>::type;
+
+  t0 i = 1;
   return 0;
 }

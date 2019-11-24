@@ -16,6 +16,7 @@
 
 #ifndef CRISP_UTIL_HPP
 #define CRISP_UTIL_HPP
+#include <iostream>
 #include "ast.hpp"
 
 namespace util {
@@ -537,6 +538,50 @@ struct IsEqualImpl {
 };
 
 /// -------------------------------------------------------------------------------------------
+/// Recursively replace types in `T` according to `ReplaceDict`.
+/// e.g.: Replace< T<int,bool>, Dict<Pair<bool, char>>::type will be T<int,char>
+// TODO: test Replace template carefully
+
+namespace internal {
+template <typename... Args>
+struct ReplaceList {};
+
+template <typename E, typename L>
+struct PrependReplaceList;
+
+template <typename E, typename... Args>
+struct PrependReplaceList<E, ReplaceList<Args...>> {
+  using type = ReplaceList<E, Args...>;
+};
+}  // namespace internal
+
+template <typename T, typename ReplaceDict>
+struct Replace {
+  using target = typename DictGet<ReplaceDict, T>::type;
+  using type = typename std::conditional<IsNil<target>::value,
+                                         T,
+                                         target>::type;
+};
+
+template <typename ReplaceDict>
+struct Replace<internal::ReplaceList<>, ReplaceDict> {
+  using type = internal::ReplaceList<>;
+};
+
+template <typename Head, typename... Tail, typename ReplaceDict>
+struct Replace<internal::ReplaceList<Head, Tail...>, ReplaceDict> {
+  using HeadReplace = typename Replace<Head, ReplaceDict>::type;
+  using TailReplaceList = typename Replace<internal::ReplaceList<Tail...>, ReplaceDict>::type;
+  using type = typename internal::PrependReplaceList<HeadReplace, TailReplaceList>::type;
+};
+
+template <template <typename...> class T, typename... Args, typename ReplaceDict>
+struct Replace<T<Args...>, ReplaceDict> {
+  using ReplaceListResult = typename Replace<internal::ReplaceList<Args...>, ReplaceDict>::type;
+  using type = typename Convert<ReplaceListResult, T>::type;
+};
+
+/// -------------------------------------------------------------------------------------------
 /// Get `Condition` in `Case<Condition,Result>`
 template <typename>
 struct GetCaseCondition;
@@ -759,22 +804,22 @@ struct QuoteMatchCase {
       Else<DeferApply<NilF>>>::type;
 
   /*
-   * 1. A ! _/___
-   * 1. ? ! Capture<T,V>
-   * 2. A<Args...> ! A<Args...>
+   * 1. A =?= _/___
+   * 2. ? =?= Capture<T,V>
+   * 2. A<Args...> =?= A<Args...>
 
    * ---------------------------
-   * 5. A<Args...> ! B<Args...>
-   * 6. A ! B
+   * 5. A<Args...> =?= B<Args...>
+   * 6. A =?= B
    */
 
-  // 2. ? ! Capture<T,V>
+  // 2. ? =?= Capture<T,V>
   using CaptureMatch = typename ConditionalApply<
       When<_TargetIsCapture,
            DeferConstruct<QuoteMatchCase, Environ, Source, SomeCaptureTarget>>,
       Else<DeferConstruct<MatchFailure, Environ>>>::type;
 
-  // 3. A<Args...> ! A<Args...>
+  // 3. A<Args...> =?= A<Args...>
   using TemplateMatch = typename ConditionalApply<
       When<_IsSameTemplateAndNotTargetIsCapture,
            DeferConstruct<QuoteMatchInternal, Environ, SomeSoureMatchList, SomeTargetMatchList>>,
@@ -790,7 +835,7 @@ struct QuoteMatchCase {
 
   using env = typename ConditionalImpl<
       When<_IsTargetMatchAny, Environ>,
-      When<_TargetIsCapture, typename EnvPut<typename CaptureMatch::env, SomeVarName, Quote<Source>>::type>,
+      When<_TargetIsCapture, typename DictPut<typename CaptureMatch::env, Pair<SomeVarName, Source>>::type>,
       When<_IsSameTemplateAndNotTargetIsCapture, typename TemplateMatch::env>,
       Else<Environ>>::type;
 };
@@ -813,9 +858,9 @@ struct QuoteMatchCase<Environ, Source, Source> {
   // put `Array< Capture<_, Var<...>> >` to current environment.
   using MaybeEnv = typename ConditionalApply<
       When<Bool<IsCaptureAnySingle<Source>::value>,
-           DeferApply<EnvPut, Environ, SomeVarName, Quote<Source>>>,
+           DeferApply<DictPut, Environ, Pair<SomeVarName, Source>>>,
       When<Bool<IsCaptureAnyList<Source>::value>,
-           DeferApply<EnvPut, Environ, SomeVarName, Quote<Array<Source>>>>,
+           DeferApply<DictPut, Environ, Pair<SomeVarName, Array<Source>>>>,
       Else<DeferApply<NilF>>>::type;
 
   // If `Source` is a template(C<Args...>) but not `Capture<_/___, Var<...> >`,

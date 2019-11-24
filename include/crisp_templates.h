@@ -53,7 +53,7 @@ using crisp::Case;
 using crisp::Default;
 
 using crisp::Quote;
-using crisp::QuoteF;
+
 using crisp::Eval;
 
 using crisp::Interp;

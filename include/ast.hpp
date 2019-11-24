@@ -103,23 +103,6 @@ struct Quote {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// quotef, which will prevent the interpreter's evaluation for outside evaluation.
-/// e.g quotef( mul( add(1,2), add(2,2) ) ) will be quote(mul(3,4))
-template <typename AST>
-struct QuoteF {
-  static constexpr const char *repr = "QuoteF";
-  static constexpr const char *c_value() { return "#quotef"; };
-};
-
-/// -------------------------------------------------------------------------------------------
-/// unquote, get the original AST from `Quote<AST>`
-template <typename T>
-struct Unquote {
-  static constexpr const char *repr = "Unquote";
-  static constexpr const char *c_value() { return "#unquote"; };
-};
-
-/// -------------------------------------------------------------------------------------------
 /// evaluate a quoted expression in current environment
 template <typename QuotedExpr>
 struct Eval {

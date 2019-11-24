@@ -100,49 +100,16 @@ struct Interp<Var<args...>, Environ> {
 template <typename Environ, typename AST>
 struct Interp<Quote<AST>, Environ> {
   using env = Environ;
-  using type = Quote<AST>;
+  using type = AST;
 
   static decltype(type::c_value()) Run() {
-    return type::c_value();
-  }
-};
-
-// TODO think deeper for how to save quoted expression
-/// -------------------------------------------------------------------------------------------
-/// Interpret quote expression.
-template <typename Environ, template <typename...> class F, typename... Args>
-struct Interp<QuoteF<F<Args...>>, Environ> {
-  using ArgsInterp = Interp<Array<Args...>, Environ>;
-
-  using type = Quote<typename Convert<typename ArgsInterp::type, F>::type>;
-  using env = typename ArgsInterp::env;
-
-  static decltype(type::c_value()) Run() {
-    ArgsInterp ::Run();
-    return type::c_value();
-  }
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Interpret unquote expression.
-template <typename Environ, typename Expr>
-struct Interp<Unquote<Expr>, Environ> {
-  using ExprInterp = Interp<Expr, Environ>;
-  using InterpEnv = typename ExprInterp::env;
-  using InterpResult = typename ExprInterp::type;
-
-  static_assert(IsTemplateOf<Quote, InterpResult>::value, "unquote could only be applied to a quoted expression");
-  using env = Environ;
-  using type = typename GetQuoteAST<InterpResult>::type;
-
-  static decltype(type::c_value()) Run() {
-    ExprInterp::Run();
     return type::c_value();
   }
 };
 
 /// -------------------------------------------------------------------------------------------
 /// Interpret eval expression (evaluate an expression with current environment).
+// TODO: fix quote here
 template <typename Environ, typename Expr>
 struct Interp<Eval<Expr>, Environ> {
   using ExprInterp = Interp<Expr, Environ>;
@@ -524,6 +491,8 @@ struct Interp<Closure<Args...>, Environ> {
 
 /// -------------------------------------------------------------------------------------------
 /// Interpret match expression.
+// TODO: check and test `Interp` carefully.
+
 template <typename Environ, typename Expr,
           typename CaseBranch, typename DefaultBranch>
 struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
@@ -531,31 +500,29 @@ struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
   static_assert(IsTemplateOf<Case, CaseBranch>::value, "expected a valid case branch");
   static_assert(IsTemplateOf<Default, DefaultBranch>::value, "expected a default branch");
 
-  using AST = typename GetQuoteAST<Expr>::type;
-  //  using ExprInterp = Interp<Expr, Environ>;
-  //  using ExprInterpResult = typename ExprInterp::type;
+  using ExprInterp = Interp<Expr, Environ>;
+  using AST = typename ExprInterp::type;
 
   using CaseCondition = typename GetCaseCondition<CaseBranch>::type;
   using CaseResult = typename GetCaseResult<CaseBranch>::type;
   using DefaultResult = typename GetDefaultResult<DefaultBranch>::type;
 
-  using CaseBranchMatch = QuoteMatchCase<Environ, AST, CaseCondition>;
+  using CaseBranchMatch = QuoteMatchCase<Dict<>, AST, CaseCondition>;
   using _CaseBranchMatched = Bool<CaseBranchMatch::matched>;
 
   using Result = typename ConditionalImpl<
       When<_CaseBranchMatched, CaseResult>,
       Else<DefaultResult>>::type;
 
-  using MatchedEnv = typename ConditionalImpl<
+  using MatchedDict = typename ConditionalImpl<
       When<_CaseBranchMatched, typename CaseBranchMatch::env>,
-      Else<Environ>>::type;
+      Else<Dict<>>>::type;
 
-  using ResultInterp = Interp<Result, MatchedEnv>;
-  using type = typename ResultInterp::type;
-  using env = typename ResultInterp::env;
+  using type = typename Replace<Result, MatchedDict>::type;
+  using env = typename ExprInterp::env;
 
   static decltype(type::c_value()) Run() {
-    ResultInterp::Run();
+    ExprInterp::Run();
     return type::c_value();
   }
 };
@@ -572,20 +539,20 @@ struct Interp<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
   using CaseCondition = typename GetCaseCondition<Branch1>::type;
   using CaseResult = typename GetCaseResult<Branch1>::type;
 
-  using CaseBranchMatch = QuoteMatchCase<Environ, AST, CaseCondition>;
+  using CaseBranchMatch = QuoteMatchCase<Dict<>, AST, CaseCondition>;
   using _CaseBranchMatched = Bool<CaseBranchMatch::matched>;
 
   using Result = typename ConditionalImpl<
       When<_CaseBranchMatched, CaseResult>,
       Else<Nil>>::type;
 
-  using MatchedEnv = typename ConditionalImpl<
+  using MatchedDict = typename ConditionalImpl<
       When<_CaseBranchMatched, typename CaseBranchMatch::env>,
-      Else<Environ>>::type;
+      Else<Dict<>>>::type;
 
   using ResultInterp = typename ConditionalApply<
       When<_CaseBranchMatched,
-           DeferConstruct<Interp, Result, MatchedEnv>>,
+           DeferConstruct<Replace, Result, MatchedDict>>,
       Else<DeferConstruct<Interp, Match<Expr, Branch2, Branch3, Branches...>, Environ>>>::type;
 
   using type = typename ResultInterp::type;
