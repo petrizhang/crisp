@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_HPP
-#define CRISP_HPP
+#ifndef CRISP_INTERPRETER_HPP
+#define CRISP_INTERPRETER_HPP
 
-#include "interpreter/BinaryOperator.hpp"
-#include "interpreter/Block.hpp"
-#include "interpreter/Call.hpp"
-#include "interpreter/ChainOperator.hpp"
-#include "interpreter/Common.hpp"
-#include "interpreter/Define.hpp"
-#include "interpreter/Eval.hpp"
-#include "interpreter/If.hpp"
-#include "interpreter/Lambda.hpp"
-#include "interpreter/Literal.hpp"
-#include "interpreter/Match.hpp"
-#include "interpreter/Println.hpp"
-#include "interpreter/Quote.hpp"
-#include "interpreter/Variable.hpp"
+#include "BinaryOperator.hpp"
+#include "Block.hpp"
+#include "Call.hpp"
+#include "ChainOperator.hpp"
+#include "Common.hpp"
+#include "Define.hpp"
+#include "Eval.hpp"
+#include "If.hpp"
+#include "Lambda.hpp"
+#include "Literal.hpp"
+#include "Match.hpp"
+#include "Println.hpp"
+#include "Quote.hpp"
+#include "Variable.hpp"
 
-#endif  // CRISP_HPP
+#endif  //CRISP_INTERPRETER_HPP

@@ -22,7 +22,7 @@
 #include <iostream>
 #include <type_traits>
 #include "AST.hpp"
-#include "Util.hpp"
+#include "util/Util.hpp"
 
 namespace crisp {
 using namespace ast;

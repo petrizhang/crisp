@@ -17,7 +17,7 @@
 #ifndef CRISP_UTIL_HPP
 #define CRISP_UTIL_HPP
 #include <iostream>
-#include "AST.hpp"
+#include "interpreter/AST.hpp"
 
 namespace util {
 using namespace ast;
