@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-#include "CrispTemplateAPI.h"
+#ifndef CRISP_COMMON_H
+#define CRISP_COMMON_H
 
-int main() {
-  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
-  return 0;
-}
+#include <array>
+#include <cassert>
+#include <iostream>
+#include <type_traits>
+#include "AST.hpp"
+#include "Util.hpp"
+
+namespace crisp {
+using namespace ast;
+using namespace util;
+
+template <typename Expr, typename Environ = Env<>>
+struct Interp;
+}  // namespace crisp
+#endif  //CRISP_COMMON_H

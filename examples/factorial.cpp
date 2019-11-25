@@ -15,7 +15,7 @@
  */
 
 #include <iostream>
-#include "crisp_macros.h"
+#include "CrispMacroAPI.h"
 
 using n = var('n');
 using factorial = var('f', 'a', 'c', 't', 'o', 'r', 'i', 'a', 'l');

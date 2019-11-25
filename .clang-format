@@ -4,3 +4,4 @@ BasedOnStyle: Google
 MaxEmptyLinesToKeep: 1
 ColumnLimit: 0
 FixNamespaceComments: true
+AllowShortFunctionsOnASingleLine: All

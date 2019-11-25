@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-#include "CrispTemplateAPI.h"
+#ifndef CRISP_VARIABLE_HPP
+#define CRISP_VARIABLE_HPP
+#include "Common.h"
 
-int main() {
-  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
-  return 0;
-}
+namespace crisp {
+using namespace ast;
+using namespace util;
+
+/// -------------------------------------------------------------------------------------------
+/// Interpret variable reference. e.g. Var<'n'>
+template <char... args, typename Environ>
+struct Interp<Var<args...>, Environ> {
+  using env = Environ;
+  using type = typename EnvLookup<Environ, Var<args...>>::type;
+
+  static decltype(type::c_value()) Run() { return type::c_value(); }
+};
+}  // namespace crisp
+
+#endif  //CRISP_VARIABLE_HPP

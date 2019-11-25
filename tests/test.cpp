@@ -16,7 +16,7 @@
 
 #include <cassert>
 #include <iostream>
-#include "crisp_templates.h"
+#include "CrispTemplateAPI.h"
 
 using namespace crisp;
 
@@ -186,6 +186,5 @@ int main() {
             Case<Add<Capture<_, x>, Capture<_, y>>, Add<Mul<x, y>, Sub<x, y>>>,
             Default<Char<'1'>>>>::type;
 
-  t0 i = 1;
   return 0;
 }

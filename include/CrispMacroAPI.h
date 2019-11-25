@@ -17,7 +17,7 @@
 #ifndef CRISP_MACROS_H
 #define CRISP_MACROS_H
 
-#include "crisp.hpp"
+#include "Crisp.hpp"
 
 using crisp::_;
 // TODO using crisp::___;

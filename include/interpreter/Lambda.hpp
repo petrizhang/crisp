@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-#include "CrispTemplateAPI.h"
+#ifndef CRISP_LAMBDA_HPP
+#define CRISP_LAMBDA_HPP
+#include "Common.h"
 
-int main() {
-  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
-  return 0;
-}
+namespace crisp {
+using namespace ast;
+using namespace util;
+
+/// -------------------------------------------------------------------------------------------
+/// Interpret lambda instantiation.
+template <typename Environ, typename Body, typename ParamL>
+struct Interp<Lambda<ParamL, Body>, Environ> {
+  using env = Environ;
+  using type = Closure<Environ, Lambda<ParamL, Body>>;
+
+  static constexpr const char *Run() { return "#closure"; }
+};
+}  // namespace crisp
+#endif  //CRISP_LAMBDA_HPP

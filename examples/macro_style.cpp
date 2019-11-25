@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "crisp_macros.h"
+#include "CrispMacroAPI.h"
 
 int main() {
   run(println(add(v(1),v(1))));

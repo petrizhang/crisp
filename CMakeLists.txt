@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-ftemplate-depth-5000)
 
-FILE(GLOB Source include/*)
+FILE(GLOB Source include/interpreter/*
+        include/util/*)
 set(crisp ${Source})
 
 add_executable(test.exe tests/test.cpp ${crisp})

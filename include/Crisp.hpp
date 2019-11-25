@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-#include "CrispTemplateAPI.h"
+#ifndef CRISP_HPP
+#define CRISP_HPP
 
-int main() {
-  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
-  return 0;
-}
+#include "interpreter/BinaryOperator.hpp"
+#include "interpreter/Block.hpp"
+#include "interpreter/Call.hpp"
+#include "interpreter/ChainOperator.hpp"
+#include "interpreter/Common.h"
+#include "interpreter/Define.hpp"
+#include "interpreter/Eval.hpp"
+#include "interpreter/If.hpp"
+#include "interpreter/Lambda.hpp"
+#include "interpreter/Literal.hpp"
+#include "interpreter/Match.hpp"
+#include "interpreter/Println.hpp"
+#include "interpreter/Quote.hpp"
+#include "interpreter/Variable.hpp"
+
+#endif  // CRISP_HPP
