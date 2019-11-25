@@ -29,8 +29,9 @@ using ast::Case;
 using ast::Default;
 using ast::Quote;
 
-/// -------------------------------------------------------------------------------------------
-/// Get `Condition` in `Case<Condition,Result>`
+/**
+ * Get `Condition` in `Case<Condition,Result>`
+ */
 template <typename>
 struct GetCaseCondition;
 
@@ -39,8 +40,9 @@ struct GetCaseCondition<Case<Condition, Result>> {
   using type = Condition;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Get `Result` in `Case<Condition,Result>`
+/**
+ * Get `Result` in `Case<Condition,Result>`
+ */
 template <typename>
 struct GetCaseResult;
 
@@ -49,8 +51,9 @@ struct GetCaseResult<Case<Condition, Result>> {
   using type = Result;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Get `Result` in `Default<Result>`
+/**
+ * Get `Result` in `Default<Result>`
+ */
 template <typename>
 struct GetDefaultResult;
 
@@ -59,8 +62,9 @@ struct GetDefaultResult<Default<Result>> {
   using type = Result;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Get `AST` from `Quote<AST>`
+/**
+ * Get `AST` from `Quote<AST>`
+ */
 template <typename>
 struct GetQuoteAST;
 
@@ -69,9 +73,11 @@ struct GetQuoteAST<Quote<AST>> {
   using type = AST;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Get template arguments into internal::InternalList
-/// e.g. C<Args...> => internal::InternalList<Args...>
+/**
+ * Get template arguments into internal::InternalList
+ * e.g. C<Args...> => internal::InternalList<Args...>
+ * @tparam T
+ */
 template <typename T>
 struct GetArgsToInternalList {
   using type = internal::InternalList<>;
@@ -82,8 +88,10 @@ struct GetArgsToInternalList<C<Args...>> {
   using type = internal::InternalList<Args...>;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Get the `Target` type in `Capture<Target,VarName>`
+/**
+ * Get the `Target` type in `Capture<Target,VarName>`
+ * @tparam T
+ */
 template <typename T>
 struct GetCaptureTarget {
   using type = Undefined;
@@ -94,8 +102,10 @@ struct GetCaptureTarget<Capture<Target, VarName>> {
   using type = Target;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Get the `VarName` type in `Capture<Target,VarName>`
+/**
+ * Get the `VarName` type in `Capture<Target,VarName>`
+ * @tparam T
+ */
 template <typename T>
 struct GetCaptureVarName {
   using type = Undefined;
@@ -106,13 +116,17 @@ struct GetCaptureVarName<Capture<Target, VarName>> {
   using type = VarName;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Test if the given type `T` is `Capture<...>`
+/**
+ * Test if the given type `T` is `Capture<...>`
+ * @tparam T
+ */
 template <typename T>
 struct IsCapture : IsTemplateOf<Capture, T> {};
 
-/// -------------------------------------------------------------------------------------------
-/// Test if the given type `T` is Capture<_,...> or Capture<___,...>
+/**
+ * Test if the given type `T` is Capture<_,...> or Capture<___,...>
+ * @tparam T
+ */
 template <typename T>
 struct IsCaptureAny {
   static const bool value = false;
@@ -128,8 +142,10 @@ struct IsCaptureAny<Capture<___, VarName>> {
   static const bool value = true;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Test if the given type `T` is Capture<_,...>
+/**
+ * Test if the given type `T` is Capture<_,...>
+ * @tparam T
+ */
 template <typename T>
 struct IsCaptureAnySingle {
   static const bool value = false;
@@ -145,8 +161,9 @@ struct IsCaptureAnySingle<Capture<___, VarName>> {
   static const bool value = false;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Test if the given type `T` is Capture<___,...>
+/**
+ * Test if the given type `T` is Capture<___,...>
+ */
 template <typename T>
 struct IsCaptureAnyList {
   static const bool value = false;
@@ -162,8 +179,10 @@ struct IsCaptureAnyList<Capture<___, VarName>> {
   static const bool value = true;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Test if the given type `T` is `Capture<A,...>` where `A` is not `_` or `___`
+/**
+ * Test if the given type `T` is `Capture<A,...>` where `A` is not `_` or `___`
+ * @tparam T
+ */
 template <typename T>
 struct IsCaptureSpecific {
   static const bool value = false;
@@ -184,26 +203,34 @@ struct IsCaptureSpecific<Capture<___, VarName>> {
   static const bool value = false;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Helper template used in match implementation.
-/// It saves a `Environ` and provides `matched` as false
+/**
+ * Helper template used in match implementation.
+ * It saves a `Environ` and provides `matched` as false
+ * @tparam Environ
+ */
 template <typename Environ>
 struct MatchFailure {
   static const bool matched = false;
   using env = Environ;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Helper template used in match implementation
-/// It saves a `Environ` and provides `matched` as true
+/**
+ * Helper template used in match implementation
+ * It saves a `Environ` and provides `matched` as true
+ * @tparam Environ
+ */
 template <typename Environ>
 struct MatchSuccess {
   static const bool matched = true;
   using env = Environ;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// QuoteMatchCase implementation
+/**
+ * QuoteMatchCase implementation
+ * @tparam Environ
+ * @tparam SourceInternalList
+ * @tparam TargetInternalList
+ */
 template <typename Environ,
           typename SourceInternalList,
           typename TargetInternalList>
