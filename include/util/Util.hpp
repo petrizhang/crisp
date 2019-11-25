@@ -24,7 +24,7 @@
 #include "Size.hpp"
 #include "TemplateUtil.hpp"
 #include "Zip.hpp"
-#include "interpreter/AST.hpp"
+#include "ast/AST.hpp"
 
 namespace util {
 using namespace ast;

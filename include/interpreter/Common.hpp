@@ -21,7 +21,7 @@
 #include <cassert>
 #include <iostream>
 #include <type_traits>
-#include "AST.hpp"
+#include "ast/AST.hpp"
 #include "util/Util.hpp"
 
 namespace crisp {

@@ -17,7 +17,7 @@
 #ifndef CRISP_OPERATOR_IMPL_HPP
 #define CRISP_OPERATOR_IMPL_HPP
 
-#include "interpreter/AST.hpp"
+#include "ast/AST.hpp"
 
 namespace util {
 using namespace ast;

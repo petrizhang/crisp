@@ -17,7 +17,7 @@
 #ifndef CRISP_PACK_HPP
 #define CRISP_PACK_HPP
 
-#include "interpreter/AST.hpp"
+#include "ast/AST.hpp"
 
 namespace util {
 using ast::Bool;

@@ -18,7 +18,6 @@
 #define CRISP_LIST_HPP
 
 #include "VectorLike.hpp"
-#include "interpreter/AST.hpp"
 
 namespace util {
 
