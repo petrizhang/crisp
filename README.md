@@ -7,14 +7,20 @@ Crisp: ***C***ompile Time Interprete***r*** for L***isp*** Written in C++ Templa
 ![std](https://img.shields.io/badge/c++->=11-blue.svg)
 
 ## About Crisp
-Crisp is a lisp-like and Turing-complete DSL built upon C++ templates.
-Users could consider Crisp as a lisp interpreter that interprets lisp programs at C++ compile time.
+You may have been told that **C++ templates are Turing-complete**.
+It means you could do anything that a general programming language can do 
+with C++ **template meta-programming** at **compile time**.
 
-With Crisp, users could easily build compile-time programs by an extremely friendly syntax,
-rather than manually writing tedious C++ templates. 
+Yes, C++ templates are powerful enough to build arbitrarily complex programs. 
+But the tedious syntax and obscure semantic of C++ templates prevent people to do such thing.   
 
-Just like lisp, Crisp is a simple but powerful functional programming language. The core features of Crisp
-include:
+Now, Crisp brings a **convenient, flexible and elegant** way for people to play with C++ template meta-programming and build
+compile time programs.
+
+In short, Crisp is a lisp-like and Turing-complete DSL built upon C++ templates.
+It could be considered as a interpreter that interprets lisp programs at C++ compile time. 
+
+Crisp is a simple but powerful functional programming language. The core features of Crisp include:
 
 - [x] **Variable**
 - [x] **Lambda**
@@ -26,7 +32,59 @@ include:
 - [x] **Pattern Match**
 - [x] **Code as Data**
 
-What's more, **all operations in Crisp are accomplished at compile time**. It is the most awesome feature of Crisp.
+## Core Idea
+
+### Lisp
+[Lisp](https://en.wikipedia.org/wiki/Lisp_(programming_language) is a family of computer programming languages with a long history.
+All program code of Lisp is written as **s-expressions**, or parenthesized lists. 
+A function call or syntactic form is written as a list with the function or operator's name first, 
+and the arguments following; for instance, a function f that takes three arguments would be called as `(f arg1 arg2 arg3)`.
+
+Lisp code is actually a list that forms a tree structure, i.e., the abstract syntax tree (AST) of a program.
+For example: `((1+2)*(3+4))` in Lisp will be:
+```lisp
+(* (+ 1 2)
+   (+ 3 4))
+```
+
+This gives users a chance to process code as data(a list), which makes meta-programming easier.
+
+### Crisp
+The two core features makes Lisp elegant are:
+1. Lisp exposes the AST structure(lists) directly to users.
+2. Lisp provides tools(list process functions) for users to easily process AST(lists).
+
+#### Feature 1
+We found that feature 1 is natural in C++ templates, 
+because C++ templates are very similar to lists and 
+could also be considered as tree structures.
+
+Consider this example:
+
+```lisp
+(* (+ 1 2)
+   (+ 3 4))
+```
+
+To express this program, users could write C++ templates as:
+
+```cpp
+Mul< Add<1, 2>,
+     Add<3, 4>>;
+```
+
+Similarly to **s-expressions**, this kind of expressions are called **m-expressions**, 
+which could form the program AST.
+
+Then we could use C++ template meta-programming techniques to write a interpreter that
+interprets these kinds of AST at compile time.
+
+#### Feature 2
+We have **nested templates as AST** now, but C++ doesn't provide convenient tools for users to process nested templates.
+It is very hard to modifies a deep level of a nested template and transform it to another one.
+
+Crisp brings the novel **pattern match** feature for users to process nested templates,
+which makes it dramatically easy to process Crisp program code just like Lisp.   
 
 ## Getting Started
 Let's start with two simple but complete examples.
