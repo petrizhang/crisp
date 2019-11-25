@@ -16,7 +16,7 @@
 
 #ifndef CRISP_PRINTLN_HPP
 #define CRISP_PRINTLN_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 namespace crisp {
 using namespace ast;

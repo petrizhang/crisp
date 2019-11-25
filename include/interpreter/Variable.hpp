@@ -16,7 +16,7 @@
 
 #ifndef CRISP_VARIABLE_HPP
 #define CRISP_VARIABLE_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 namespace crisp {
 using namespace ast;

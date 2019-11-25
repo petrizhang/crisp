@@ -16,7 +16,7 @@
 
 #ifndef CRISP_MATCH_HPP
 #define CRISP_MATCH_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 namespace crisp {
 using namespace ast;

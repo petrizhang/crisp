@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_DEFINE_HPP
-#define CRISP_DEFINE_HPP
-#include "Common.hpp"
+#ifndef CRISP_COMMON_HPP
+#define CRISP_COMMON_HPP
+
+#include <array>
+#include <cassert>
+#include <iostream>
+#include <type_traits>
+#include "AST.hpp"
+#include "Util.hpp"
 
 namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret variable definition. e.g. Define<Var<'a'>,Int<1>>
-template <typename Environ, typename Ident, typename Value>
-struct Interp<Define<Ident, Value>, Environ> {
-  using ValueInterp = Interp<Value, Environ>;
-
-  using env = typename EnvPut<Environ, Ident, typename ValueInterp::type>::type;
-  using type = Undefined;
-
-  static decltype(type::c_value()) Run() {
-    ValueInterp::Run();
-    return type::c_value();
-  }
-};
+template <typename Expr, typename Environ = Env<>>
+struct Interp;
 }  // namespace crisp
-#endif  //CRISP_DEFINE_HPP
+#endif  //CRISP_COMMON_HPP

@@ -16,7 +16,7 @@
 
 #ifndef CRISP_LAMBDA_HPP
 #define CRISP_LAMBDA_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 namespace crisp {
 using namespace ast;

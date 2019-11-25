@@ -21,7 +21,7 @@
 #include "interpreter/Block.hpp"
 #include "interpreter/Call.hpp"
 #include "interpreter/ChainOperator.hpp"
-#include "interpreter/Common.h"
+#include "interpreter/Common.hpp"
 #include "interpreter/Define.hpp"
 #include "interpreter/Eval.hpp"
 #include "interpreter/If.hpp"

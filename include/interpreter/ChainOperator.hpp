@@ -16,7 +16,7 @@
 
 #ifndef CRISP_CHAIN_OPERATOR_HPP
 #define CRISP_CHAIN_OPERATOR_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 namespace crisp {
 using namespace ast;

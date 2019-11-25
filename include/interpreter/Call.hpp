@@ -16,7 +16,7 @@
 
 #ifndef CRISP_CALL_HPP
 #define CRISP_CALL_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 // TODO: Refine `call` implementation.
 namespace crisp {

@@ -16,7 +16,7 @@
 
 #ifndef CRISP_IF_HPP
 #define CRISP_IF_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 // TODO: Refine if implementation
 namespace crisp {

@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_COMMON_H
-#define CRISP_COMMON_H
-
-#include <array>
-#include <cassert>
-#include <iostream>
-#include <type_traits>
-#include "AST.hpp"
-#include "Util.hpp"
+#ifndef CRISP_ERROR_HPP
+#define CRISP_ERROR_HPP
 
 namespace crisp {
-using namespace ast;
-using namespace util;
-
-template <typename Expr, typename Environ = Env<>>
-struct Interp;
+/**
+ * Use this type in static_assert to trigger a compile error.
+ * @tparam ... type parameters will be displayed in compiler error message.
+ */
+template <typename...>
+struct Error {
+  static const bool always_false = false;
+};
 }  // namespace crisp
-#endif  //CRISP_COMMON_H
+
+#endif  //CRISP_ERROR_HPP

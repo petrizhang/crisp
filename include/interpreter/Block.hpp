@@ -16,7 +16,7 @@
 
 #ifndef CRISP_BLOCK_HPP
 #define CRISP_BLOCK_HPP
-#include "Common.h"
+#include "Common.hpp"
 
 namespace crisp {
 using namespace ast;
