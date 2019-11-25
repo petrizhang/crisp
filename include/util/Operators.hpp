@@ -75,6 +75,30 @@ struct IsEqualImpl {
   using type = Bool<std::is_same<L, R>::value>;
 };
 
+/**
+ * Implementation for `Car`.
+ * @tparam T
+ */
+template <typename T>
+struct CarImpl;
+
+template <typename L, typename R>
+struct CarImpl<Pair<L, R>> {
+  using type = L;
+};
+
+/**
+ * Implementation for `Cdr`
+ * @tparam T
+ */
+template <typename T>
+struct CdrImpl;
+
+template <typename L, typename R>
+struct CdrImpl<Pair<L, R>> {
+  using type = R;
+};
+
 }  // namespace util
 
 #endif  //CRISP_OPERATOR_IMPL_HPP

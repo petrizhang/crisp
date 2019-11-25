@@ -17,7 +17,11 @@
 #ifndef CRISP_TEMPLATE_UTIL_HPP
 #define CRISP_TEMPLATE_UTIL_HPP
 
+#include "ast/AST.hpp"
+
 namespace util {
+using ast::Closure;
+using ast::Var;
 
 /**
  * Convert A<Args...> to B<Args...>
@@ -98,5 +102,26 @@ template <typename ValueType, template <ValueType...> class C, ValueType... Args
 struct IsValueTemplateOf<ValueType, C, C<Args...>> {
   static const bool value = true;
 };
+
+template <typename T>
+struct IsVar : IsValueTemplateOf<char, Var, T> {};
+
+template <typename T>
+struct IsNil : std::is_same<T, Nil> {};
+
+/**
+ * Check if an expression is callable or not.
+ * @tparam Args
+ */
+template <typename... Args>
+struct IsCallable {
+  static const bool value = false;
+};
+
+template <typename... Args>
+struct IsCallable<Closure<Args...>> {
+  static const bool value = true;
+};
+
 }  // namespace util
 #endif  //CRISP_TEMPLATE_UTIL_HPP

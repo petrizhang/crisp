@@ -19,7 +19,7 @@ FOREACH (path ${Examples})
     add_executable(${name}.exe ${path} ${crisp})
 ENDFOREACH ()
 
-# Add executables for files in "examples/"
+# Add executables for files in "test/"
 FILE(GLOB Tests test/*)
 
 FOREACH (path ${Tests})

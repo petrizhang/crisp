@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_UTIL_HPP
-#define CRISP_UTIL_HPP
+#ifndef CRISP_OUTPUT_HPP
+#define CRISP_OUTPUT_HPP
 
-#include "Conditional.hpp"
-#include "Defer.hpp"
-#include "Dict.hpp"
-#include "Env.hpp"
-#include "Error.hpp"
-#include "List.hpp"
-#include "MatchUtil.hpp"
-#include "Operators.hpp"
-#include "Output.hpp"
-#include "Pack.hpp"
-#include "Replace.hpp"
-#include "Size.hpp"
-#include "TemplateUtil.hpp"
-#include "Zip.hpp"
-#include "ast/AST.hpp"
+#include <iostream>
 
-#endif  //CRISP_UTIL_HPP
+namespace util {
+
+template <typename T>
+inline void output(T v) {
+  std::cout << v;
+}
+
+inline void output(bool v) {
+  std::cout << (v ? "true" : "false");
+}
+
+}  // namespace util
+
+#endif  //CRISP_OUTPUT_HPP
