@@ -17,7 +17,7 @@
 #ifndef CRISP_VECTOR_LIKE_HPP
 #define CRISP_VECTOR_LIKE_HPP
 
-#include "Util.hpp"
+#include "Size.hpp"
 
 namespace util {
 

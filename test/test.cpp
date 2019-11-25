@@ -110,18 +110,18 @@ void TestQuoteMatchCase0() {
   using x = Var<'x'>;
   // Single-element templates test
   static_assert((QuoteMatchCase<Env<>, int, int>::matched), "");
-  static_assert((QuoteMatchCase<Env<>, Array<>, Array<>>::matched), "");
-  static_assert((!QuoteMatchCase<Env<>, Array<>, Array<Int<1>>>::matched), "");
-  static_assert((!QuoteMatchCase<Env<>, Array<Int<2>>, Array<Int<1>>>::matched), "");
-  static_assert((QuoteMatchCase<Env<>, Array<Int<1>>, Array<Int<1>>>::matched), "");
+  static_assert((QuoteMatchCase<Env<>, Vector<>, Vector<>>::matched), "");
+  static_assert((!QuoteMatchCase<Env<>, Vector<>, Vector<Int<1>>>::matched), "");
+  static_assert((!QuoteMatchCase<Env<>, Vector<Int<2>>, Vector<Int<1>>>::matched), "");
+  static_assert((QuoteMatchCase<Env<>, Vector<Int<1>>, Vector<Int<1>>>::matched), "");
 
   // Capture test
-  static_assert((QuoteMatchCase<Env<>, Array<Int<1>>, Array<Capture<_, x>>>::matched), "");
-  using t0 = QuoteMatchCase<Env<>, Array<Int<1>>, Array<Capture<Int<1>, x>>>;
+  static_assert((QuoteMatchCase<Env<>, Vector<Int<1>>, Vector<Capture<_, x>>>::matched), "");
+  using t0 = QuoteMatchCase<Env<>, Vector<Int<1>>, Vector<Capture<Int<1>, x>>>;
   static_assert((t0::matched), "");
   //  static_assert((std::is_same<typename EnvLookup<t0::env, x>::type, Quote<Int<1>>>::value), "");
 
-  static_assert((!QuoteMatchCase<Env<>, Array<Int<1>>, Array<Capture<Int<2>, x>>>::matched), "");
+  static_assert((!QuoteMatchCase<Env<>, Vector<Int<1>>, Vector<Capture<Int<2>, x>>>::matched), "");
 
   static_assert((QuoteMatchCase<Env<>, Capture<_, x>, Capture<_, x>>::matched), "");
   // static_assert((!QuoteMatchCase<Env<>, Capture<_, x>, Capture<x, x>>::matched), "");
@@ -131,31 +131,31 @@ void TestQuoteMatchCase0() {
 
 void TestQuoteMatchCase1() {
   using x = Var<'x'>;
-  static_assert((!QuoteMatchCase<Env<>, Array<Int<1>, Int<2>>, Array<Int<1>>>::matched), "");
-  static_assert((QuoteMatchCase<Env<>, Array<Int<1>, Int<2>>, Array<Int<1>, Int<2>>>::matched), "");
+  static_assert((!QuoteMatchCase<Env<>, Vector<Int<1>, Int<2>>, Vector<Int<1>>>::matched), "");
+  static_assert((QuoteMatchCase<Env<>, Vector<Int<1>, Int<2>>, Vector<Int<1>, Int<2>>>::matched), "");
 
   static_assert((QuoteMatchCase<Env<>,
-                                Array<Array<Int<1>, Int<2>>>,
-                                Array<Array<Int<1>, Int<2>>>>::matched),
+                                Vector<Vector<Int<1>, Int<2>>>,
+                                Vector<Vector<Int<1>, Int<2>>>>::matched),
                 "");
 
   static_assert((QuoteMatchCase<Env<>,
-                                Array<Array<Int<1>, Int<2>>>,
-                                Array<Array<Int<1>, _>>>::matched),
+                                Vector<Vector<Int<1>, Int<2>>>,
+                                Vector<Vector<Int<1>, _>>>::matched),
                 "");
 
   static_assert((QuoteMatchCase<Env<>,
-                                Array<Array<Int<1>, Int<2>>>,
-                                Array<Array<_, _>>>::matched),
+                                Vector<Vector<Int<1>, Int<2>>>,
+                                Vector<Vector<_, _>>>::matched),
                 "");
 
   static_assert((!QuoteMatchCase<Env<>,
-                                 Array<Array<Int<2>, Int<2>>>,
-                                 Array<Array<Int<1>, Int<2>>>>::matched),
+                                 Vector<Vector<Int<2>, Int<2>>>,
+                                 Vector<Vector<Int<1>, Int<2>>>>::matched),
                 "");
 
   // Capture test
-  using t0 = QuoteMatchCase<Env<>, Array<Int<1>, Int<2>>, Array<Capture<Int<1>, x>, Int<2>>>;
+  using t0 = QuoteMatchCase<Env<>, Vector<Int<1>, Int<2>>, Vector<Capture<Int<1>, x>, Int<2>>>;
   static_assert((t0::matched), "");
   //  static_assert((std::is_same<typename EnvLookup<t0::env, x>::type,
   //                              Quote<Int<1>>>::value),

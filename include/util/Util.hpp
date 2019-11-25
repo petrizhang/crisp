@@ -18,9 +18,12 @@
 #define CRISP_UTIL_HPP
 #include <iostream>
 #include "Error.hpp"
+#include "List.hpp"
+#include "OperatorImpl.hpp"
 #include "Pack.hpp"
 #include "Size.hpp"
 #include "TemplateUtil.hpp"
+#include "Zip.hpp"
 #include "interpreter/AST.hpp"
 
 namespace util {
@@ -54,92 +57,12 @@ struct IsCallable<Closure<Args...>> {
 };
 
 /// -------------------------------------------------------------------------------------------
-/// A array-like collection type.
-template <typename... Elements>
-struct Array {};
-
-template <typename array>
-struct ArrayHead;
-
-template <>
-struct ArrayHead<Array<>> {
-  using type = Nil;
-};
-
-template <typename Head, typename... Tail>
-struct ArrayHead<Array<Head, Tail...>> {
-  using type = Head;
-};
-
-template <typename array>
-struct ArrayTail;
-
-template <>
-struct ArrayTail<Array<>> {
-  using type = Array<>;
-};
-
-template <typename Head, typename... Tail>
-struct ArrayTail<Array<Head, Tail...>> {
-  using type = Array<Tail...>;
-};
-
-template <typename array, typename Elem>
-struct ArrayPushFront;
-
-template <typename Elem, typename... Elements>
-struct ArrayPushFront<Array<Elements...>, Elem> {
-  using type = Array<Elem, Elements...>;
-};
-
-template <typename array, typename Elem>
-struct ArrayPushBack;
-
-template <typename Elem, typename... Elements>
-struct ArrayPushBack<Array<Elements...>, Elem> {
-  using type = Array<Elements..., Elem>;
-};
-
-template <typename array>
-struct ArrayPopFront;
-
-template <typename Head, typename... Tail>
-struct ArrayPopFront<Array<Head, Tail...>> {
-  using type = Array<Tail...>;
-  using poped = Head;
-};
-
-template <typename Environ, typename Extra>
-struct ArrayExtendBack;
-
-template <typename... Head, typename... Tail>
-struct ArrayExtendBack<Array<Head...>, Array<Tail...>> {
-  using type = Array<Head..., Tail...>;
-};
-
-/// Zip two arrays to a pair array.
-/// An intuitive example: zip([1,2,3],[a,b,c]) => [(1,a),(2,b),(3,c)]
-template <typename Keys, typename Values>
-struct Zip;
-
-template <typename K, typename V, typename... Keys, typename... Values>
-struct Zip<Array<K, Keys...>, Array<V, Values...>> {
-  using tailResult = typename Zip<Array<Keys...>, Array<Values...>>::type;
-  using type = typename ArrayPushFront<tailResult, Pair<K, V>>::type;
-};
-
-template <>
-struct Zip<Array<>, Array<>> {
-  using type = Array<>;
-};
-
-/// -------------------------------------------------------------------------------------------
 /// A map-like collection type.
 template <typename... Pairs>
-using Dict = Array<Pairs...>;
+using Dict = Vector<Pairs...>;
 
 template <typename dict, typename pair>
-using DictPut = ArrayPushFront<dict, pair>;
+using DictPut = VectorPushFront<dict, pair>;
 
 template <typename dict, typename K>
 struct DictGet {
@@ -280,16 +203,13 @@ struct ConditionalApply {
 /// Environment stack implementation.
 /// Every element in the stack is a symbol table for a specific lexical scope.
 template <typename... Dicts>
-using Env = Array<Dicts...>;
+using Env = Vector<Dicts...>;
 
 template <typename Environ, typename Extra>
-using EnvExtendBack = ArrayExtendBack<Environ, Extra>;
+using EnvExtendBack = VectorExtendBack<Environ, Extra>;
 
 template <typename env, typename dict>
-using EnvPushFront = ArrayPushFront<env, dict>;
-
-template <typename env>
-using EnvPopFront = ArrayPopFront<env>;
+using EnvPushFront = VectorPushFront<env, dict>;
 
 /// -------------------------------------------------------------------------------------------
 /// Bind a variable name `K` with a value `V` in current scope
@@ -359,51 +279,6 @@ struct ListImpl {
 template <typename T>
 struct ListImpl<T> {
   using type = Pair<T, Nil>;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Implementation for `Add`
-template <typename L, typename R>
-struct AddImpl {
-  static_assert(Error<L, R>::always_false, "Incompatible types for operation `Add`.");
-};
-
-template <int LV, int RV>
-struct AddImpl<Int<LV>, Int<RV>> {
-  using type = Int<LV + RV>;
-};
-
-/// Most binary operators (-,*,%,...) follow the same pattern as
-/// `AddImpl`, thus we could implement them with an unified macro.
-#define BinaryOperator(OpName, Operator, LeftValueType, LeftType, RightValueType, RightType, \
-                       ResultType)                                                           \
-  template <typename L, typename R>                                                          \
-  struct OpName##Impl {                                                                      \
-    static_assert(Error<L, R>::always_false,                                                 \
-                  "Incompatible types for operation `" #OpName "`.");                        \
-  };                                                                                         \
-                                                                                             \
-  template <LeftValueType LV, RightValueType RV>                                             \
-  struct OpName##Impl<LeftType<LV>, RightType<RV>> {                                         \
-    using type = ResultType<(LV Operator RV)>;                                               \
-  };
-
-BinaryOperator(Sub, -, int, Int, int, Int, Int);
-BinaryOperator(Mul, *, int, Int, int, Int, Int);
-BinaryOperator(Mod, %, int, Int, int, Int, Int);
-BinaryOperator(And, &&, bool, Bool, bool, Bool, Bool);
-BinaryOperator(Or, ||, bool, Bool, bool, Bool, Bool);
-BinaryOperator(IsGreaterThan, >, int, Int, int, Int, Bool);
-BinaryOperator(IsLessThan, <, int, Int, int, Int, Bool);
-BinaryOperator(IsGreaterEqual, >=, int, Int, int, Int, Bool);
-BinaryOperator(IsLessEqual, <=, int, Int, int, Int, Bool);
-
-/// -------------------------------------------------------------------------------------------
-/// Implementation for `IsEqual`
-/// If two types are the same, then the values they represent are the same.
-template <typename L, typename R>
-struct IsEqualImpl {
-  using type = Bool<std::is_same<L, R>::value>;
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -724,12 +599,12 @@ struct QuoteMatchCase<Environ, Source, Source> {
   // When match Capture<_, Var<...> > with Capture<_, Var<...> >,
   // put `Capture<_, Var<...> >` to current environment.
   // When match Capture<___, Var<...> > with Capture<___, Var<...> >,
-  // put `Array< Capture<_, Var<...>> >` to current environment.
+  // put `Vector< Capture<_, Var<...>> >` to current environment.
   using MaybeEnv = typename ConditionalApply<
       When<Bool<IsCaptureAnySingle<Source>::value>,
            DeferApply<DictPut, Environ, Pair<SomeVarName, Source>>>,
       When<Bool<IsCaptureAnyList<Source>::value>,
-           DeferApply<DictPut, Environ, Pair<SomeVarName, Array<Source>>>>,
+           DeferApply<DictPut, Environ, Pair<SomeVarName, Vector<Source>>>>,
       Else<DeferApply<NilF>>>::type;
 
   // If `Source` is a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
@@ -758,10 +633,10 @@ struct QuoteMatchCase<Environ, Source, Source> {
    *
    * 2. When match C<Args...> with C<Args...>, we still need to match `Args` recursively.
    * Consider the follow example:
-   *   QuoteMatchCase< T, Array< Capture<A, Var<'a'>> >
+   *   QuoteMatchCase< T, Vector< Capture<A, Var<'a'>> >
    * Users use this line to match a single element array and capture it's first element `A` to `Var<'a'>`.
-   * But when the given `T` is `Array< Capture<A, Var<'a'> >`.
-   * we got `QuoteMatchCase< Array< Capture<A, Var<'a'> >, Array< Capture<A, Var<'a'>> > >`
+   * But when the given `T` is `Vector< Capture<A, Var<'a'> >`.
+   * we got `QuoteMatchCase< Vector< Capture<A, Var<'a'> >, Vector< Capture<A, Var<'a'>> > >`
    * In this case, we regard it as a match failure, because the first element of the array is
    * `Capture<_, Var<'a'>`, and it doesn't match `A`.
    */

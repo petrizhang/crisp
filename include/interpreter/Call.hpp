@@ -17,32 +17,35 @@
 #ifndef CRISP_CALL_HPP
 #define CRISP_CALL_HPP
 #include "Common.hpp"
+#include "util/InternalList.hpp"
 
 // TODO: Refine `call` implementation.
 namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret argument list for function calls.
+/**
+ * Interpret argument list for function calls.
+ * @tparam Environ 
+ */
 template <typename Environ>
-struct Interp<Array<>, Environ> {
+struct Interp<internal::InternalList<>, Environ> {
   using env = Environ;
-  using type = Array<>;
+  using type = internal::InternalList<>;
 
   static constexpr const char *Run() { return "#undefined"; }
 };
 
 template <typename Environ, typename Head, typename... Tail>
-struct Interp<Array<Head, Tail...>, Environ> {
+struct Interp<internal::InternalList<Head, Tail...>, Environ> {
   using HeadInterp = Interp<Head, Environ>;
   using HeadValue = typename HeadInterp::type;
 
-  using TailInterp = Interp<Array<Tail...>, Environ>;
+  using TailInterp = Interp<internal::InternalList<Tail...>, Environ>;
   using TailValue = typename TailInterp::type;
 
   using env = Environ;
-  using type = typename ArrayPushFront<TailValue, HeadValue>::type;
+  using type = typename internal::InternalListPushFront<TailValue, HeadValue>::type;
 
   static const char *Run() {
     HeadInterp::Run();
@@ -60,20 +63,20 @@ template <typename CallSiteEnviron, typename ClosureEnviron, typename Body,
           typename... Params, typename... ArgValues>
 struct CallClosure<CallSiteEnviron,
                    Closure<ClosureEnviron, Lambda<ParamList<Params...>, Body>>,
-                   Array<ArgValues...>> {
+                   internal::InternalList<ArgValues...>> {
   // Check arguments number
   static_assert(Size<Params...>::value == Size<ArgValues...>::value,
                 "Arguments number does't match.");
 
   // Pack parameters and given arguments to a dict
-  using argDict = typename Zip<Array<Params...>, Array<ArgValues...>>::type;
+  using argDict = typename Zip<Vector<Params...>, Vector<ArgValues...>>::type;
 
   // Insert the arguments dict to the closest level of the closure's environment
-  using executionEnv0 = typename ArrayPushFront<ClosureEnviron, argDict>::type;
+  using executionEnv0 = typename VectorPushFront<ClosureEnviron, argDict>::type;
   // Add the call site's environment into the end of the environment list,
   // thus the recursive calls could be supported
   using executionEnv =
-      typename ArrayExtendBack<executionEnv0, CallSiteEnviron>::type;
+      typename VectorExtendBack<executionEnv0, CallSiteEnviron>::type;
 
   using env = CallSiteEnviron;
   // Interpret function body
@@ -93,7 +96,7 @@ struct Interp<Call<Func, Args...>, Environ> {
   using ClosureValue = typename ClosureInterp::type;
 
   // Interpret argument list.
-  using ArgInterp = Interp<Array<Args...>, Environ>;
+  using ArgInterp = Interp<internal::InternalList<Args...>, Environ>;
   using ArgValues = typename ArgInterp::type;
   static_assert(IsCallable<ClosureValue>::value,
                 "Expected a callable function/closure.");

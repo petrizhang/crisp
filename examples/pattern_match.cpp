@@ -55,11 +55,11 @@ using namespace crisp;
 //
 //  using MatchResult = typename ConditionalImpl<HeadMatch::matched,
 //                                                QuoteMatchInternal,
-//                                                Array<HeadMatchEnv,
+//                                                Vector<HeadMatchEnv,
 //                                                      internal::MatchList<SourceTail...>,
 //                                                      internal::MatchList<TargetTail...>>,
 //                                                QuoteMatchCase,
-//                                                Array<Env<>, int, bool>>::type;
+//                                                Vector<Env<>, int, bool>>::type;
 //
 //  static const bool matched = MatchResult::matched;
 //  using env = typename MatchResult::env;
@@ -89,11 +89,11 @@ using namespace crisp;
 //
 //  using MatchResult = typename ConditionalImpl<RTailMatch::matched,
 //                                                QuoteMatchReversedTail,
-//                                                Array<RTailMatchEnv,
+//                                                Vector<RTailMatchEnv,
 //                                                      internal::MatchList<SourceRHead...>,
 //                                                      internal::MatchList<TargetRHead...>>,
 //                                                QuoteMatchReversedTail,
-//                                                Array<Env<>, int, bool>>::type;
+//                                                Vector<Env<>, int, bool>>::type;
 //
 //  static const bool matched = MatchResult::matched;
 //  using env = typename MatchResult::env;
