@@ -18,6 +18,7 @@
 #define CRISP_CONDITIONAL_HPP
 
 #include "Error.hpp"
+#include "ast/AST.hpp"
 
 namespace util {
 using ast::Bool;
@@ -36,20 +37,20 @@ using ast::When;
  *
  */
 template <typename Branch1, typename Branch2, typename... Branches>
-struct ConditionalImpl;
+struct Conditional;
 
 template <typename Body, typename ElseBody>
-struct ConditionalImpl<When<Bool<true>, Body>, Else<ElseBody>> {
+struct Conditional<When<Bool<true>, Body>, Else<ElseBody>> {
   using type = Body;
 };
 
 template <typename Body, typename ElseBody>
-struct ConditionalImpl<When<Bool<false>, Body>, Else<ElseBody>> {
+struct Conditional<When<Bool<false>, Body>, Else<ElseBody>> {
   using type = ElseBody;
 };
 
 template <typename Branch, typename ElseBranch>
-struct ConditionalImpl<Branch, ElseBranch> {
+struct Conditional<Branch, ElseBranch> {
   static_assert(Error<Branch>::always_false,
                 "expected a valid `When` instantiation.");
   static_assert(Error<ElseBranch>::always_false,
@@ -57,17 +58,17 @@ struct ConditionalImpl<Branch, ElseBranch> {
 };
 
 template <typename Body1, typename Branch2, typename Branch3, typename... Tail>
-struct ConditionalImpl<When<Bool<true>, Body1>, Branch2, Branch3, Tail...> {
+struct Conditional<When<Bool<true>, Body1>, Branch2, Branch3, Tail...> {
   using type = Body1;
 };
 
 template <typename Body1, typename Branch2, typename Branch3, typename... Tail>
-struct ConditionalImpl<When<Bool<false>, Body1>, Branch2, Branch3, Tail...> {
-  using type = typename ConditionalImpl<Branch2, Branch3, Tail...>::type;
+struct Conditional<When<Bool<false>, Body1>, Branch2, Branch3, Tail...> {
+  using type = typename Conditional<Branch2, Branch3, Tail...>::type;
 };
 
 template <typename Branch1, typename Branch2, typename Branch3, typename... Tail>
-struct ConditionalImpl<Branch1, Branch2, Branch3, Tail...> {
+struct Conditional<Branch1, Branch2, Branch3, Tail...> {
   static_assert(Error<Branch1>::always_false,
                 "expected a valid `When` instantiation.");
 };
@@ -85,7 +86,7 @@ struct ConditionalImpl<Branch1, Branch2, Branch3, Tail...> {
  */
 template <typename Branch1, typename Branch2, typename... Branches>
 struct ConditionalApply {
-  using Result = typename ConditionalImpl<Branch1, Branch2, Branches...>::type;
+  using Result = typename Conditional<Branch1, Branch2, Branches...>::type;
   using type = typename Result::template apply<>::type;
 };
 

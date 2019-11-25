@@ -39,6 +39,11 @@ struct Replace {
                                          target>::type;
 };
 
+template <typename T>
+struct Replace<T, Dict<>> {
+  using type = T;
+};
+
 template <typename ReplaceDict>
 struct Replace<internal::InternalList<>, ReplaceDict> {
   using type = internal::InternalList<>;

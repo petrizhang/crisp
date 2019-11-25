@@ -21,7 +21,7 @@ using namespace crisp;
 
 //
 //template <typename Environ, typename Source, char... chars>
-//struct QuoteMatchInternal<Environ,
+//struct MatchInternal<Environ,
 //                          Source, internal::MatchList<Source>,
 //                          Var<chars...>, internal::MatchList<>> {
 //  static const bool matched = true;
@@ -32,33 +32,33 @@ using namespace crisp;
 //          template <typename...> class T,
 //          typename SourceHead, typename... SourceTail,
 //          typename TargetHead, typename... TargetTail>
-//struct QuoteMatchCase<Environ, T<SourceHead, SourceTail...>, T<TargetHead, TargetTail...>>
-//    : QuoteMatchInternal<Environ,
+//struct MatchCase<Environ, T<SourceHead, SourceTail...>, T<TargetHead, TargetTail...>>
+//    : MatchInternal<Environ,
 //                         SourceHead, internal::MatchList<SourceTail...>,
 //                         TargetHead, internal::MatchList<TargetTail...>> {
 //};
 //
 //template <typename Environ, typename SourceHead, typename TargetHead>
-//struct QuoteMatchInternal<Environ,
+//struct MatchInternal<Environ,
 //                          SourceHead, internal::MatchList<>,
 //                          TargetHead, internal::MatchList<TargetHead>>
-//    : QuoteMatchCase<Environ, SourceHead, TargetHead> {};
+//    : MatchCase<Environ, SourceHead, TargetHead> {};
 //
 //template <typename Environ,
 //          typename SourceHead, typename... SourceTail,
 //          typename TargetHead, typename... TargetTail>
-//struct QuoteMatchInternal<Environ,
+//struct MatchInternal<Environ,
 //                          internal::MatchList<SourceHead, SourceTail...>,
 //                          internal::MatchList<TargetHead, TargetTail...>> {
-//  using HeadMatch = QuoteMatchCase<Environ, SourceHead, TargetHead>;
+//  using HeadMatch = MatchCase<Environ, SourceHead, TargetHead>;
 //  using HeadMatchEnv = typename HeadMatch::env;
 //
-//  using MatchResult = typename ConditionalImpl<HeadMatch::matched,
-//                                                QuoteMatchInternal,
+//  using MatchResult = typename Conditional<HeadMatch::matched,
+//                                                MatchInternal,
 //                                                Vector<HeadMatchEnv,
 //                                                      internal::MatchList<SourceTail...>,
 //                                                      internal::MatchList<TargetTail...>>,
-//                                                QuoteMatchCase,
+//                                                MatchCase,
 //                                                Vector<Env<>, int, bool>>::type;
 //
 //  static const bool matched = MatchResult::matched;
@@ -75,7 +75,7 @@ using namespace crisp;
 //struct QuoteMatchReversedTail<Environ,
 //                              internal::MatchList<SourceTail>,
 //                              internal::MatchList<TargetTail>>
-//    : QuoteMatchCase<Environ, SourceTail, TargetTail> {
+//    : MatchCase<Environ, SourceTail, TargetTail> {
 //};
 //
 //template <typename Environ,
@@ -84,10 +84,10 @@ using namespace crisp;
 //struct QuoteMatchReversedTail<Environ,
 //                              internal::MatchList<SourceRTail, SourceRHead...>,
 //                              internal::MatchList<TargetRTail, TargetRHead...>> {
-//  using RTailMatch = QuoteMatchCase<Environ, SourceRTail, TargetRTail>;
+//  using RTailMatch = MatchCase<Environ, SourceRTail, TargetRTail>;
 //  using RTailMatchEnv = typename RTailMatch::env;
 //
-//  using MatchResult = typename ConditionalImpl<RTailMatch::matched,
+//  using MatchResult = typename Conditional<RTailMatch::matched,
 //                                                QuoteMatchReversedTail,
 //                                                Vector<RTailMatchEnv,
 //                                                      internal::MatchList<SourceRHead...>,
@@ -103,7 +103,7 @@ using namespace crisp;
 //          template <typename...> class T,
 //          typename... SourceArgs,
 //          typename... TargetArgs>
-//struct QuoteMatchInternal<Environ,
+//struct MatchInternal<Environ,
 //                          internal::MatchList<SourceArgs...>,
 //                          internal::MatchList<___, TargetArgs...>>
 //    : QuoteMatchReversedTail<Environ,
@@ -113,7 +113,7 @@ using namespace crisp;
 
 
 int main() {
-  using t = QuoteMatchInternal<Env<>,
+  using t = MatchInternal<Env<>,
                                internal::InternalList<_>,
                                internal::InternalList<_>>;
   std::cout << t::matched;

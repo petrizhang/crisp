@@ -236,13 +236,13 @@ struct MatchSuccess {
 template <typename CaptureDict,
           typename SourceInternalList,
           typename TargetInternalList>
-struct QuoteMatchInternal {
+struct MatchInternal {
   static const bool matched = false;
   using dict = CaptureDict;
 };
 
 template <typename CaptureDict, typename Source, typename Target>
-struct QuoteMatchCase {
+struct MatchCase {
   using _TargetIsCapture = Bool<IsCapture<Target>::value>;
 
   using _SourceIsTemplate = Bool<IsTemplate<Source>::value>;
@@ -286,16 +286,16 @@ struct QuoteMatchCase {
   // 2. ? =?= Capture<T,V>
   using CaptureMatch = typename ConditionalApply<
       When<_TargetIsCapture,
-           DeferConstruct<QuoteMatchCase, CaptureDict, Source, SomeCaptureTarget>>,
+           DeferConstruct<MatchCase, CaptureDict, Source, SomeCaptureTarget>>,
       Else<DeferConstruct<MatchFailure, CaptureDict>>>::type;
 
   // 3. A<Args...> =?= A<Args...>
   using TemplateMatch = typename ConditionalApply<
       When<_IsSameTemplateAndNotTargetIsCapture,
-           DeferConstruct<QuoteMatchInternal, CaptureDict, SomeSoureInternalList, SomeTargetInternalList>>,
+           DeferConstruct<MatchInternal, CaptureDict, SomeSoureInternalList, SomeTargetInternalList>>,
       Else<DeferConstruct<MatchFailure, CaptureDict>>>::type;
 
-  using Matched = typename ConditionalImpl<
+  using Matched = typename Conditional<
       When<_IsTargetMatchAny, Bool<true>>,
       When<_TargetIsCapture, Bool<CaptureMatch::matched>>,
       When<_IsSameTemplateAndNotTargetIsCapture, Bool<TemplateMatch::matched>>,
@@ -303,7 +303,7 @@ struct QuoteMatchCase {
 
   static const bool matched = Matched::value;
 
-  using dict = typename ConditionalImpl<
+  using dict = typename Conditional<
       When<_IsTargetMatchAny, CaptureDict>,
       When<_TargetIsCapture, typename DictPut<typename CaptureMatch::dict, Pair<SomeVarName, Source>>::type>,
       When<_IsSameTemplateAndNotTargetIsCapture, typename TemplateMatch::dict>,
@@ -311,7 +311,7 @@ struct QuoteMatchCase {
 };
 
 template <typename CaptureDict, typename Source>
-struct QuoteMatchCase<CaptureDict, Source, Source> {
+struct MatchCase<CaptureDict, Source, Source> {
   // If `Source` is Capture<_, Var<...> > or Capture<___, Var<...> >
   using _TargetIsCaptureAny = Bool<IsCaptureAny<Source>::value>;
 
@@ -349,7 +349,7 @@ struct QuoteMatchCase<CaptureDict, Source, Source> {
       When<_TargetIsCaptureAny,
            DeferConstruct<MatchSuccess, MaybeEnv>>,
       When<_IsTemplateButNotCaptureAny,
-           DeferConstruct<QuoteMatchInternal, CaptureDict, MaybeInternalList, MaybeInternalList>>,
+           DeferConstruct<MatchInternal, CaptureDict, MaybeInternalList, MaybeInternalList>>,
       Else<DeferConstruct<MatchSuccess, CaptureDict>>>::type;
 
   /*
@@ -359,10 +359,10 @@ struct QuoteMatchCase<CaptureDict, Source, Source> {
    *
    * 2. When match C<Args...> with C<Args...>, we still need to match `Args` recursively.
    * Consider the follow example:
-   *   QuoteMatchCase< T, List< Capture<A, Var<'a'>> >
+   *   MatchCase< T, List< Capture<A, Var<'a'>> >
    * Users use this line to match a single element array and capture it's first element `A` to `Var<'a'>`.
    * But when the given `T` is `List< Capture<A, Var<'a'> >`.
-   * we got `QuoteMatchCase< List< Capture<A, Var<'a'> >, List< Capture<A, Var<'a'>> > >`
+   * we got `MatchCase< List< Capture<A, Var<'a'> >, List< Capture<A, Var<'a'>> > >`
    * In this case, we regard it as a match failure, because the first element of the array is
    * `Capture<_, Var<'a'>`, and it doesn't match `A`.
    */
@@ -371,7 +371,7 @@ struct QuoteMatchCase<CaptureDict, Source, Source> {
 };
 
 template <typename CaptureDict>
-struct QuoteMatchInternal<CaptureDict,
+struct MatchInternal<CaptureDict,
                           internal::InternalList<>,
                           internal::InternalList<>> {
   static const bool matched = true;
@@ -379,10 +379,10 @@ struct QuoteMatchInternal<CaptureDict,
 };
 
 template <typename CaptureDict, typename Source, typename Target>
-struct QuoteMatchInternal<CaptureDict,
+struct MatchInternal<CaptureDict,
                           internal::InternalList<Source>,
                           internal::InternalList<Target>> {
-  using SubMatch = QuoteMatchCase<CaptureDict, Source, Target>;
+  using SubMatch = MatchCase<CaptureDict, Source, Target>;
 
   static const bool matched = SubMatch::matched;
   using dict = typename SubMatch::dict;
@@ -391,15 +391,15 @@ struct QuoteMatchInternal<CaptureDict,
 template <typename CaptureDict,
           typename SourceHead, typename... SourceTail,
           typename TargetHead, typename... TargetTail>
-struct QuoteMatchInternal<CaptureDict,
+struct MatchInternal<CaptureDict,
                           internal::InternalList<SourceHead, SourceTail...>,
                           internal::InternalList<TargetHead, TargetTail...>> {
-  using HeadMatch = QuoteMatchCase<CaptureDict, SourceHead, TargetHead>;
+  using HeadMatch = MatchCase<CaptureDict, SourceHead, TargetHead>;
   using HeadMatched = Bool<HeadMatch::matched>;
 
   using MatchResult = typename ConditionalApply<
       When<HeadMatched,
-           DeferConstruct<QuoteMatchInternal,
+           DeferConstruct<MatchInternal,
                           typename HeadMatch::dict,
                           internal::InternalList<SourceTail...>,
                           internal::InternalList<TargetTail...>>>,
