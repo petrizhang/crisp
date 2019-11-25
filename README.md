@@ -47,16 +47,15 @@ For example: `((1+2)*(3+4))` in Lisp will be:
    (+ 3 4))
 ```
 
-This gives users a chance to process code as data(a list), which makes meta-programming easier.
+This gives users a chance to process code as data(lists), which makes meta-programming easier.
 
 ### Crisp
-The two core features makes Lisp elegant are:
+The two core features make Lisp elegant are:
 1. Lisp exposes the AST structure(lists) directly to users.
-2. Lisp provides tools(list process functions) for users to easily process AST(lists).
+2. Lisp provides tools(list processing functions) for users to easily process AST(lists).
 
 #### Feature 1
-We found that feature 1 is natural in C++ templates, 
-because C++ templates are very similar to lists and 
+We found that feature 1 is natural in C++ templates, because C++ templates are very similar to lists and 
 could also be considered as tree structures.
 
 Consider this example:
@@ -74,7 +73,7 @@ Mul< Add<1, 2>,
 ```
 
 Similarly to **s-expressions**, this kind of expressions are called **m-expressions**, 
-which could form the program AST.
+which could also form the program AST.
 
 Then we could use C++ template meta-programming techniques to write a interpreter that
 interprets these kinds of AST at compile time.
@@ -83,7 +82,7 @@ interprets these kinds of AST at compile time.
 We have **nested templates as AST** now, but C++ doesn't provide convenient tools for users to process nested templates.
 It is very hard to modifies a deep level of a nested template and transform it to another one.
 
-Crisp brings the novel **pattern match** feature for users to process nested templates,
+Crisp brings the novel **pattern match** feature for users to process such nested templates,
 which makes it dramatically easy to process Crisp program code just like Lisp.   
 
 ## Getting Started
