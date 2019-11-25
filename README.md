@@ -9,13 +9,13 @@ Crisp: ***C***ompile Time Interprete***r*** for L***isp*** Written in C++ Templa
 ## About Crisp
 You may have been told that **C++ templates are Turing-complete**.
 It means you could do anything that a general programming language can do 
-with C++ **template meta-programming** at **compile time**.
+with C++ templates at **compile time**.
 
 Yes, C++ templates are powerful enough to build arbitrarily complex programs. 
-But the tedious syntax and obscure semantic of C++ templates prevent people to do such thing.   
+But the tedious syntax and obscure semantic of C++ prevent people to do such thing.   
 
-Now, Crisp brings a **convenient, flexible and elegant** way for people to play with C++ template meta-programming and build
-compile time programs.
+Now, Crisp brings a **convenient, flexible and elegant** way for people to play with C++ templates and build
+compile-time programs.
 
 In short, Crisp is a lisp-like and Turing-complete DSL built upon C++ templates.
 It could be considered as a interpreter that interprets lisp programs at C++ compile time. 
