@@ -22,8 +22,6 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret value types.
 template <typename Environ, bool V>
 struct Interpret<Bool<V>, Environ> {
   using env = Environ;

@@ -22,8 +22,12 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interp Add<n1,n2,n3,...>
+/**
+ * Interpret Add<n1,n2,n3,...>
+ * @tparam Environ
+ * @tparam L
+ * @tparam R
+ */
 template <typename Environ, typename L, typename R>
 struct Interpret<Add<L, R>, Environ> {
   using env = Environ;
@@ -60,14 +64,15 @@ struct Interpret<Add<L, R, Args...>, Environ> {
   }
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Interp chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
-#define InterpForChainOperator(OpName)                                  \
+/**
+ * Interp chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
+ */
+#define InterpretForChainOperator(OpName)                               \
   template <typename Environ, typename L, typename R>                   \
-  struct Interpret<OpName<L, R>, Environ> {                                \
+  struct Interpret<OpName<L, R>, Environ> {                             \
     using env = Environ;                                                \
-    using LInterp = Interpret<L, Environ>;                                 \
-    using RInterp = Interpret<R, Environ>;                                 \
+    using LInterp = Interpret<L, Environ>;                              \
+    using RInterp = Interpret<R, Environ>;                              \
     typedef typename OpName##Impl<typename LInterp::type,               \
                                   typename RInterp::type>::type type;   \
                                                                         \
@@ -79,13 +84,13 @@ struct Interpret<Add<L, R, Args...>, Environ> {
   };                                                                    \
                                                                         \
   template <typename Environ, typename L, typename R, typename... Args> \
-  struct Interpret<OpName<L, R, Args...>, Environ> {                       \
-    using LInterp = Interpret<L, Environ>;                                 \
-    using RInterp = Interpret<R, Environ>;                                 \
+  struct Interpret<OpName<L, R, Args...>, Environ> {                    \
+    using LInterp = Interpret<L, Environ>;                              \
+    using RInterp = Interpret<R, Environ>;                              \
     using LT = typename OpName##Impl<typename LInterp::type,            \
                                      typename RInterp::type>::type;     \
-    using TailInterp = Interpret<Add<Args...>, Environ>;                   \
-    using RT = typename Interpret<OpName<Args...>, Environ>::type;         \
+    using TailInterp = Interpret<Add<Args...>, Environ>;                \
+    using RT = typename Interpret<OpName<Args...>, Environ>::type;      \
                                                                         \
     using env = Environ;                                                \
     using type = typename OpName##Impl<LT, RT>::type;                   \
@@ -98,10 +103,10 @@ struct Interpret<Add<L, R, Args...>, Environ> {
     }                                                                   \
   };
 
-InterpForChainOperator(Sub);
-InterpForChainOperator(Mul);
-InterpForChainOperator(Mod);
-InterpForChainOperator(And);
-InterpForChainOperator(Or);
+InterpretForChainOperator(Sub);
+InterpretForChainOperator(Mul);
+InterpretForChainOperator(Mod);
+InterpretForChainOperator(And);
+InterpretForChainOperator(Or);
 }  // namespace crisp
 #endif  //CRISP_INTERPRETCHAINOPERATOR_HPP

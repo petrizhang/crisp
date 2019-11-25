@@ -22,8 +22,12 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interp IsEqual<L,R>
+/**
+ * Interpret IsEqual<L,R>
+ * @tparam Environ 
+ * @tparam L 
+ * @tparam R 
+ */
 template <typename Environ, typename L, typename R>
 struct Interpret<IsEqual<L, R>, Environ> {
   using env = Environ;
@@ -41,7 +45,7 @@ struct Interpret<IsEqual<L, R>, Environ> {
   }
 };
 
-#define InterpForBinaryOperator(OpName)                               \
+#define InterpretForBinaryOperator(OpName)                               \
   template <typename Environ, typename L, typename R>                 \
   struct Interpret<OpName<L, R>, Environ> {                              \
     using env = Environ;                                              \
@@ -59,9 +63,9 @@ struct Interpret<IsEqual<L, R>, Environ> {
     }                                                                 \
   };
 
-InterpForBinaryOperator(IsGreaterThan);
-InterpForBinaryOperator(IsLessThan);
-InterpForBinaryOperator(IsGreaterEqual);
-InterpForBinaryOperator(IsLessEqual);
+InterpretForBinaryOperator(IsGreaterThan);
+InterpretForBinaryOperator(IsLessThan);
+InterpretForBinaryOperator(IsGreaterEqual);
+InterpretForBinaryOperator(IsLessEqual);
 }  // namespace crisp
 #endif  //CRISP_INTERPRETBINARYOPERATOR_HPP

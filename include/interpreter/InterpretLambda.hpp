@@ -22,8 +22,12 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret lambda instantiation.
+/**
+ * Interpret an lambda expression.
+ * @tparam Environ
+ * @tparam Body
+ * @tparam ParamL
+ */
 template <typename Environ, typename Body, typename ParamL>
 struct Interpret<Lambda<ParamL, Body>, Environ> {
   using env = Environ;

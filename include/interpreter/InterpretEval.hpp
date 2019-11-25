@@ -22,9 +22,12 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret eval expression (evaluate an expression with current environment).
 // TODO: fix quote here
+/**
+ * Interpret an eval expression (evaluate an expression with current environment).
+ * @tparam Environ
+ * @tparam Expr
+ */
 template <typename Environ, typename Expr>
 struct Interpret<Eval<Expr>, Environ> {
   using ExprInterp = Interpret<Expr, Environ>;

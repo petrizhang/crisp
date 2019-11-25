@@ -21,8 +21,13 @@
 namespace crisp {
 using namespace ast;
 using namespace util;
-/// -------------------------------------------------------------------------------------------
-/// Interpret println
+
+/**
+ * Interpret println
+ * @tparam Environ
+ * @tparam Head
+ * @tparam Args
+ */
 template <typename Environ, typename Head, typename... Args>
 struct Interpret<Println<Head, Args...>, Environ> {
   static const char *Run() {

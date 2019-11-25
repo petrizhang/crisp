@@ -23,8 +23,13 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret if-then-else expression
+/**
+ * Interpret an if-then-else expression
+ * @tparam Environ
+ * @tparam CondInterpretd
+ * @tparam Body
+ * @tparam ElseBody
+ */
 template <typename Environ, typename CondInterpretd, typename Body,
           typename ElseBody>
 struct DelayIf {

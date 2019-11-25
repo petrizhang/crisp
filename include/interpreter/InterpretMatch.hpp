@@ -29,7 +29,7 @@ struct MatchList {};
 
 // TODO: check and test pattern match carefully.
 /**
- * Interpret match expression.
+ * Interpret an match expression.
  *
  * @tparam Environ
  * @tparam InterpretedExpr
@@ -42,7 +42,7 @@ struct Interpret<Match<Expr, Branches...>, Environ> {
   using InterpretedExpr = typename ExprInterp::type;
 
   using type = typename Interpret<MatchList<InterpretedExpr, Branches...>>::type;
-  using env = typename ExprInterp::env;
+  using env = Environ;
 
   static decltype(type::c_value()) Run() {
     ExprInterp::Run();

@@ -22,8 +22,11 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret quote expression.
+/**
+ * Interpret a quote expression.
+ * @tparam Environ
+ * @tparam AST
+ */
 template <typename Environ, typename AST>
 struct Interpret<Quote<AST>, Environ> {
 using env = Environ;

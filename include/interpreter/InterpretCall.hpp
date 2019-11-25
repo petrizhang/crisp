@@ -54,8 +54,13 @@ struct Interpret<internal::InternalList<Head, Tail...>, Environ> {
   }
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret function calls.
+
+/**
+ * Interpret function calls.
+ * @tparam CallSiteEnviron
+ * @tparam ClosureV
+ * @tparam Args
+ */
 template <typename CallSiteEnviron, typename ClosureV, typename... Args>
 struct CallClosure;
 

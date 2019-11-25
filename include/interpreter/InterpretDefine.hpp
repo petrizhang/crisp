@@ -22,8 +22,12 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret variable definition. e.g. Define<Var<'a'>,Int<1>>
+/**
+ * Interpret a variable definition. e.g. Define<Var<'a'>,Int<1>>
+ * @tparam Environ
+ * @tparam Ident
+ * @tparam Value
+ */
 template <typename Environ, typename Ident, typename Value>
 struct Interpret<Define<Ident, Value>, Environ> {
   using ValueInterp = Interpret<Value, Environ>;

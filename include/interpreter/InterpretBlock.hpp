@@ -22,10 +22,16 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret a sequence of expressions. e.g Block< Define<Var<'n'>,1>,
-/// Var<'n'>> The result of a block is the result of the last expression int
-/// this block
+/**
+ * Interpret a block expression which contains a sequence of expressions.
+ * e.g Block< Define<Var<'n'>,1>,
+ *            Var<'n'>>.
+ * The result of a block is the result of the last expression in this block.
+ *
+ * @tparam Environ
+ * @tparam Head
+ * @tparam Tail
+ */
 template <typename Environ, typename Head, typename... Tail>
 struct Interpret<Block<Head, Tail...>, Environ> {
   using env = Environ;

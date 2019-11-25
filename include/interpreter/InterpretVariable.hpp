@@ -16,14 +16,18 @@
 
 #ifndef CRISP_INTERPRETVARIABLE_HPP
 #define CRISP_INTERPRETVARIABLE_HPP
+
 #include "Common.hpp"
 
 namespace crisp {
 using namespace ast;
 using namespace util;
 
-/// -------------------------------------------------------------------------------------------
-/// Interpret variable reference. e.g. Var<'n'>
+/**
+ * Interpret a variable reference. e.g. Var<'n'>
+ * @tparam args
+ * @tparam Environ
+ */
 template <char... args, typename Environ>
 struct Interpret<Var<args...>, Environ> {
   using env = Environ;
