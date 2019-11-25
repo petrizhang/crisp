@@ -17,8 +17,8 @@ But the tedious syntax and obscure semantic of C++ prevent people to do such thi
 Now, Crisp brings a **convenient, flexible and elegant** way for people to play with C++ templates and build
 compile-time programs.
 
-In short, Crisp is a lisp-like and Turing-complete DSL built upon C++ templates.
-It could be considered as a interpreter that interprets lisp programs at C++ compile time. 
+In short, Crisp is a Lisp-like and Turing-complete DSL built upon C++ templates.
+It could be considered as a interpreter that interprets Lisp-like programs at C++ compile time. 
 
 Crisp is a simple but powerful functional programming language. The core features of Crisp include:
 
@@ -35,7 +35,7 @@ Crisp is a simple but powerful functional programming language. The core feature
 ## Core Idea
 
 ### Lisp
-[Lisp](https://en.wikipedia.org/wiki/Lisp_(programming_language) is a family of computer programming languages with a long history.
+[Lisp](https://en.wikipedia.org/wiki/Lisp_(programming_language)) is a family of computer programming languages with a long history.
 All program code of Lisp is written as **s-expressions**, or parenthesized lists. 
 A function call or syntactic form is written as a list with the function or operator's name first, 
 and the arguments following; for instance, a function f that takes three arguments would be called as `(f arg1 arg2 arg3)`.
