@@ -114,8 +114,8 @@ using namespace crisp;
 
 int main() {
   using t = QuoteMatchInternal<Env<>,
-                               internal::MatchList<_>,
-                               internal::MatchList<_>>;
+                               internal::InternalList<_>,
+                               internal::InternalList<_>>;
   std::cout << t::matched;
 
   return 0;

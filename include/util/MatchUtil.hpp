@@ -17,6 +17,7 @@
 #ifndef CRISP_MATCH_UTIL_HPP
 #define CRISP_MATCH_UTIL_HPP
 
+#include "InternalList.hpp"
 #include "TemplateUtil.hpp"
 #include "ast/AST.hpp"
 
@@ -68,24 +69,17 @@ struct GetQuoteAST<Quote<AST>> {
   using type = AST;
 };
 
-/// This namespace is used for internal evaluation.
-/// Never use it in user code!!!
-namespace internal {
-template <typename... Args>
-struct MatchList {};
-}  // namespace internal
-
 /// -------------------------------------------------------------------------------------------
-/// Get template arguments into internal::MatchList
-/// e.g. C<Args...> => internal::MatchList<Args...>
+/// Get template arguments into internal::InternalList
+/// e.g. C<Args...> => internal::InternalList<Args...>
 template <typename T>
-struct GetArgsToMatchList {
-  using type = internal::MatchList<>;
+struct GetArgsToInternalList {
+  using type = internal::InternalList<>;
 };
 
 template <template <typename...> class C, typename... Args>
-struct GetArgsToMatchList<C<Args...>> {
-  using type = internal::MatchList<Args...>;
+struct GetArgsToInternalList<C<Args...>> {
+  using type = internal::InternalList<Args...>;
 };
 
 /// -------------------------------------------------------------------------------------------
@@ -211,8 +205,8 @@ struct MatchSuccess {
 /// -------------------------------------------------------------------------------------------
 /// QuoteMatchCase implementation
 template <typename Environ,
-          typename SourceMatchList,
-          typename TargetMatchList>
+          typename SourceInternalList,
+          typename TargetInternalList>
 struct QuoteMatchInternal {
   static const bool matched = false;
   using env = Environ;
@@ -240,14 +234,14 @@ struct QuoteMatchCase {
            DeferApply<GetCaptureTarget, Target>>,
       Else<DeferApply<NilF>>>::type;
 
-  using SomeSoureMatchList = typename ConditionalApply<
+  using SomeSoureInternalList = typename ConditionalApply<
       When<_SourceIsTemplate,
-           DeferApply<GetArgsToMatchList, Source>>,
+           DeferApply<GetArgsToInternalList, Source>>,
       Else<DeferApply<NilF>>>::type;
 
-  using SomeTargetMatchList = typename ConditionalApply<
+  using SomeTargetInternalList = typename ConditionalApply<
       When<_TargetIsTemplate,
-           DeferApply<GetArgsToMatchList, Target>>,
+           DeferApply<GetArgsToInternalList, Target>>,
       Else<DeferApply<NilF>>>::type;
 
   /*
@@ -269,7 +263,7 @@ struct QuoteMatchCase {
   // 3. A<Args...> =?= A<Args...>
   using TemplateMatch = typename ConditionalApply<
       When<_IsSameTemplateAndNotTargetIsCapture,
-           DeferConstruct<QuoteMatchInternal, Environ, SomeSoureMatchList, SomeTargetMatchList>>,
+           DeferConstruct<QuoteMatchInternal, Environ, SomeSoureInternalList, SomeTargetInternalList>>,
       Else<DeferConstruct<MatchFailure, Environ>>>::type;
 
   using Matched = typename ConditionalImpl<
@@ -314,10 +308,10 @@ struct QuoteMatchCase<Environ, Source, Source> {
   using _IsTemplateButNotCaptureAny = Bool<IsTemplate<Source>::value && !_TargetIsCaptureAny::value>;
 
   // If `Source` a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
-  // pack it's arguments into `internal::MatchList`.
-  using MaybeMatchList = typename ConditionalApply<
+  // pack it's arguments into `internal::InternalList`.
+  using MaybeInternalList = typename ConditionalApply<
       When<_IsTemplateButNotCaptureAny,
-           DeferApply<GetArgsToMatchList, Source>>,
+           DeferApply<GetArgsToInternalList, Source>>,
       Else<DeferApply<NilF>>>::type;
 
   // If `Source` a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
@@ -326,7 +320,7 @@ struct QuoteMatchCase<Environ, Source, Source> {
       When<_TargetIsCaptureAny,
            DeferConstruct<MatchSuccess, MaybeEnv>>,
       When<_IsTemplateButNotCaptureAny,
-           DeferConstruct<QuoteMatchInternal, Environ, MaybeMatchList, MaybeMatchList>>,
+           DeferConstruct<QuoteMatchInternal, Environ, MaybeInternalList, MaybeInternalList>>,
       Else<DeferConstruct<MatchSuccess, Environ>>>::type;
 
   /*
@@ -349,16 +343,16 @@ struct QuoteMatchCase<Environ, Source, Source> {
 
 template <typename Environ>
 struct QuoteMatchInternal<Environ,
-                          internal::MatchList<>,
-                          internal::MatchList<>> {
+                          internal::InternalList<>,
+                          internal::InternalList<>> {
   static const bool matched = true;
   using env = Environ;
 };
 
 template <typename Environ, typename Source, typename Target>
 struct QuoteMatchInternal<Environ,
-                          internal::MatchList<Source>,
-                          internal::MatchList<Target>> {
+                          internal::InternalList<Source>,
+                          internal::InternalList<Target>> {
   using SubMatch = QuoteMatchCase<Environ, Source, Target>;
 
   static const bool matched = SubMatch::matched;
@@ -369,8 +363,8 @@ template <typename Environ,
           typename SourceHead, typename... SourceTail,
           typename TargetHead, typename... TargetTail>
 struct QuoteMatchInternal<Environ,
-                          internal::MatchList<SourceHead, SourceTail...>,
-                          internal::MatchList<TargetHead, TargetTail...>> {
+                          internal::InternalList<SourceHead, SourceTail...>,
+                          internal::InternalList<TargetHead, TargetTail...>> {
   using HeadMatch = QuoteMatchCase<Environ, SourceHead, TargetHead>;
   using HeadMatched = Bool<HeadMatch::matched>;
 
@@ -378,8 +372,8 @@ struct QuoteMatchInternal<Environ,
       When<HeadMatched,
            DeferConstruct<QuoteMatchInternal,
                           typename HeadMatch::env,
-                          internal::MatchList<SourceTail...>,
-                          internal::MatchList<TargetTail...>>>,
+                          internal::InternalList<SourceTail...>,
+                          internal::InternalList<TargetTail...>>>,
       Else<DeferConstruct<MatchFailure, Environ>>>::type;
 
   static const bool matched = MatchResult::matched;
