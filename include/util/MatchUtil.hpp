@@ -17,6 +17,8 @@
 #ifndef CRISP_MATCH_UTIL_HPP
 #define CRISP_MATCH_UTIL_HPP
 
+#include "Conditional.hpp"
+#include "Defer.hpp"
 #include "InternalList.hpp"
 #include "TemplateUtil.hpp"
 #include "ast/AST.hpp"
@@ -205,41 +207,41 @@ struct IsCaptureSpecific<Capture<___, VarName>> {
 
 /**
  * Helper template used in match implementation.
- * It saves a `Environ` and provides `matched` as false
- * @tparam Environ
+ * It saves a `CaptureDict` and provides `matched` as false
+ * @tparam CaptureDict
  */
-template <typename Environ>
+template <typename CaptureDict>
 struct MatchFailure {
   static const bool matched = false;
-  using env = Environ;
+  using dict = CaptureDict;
 };
 
 /**
  * Helper template used in match implementation
- * It saves a `Environ` and provides `matched` as true
- * @tparam Environ
+ * It saves a `CaptureDict` and provides `matched` as true
+ * @tparam CaptureDict
  */
-template <typename Environ>
+template <typename CaptureDict>
 struct MatchSuccess {
   static const bool matched = true;
-  using env = Environ;
+  using dict = CaptureDict;
 };
 
 /**
  * QuoteMatchCase implementation
- * @tparam Environ
+ * @tparam CaptureDict
  * @tparam SourceInternalList
  * @tparam TargetInternalList
  */
-template <typename Environ,
+template <typename CaptureDict,
           typename SourceInternalList,
           typename TargetInternalList>
 struct QuoteMatchInternal {
   static const bool matched = false;
-  using env = Environ;
+  using dict = CaptureDict;
 };
 
-template <typename Environ, typename Source, typename Target>
+template <typename CaptureDict, typename Source, typename Target>
 struct QuoteMatchCase {
   using _TargetIsCapture = Bool<IsCapture<Target>::value>;
 
@@ -284,14 +286,14 @@ struct QuoteMatchCase {
   // 2. ? =?= Capture<T,V>
   using CaptureMatch = typename ConditionalApply<
       When<_TargetIsCapture,
-           DeferConstruct<QuoteMatchCase, Environ, Source, SomeCaptureTarget>>,
-      Else<DeferConstruct<MatchFailure, Environ>>>::type;
+           DeferConstruct<QuoteMatchCase, CaptureDict, Source, SomeCaptureTarget>>,
+      Else<DeferConstruct<MatchFailure, CaptureDict>>>::type;
 
   // 3. A<Args...> =?= A<Args...>
   using TemplateMatch = typename ConditionalApply<
       When<_IsSameTemplateAndNotTargetIsCapture,
-           DeferConstruct<QuoteMatchInternal, Environ, SomeSoureInternalList, SomeTargetInternalList>>,
-      Else<DeferConstruct<MatchFailure, Environ>>>::type;
+           DeferConstruct<QuoteMatchInternal, CaptureDict, SomeSoureInternalList, SomeTargetInternalList>>,
+      Else<DeferConstruct<MatchFailure, CaptureDict>>>::type;
 
   using Matched = typename ConditionalImpl<
       When<_IsTargetMatchAny, Bool<true>>,
@@ -301,15 +303,15 @@ struct QuoteMatchCase {
 
   static const bool matched = Matched::value;
 
-  using env = typename ConditionalImpl<
-      When<_IsTargetMatchAny, Environ>,
-      When<_TargetIsCapture, typename DictPut<typename CaptureMatch::env, Pair<SomeVarName, Source>>::type>,
-      When<_IsSameTemplateAndNotTargetIsCapture, typename TemplateMatch::env>,
-      Else<Environ>>::type;
+  using dict = typename ConditionalImpl<
+      When<_IsTargetMatchAny, CaptureDict>,
+      When<_TargetIsCapture, typename DictPut<typename CaptureMatch::dict, Pair<SomeVarName, Source>>::type>,
+      When<_IsSameTemplateAndNotTargetIsCapture, typename TemplateMatch::dict>,
+      Else<CaptureDict>>::type;
 };
 
-template <typename Environ, typename Source>
-struct QuoteMatchCase<Environ, Source, Source> {
+template <typename CaptureDict, typename Source>
+struct QuoteMatchCase<CaptureDict, Source, Source> {
   // If `Source` is Capture<_, Var<...> > or Capture<___, Var<...> >
   using _TargetIsCaptureAny = Bool<IsCaptureAny<Source>::value>;
 
@@ -321,14 +323,14 @@ struct QuoteMatchCase<Environ, Source, Source> {
       Else<DeferApply<NilF>>>::type;
 
   // When match Capture<_, Var<...> > with Capture<_, Var<...> >,
-  // put `Capture<_, Var<...> >` to current environment.
+  // put `Capture<_, Var<...> >` to current dictironment.
   // When match Capture<___, Var<...> > with Capture<___, Var<...> >,
-  // put `List< Capture<_, Var<...>> >` to current environment.
+  // put `List< Capture<_, Var<...>> >` to current dictironment.
   using MaybeEnv = typename ConditionalApply<
       When<Bool<IsCaptureAnySingle<Source>::value>,
-           DeferApply<DictPut, Environ, Pair<SomeVarName, Source>>>,
+           DeferApply<DictPut, CaptureDict, Pair<SomeVarName, Source>>>,
       When<Bool<IsCaptureAnyList<Source>::value>,
-           DeferApply<DictPut, Environ, Pair<SomeVarName, List<Source>>>>,
+           DeferApply<DictPut, CaptureDict, Pair<SomeVarName, List<Source>>>>,
       Else<DeferApply<NilF>>>::type;
 
   // If `Source` is a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
@@ -347,8 +349,8 @@ struct QuoteMatchCase<Environ, Source, Source> {
       When<_TargetIsCaptureAny,
            DeferConstruct<MatchSuccess, MaybeEnv>>,
       When<_IsTemplateButNotCaptureAny,
-           DeferConstruct<QuoteMatchInternal, Environ, MaybeInternalList, MaybeInternalList>>,
-      Else<DeferConstruct<MatchSuccess, Environ>>>::type;
+           DeferConstruct<QuoteMatchInternal, CaptureDict, MaybeInternalList, MaybeInternalList>>,
+      Else<DeferConstruct<MatchSuccess, CaptureDict>>>::type;
 
   /*
    * 1. When match Capture<A, Var<...>> with Capture<A, Var<...>>,
@@ -365,46 +367,46 @@ struct QuoteMatchCase<Environ, Source, Source> {
    * `Capture<_, Var<'a'>`, and it doesn't match `A`.
    */
   static const bool matched = MatchResult::matched;
-  using env = typename MatchResult::env;
+  using dict = typename MatchResult::dict;
 };
 
-template <typename Environ>
-struct QuoteMatchInternal<Environ,
+template <typename CaptureDict>
+struct QuoteMatchInternal<CaptureDict,
                           internal::InternalList<>,
                           internal::InternalList<>> {
   static const bool matched = true;
-  using env = Environ;
+  using dict = CaptureDict;
 };
 
-template <typename Environ, typename Source, typename Target>
-struct QuoteMatchInternal<Environ,
+template <typename CaptureDict, typename Source, typename Target>
+struct QuoteMatchInternal<CaptureDict,
                           internal::InternalList<Source>,
                           internal::InternalList<Target>> {
-  using SubMatch = QuoteMatchCase<Environ, Source, Target>;
+  using SubMatch = QuoteMatchCase<CaptureDict, Source, Target>;
 
   static const bool matched = SubMatch::matched;
-  using env = typename SubMatch::env;
+  using dict = typename SubMatch::dict;
 };
 
-template <typename Environ,
+template <typename CaptureDict,
           typename SourceHead, typename... SourceTail,
           typename TargetHead, typename... TargetTail>
-struct QuoteMatchInternal<Environ,
+struct QuoteMatchInternal<CaptureDict,
                           internal::InternalList<SourceHead, SourceTail...>,
                           internal::InternalList<TargetHead, TargetTail...>> {
-  using HeadMatch = QuoteMatchCase<Environ, SourceHead, TargetHead>;
+  using HeadMatch = QuoteMatchCase<CaptureDict, SourceHead, TargetHead>;
   using HeadMatched = Bool<HeadMatch::matched>;
 
   using MatchResult = typename ConditionalApply<
       When<HeadMatched,
            DeferConstruct<QuoteMatchInternal,
-                          typename HeadMatch::env,
+                          typename HeadMatch::dict,
                           internal::InternalList<SourceTail...>,
                           internal::InternalList<TargetTail...>>>,
-      Else<DeferConstruct<MatchFailure, Environ>>>::type;
+      Else<DeferConstruct<MatchFailure, CaptureDict>>>::type;
 
   static const bool matched = MatchResult::matched;
-  using env = typename MatchResult::env;
+  using dict = typename MatchResult::dict;
 };
 }  // namespace util
 #endif  //CRISP_MATCH_UTIL_HPP

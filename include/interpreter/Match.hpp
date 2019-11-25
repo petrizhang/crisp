@@ -21,10 +21,17 @@
 namespace crisp {
 using namespace ast;
 using namespace util;
-/// -------------------------------------------------------------------------------------------
-/// Interpret match expression.
-// TODO: check and test `Interp` carefully.
 
+
+// TODO: check and test pattern match carefully.
+/**
+ * Interpret match expression.
+ *
+ * @tparam Environ
+ * @tparam Expr
+ * @tparam CaseBranch
+ * @tparam DefaultBranch
+ */
 template <typename Environ, typename Expr, typename CaseBranch,
           typename DefaultBranch>
 struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
@@ -48,11 +55,11 @@ struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
   using Result = typename ConditionalImpl<When<_CaseBranchMatched, CaseResult>,
                                           Else<DefaultResult>>::type;
 
-  using MatchedDict = typename ConditionalImpl<
-      When<_CaseBranchMatched, typename CaseBranchMatch::env>,
+  using CapturedDict = typename ConditionalImpl<
+      When<_CaseBranchMatched, typename CaseBranchMatch::dict>,
       Else<Dict<>>>::type;
 
-  using type = typename Replace<Result, MatchedDict>::type;
+  using type = typename Replace<Result, CapturedDict>::type;
   using env = typename ExprInterp::env;
 
   static decltype(type::c_value()) Run() {
@@ -82,12 +89,12 @@ struct Interp<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
   using Result = typename ConditionalImpl<When<_CaseBranchMatched, CaseResult>,
                                           Else<Nil>>::type;
 
-  using MatchedDict = typename ConditionalImpl<
-      When<_CaseBranchMatched, typename CaseBranchMatch::env>,
+  using CapturedDict = typename ConditionalImpl<
+      When<_CaseBranchMatched, typename CaseBranchMatch::dict>,
       Else<Dict<>>>::type;
 
   using ResultInterp = typename ConditionalApply<
-      When<_CaseBranchMatched, DeferConstruct<Replace, Result, MatchedDict>>,
+      When<_CaseBranchMatched, DeferConstruct<Replace, Result, CapturedDict>>,
       Else<DeferConstruct<Interp, Match<Expr, Branch2, Branch3, Branches...>,
                           Environ>>>::type;
 
