@@ -17,7 +17,7 @@
 #ifndef CRISP_INTERNAL_LIST_HPP
 #define CRISP_INTERNAL_LIST_HPP
 
-#include "VectorLike.hpp"
+#include "ListLike.hpp"
 
 namespace util {
 namespace internal {

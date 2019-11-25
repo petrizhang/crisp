@@ -17,8 +17,8 @@
 #ifndef CRISP_LIST_HPP
 #define CRISP_LIST_HPP
 
+#include "ListLike.hpp"
 #include "ast/AST.hpp"
-#include "VectorLike.hpp"
 
 namespace util {
 using ast::List;
