@@ -17,6 +17,9 @@
 #include "CrispMacroAPI.h"
 
 int main() {
-  run(println(add(v(1),v(1))));
+  using result = interpret(add(v(1), v(1)));
+  constexpr int value = result::value;
+  // `value` is a compile-time constant!
+  int a[value] = {0, 1};
   return 0;
 }

@@ -17,6 +17,9 @@
 #include "CrispTemplateAPI.h"
 
 int main() {
-  Interpret<Println<Add<Int<1>, Int<1>>>>::Run();
+  using result = Interpret<Add<Int<1>, Int<1>>>::type;
+  constexpr int value = result::value;
+  // `value` is a compile-time constant!
+  int a[value] = {0, 1};
   return 0;
 }

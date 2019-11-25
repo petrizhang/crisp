@@ -33,28 +33,26 @@ First, let us see two simple but complete examples:
 
 1. Crisp Macro Style
 ```cpp
-#include "crisp_macros.h"
+#include "CrispMacroAPI.h"
 
 int main() {
-  // The `println` part of the expression is evaluated at runtime rather than at compile time. 
-  // To strictly use compile time evaluation:
-  //   - use `using Result = eval(add(v(1),v(1)));` to get the evaluation result type
-  //   - use `constexpr auto value = Result::c_value();` to get the constexpr result value
-  run(println(add(v(1), v(1))));
+  using result = interpret(add(v(1), v(1)));
+  constexpr int value = result::value;
+  // `value` is a compile-time constant!
+  int a[value] = {0, 1};
   return 0;
 }
 ```
 
 2. Crisp Template Style
 ```cpp
-#include "crisp_templates.h"
+#include "CrispTemplateAPI.h"
 
 int main() {
-  // The `Println` part of the expression is evaluated at runtime rather than at compile time.  
-  // To strictly use compile time evaluation:
-  //   - use `using Result = Interpret<Add<Int<1>, Int<1>>>::type;` to get the result type
-  //   - use `constexpr auto value = Result::c_value();` to get the constexpr result value
-  Interpret<Println<Add<Int<1>, Int<1>>>>::Run();
+  using result = Interpret<Add<Int<1>, Int<1>>>::type;
+  constexpr int value = result::value;
+  // `value` is a compile-time constant!
+  int a[value] = {0, 1};
   return 0;
 }
 ```
