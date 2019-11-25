@@ -14,18 +14,31 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_ERROR_HPP
-#define CRISP_ERROR_HPP
+#ifndef CRISP_SIZE_HPP
+#define CRISP_SIZE_HPP
+
+#include <cstdint>
 
 namespace util {
-/**
- * Use this type in static_assert to trigger a compile error.
- * @tparam ... type parameters will be displayed in compiler error message.
- */
-template <typename...>
-struct Error {
-  static const bool always_false = false;
-};
-}  // namespace crisp
+using std::uint64_t;
 
-#endif  //CRISP_ERROR_HPP
+/**
+ * Get size of given `Args`.
+ * @tparam Args
+ */
+template <typename... Args>
+struct Size;
+
+template <>
+struct Size<> {
+  static const uint64_t value = 0;
+};
+
+template <typename Head, typename... Tails>
+struct Size<Head, Tails...> {
+  static const uint64_t value = 1 + Size<Tails...>::value;
+};
+
+}  // namespace util
+
+#endif  //CRISP_SIZE_HPP

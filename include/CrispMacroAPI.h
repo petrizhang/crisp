@@ -22,7 +22,7 @@
 using crisp::_;
 // TODO using crisp::___;
 
-#define v(x) crisp::PackToType<decltype(x), x>::type
+#define v(x) crisp::Pack<decltype(x), x>::type
 #define quote(e) crisp::Quote<e>
 #define eval(expr) crisp::Eval<expr>
 #define str(args...) crisp::String<args>

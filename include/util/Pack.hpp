@@ -14,18 +14,40 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_ERROR_HPP
-#define CRISP_ERROR_HPP
+#ifndef CRISP_PACK_HPP
+#define CRISP_PACK_HPP
+
+#include "interpreter/AST.hpp"
 
 namespace util {
-/**
- * Use this type in static_assert to trigger a compile error.
- * @tparam ... type parameters will be displayed in compiler error message.
- */
-template <typename...>
-struct Error {
-  static const bool always_false = false;
-};
-}  // namespace crisp
+using ast::Bool;
+using ast::Char;
+using ast::Int;
 
-#endif  //CRISP_ERROR_HPP
+/**
+ * Pack a const value(int/char/bool) into Value type.
+ * e.g. PackToValue<int, 1>::packed_type will be Value<Int<1>>.
+ * @tparam T
+ * @tparam V
+ */
+template <typename T, T V>
+struct Pack;
+
+template <bool V>
+struct Pack<bool, V> {
+  using type = Bool<V>;
+};
+
+template <char V>
+struct Pack<char, V> {
+  using type = Char<V>;
+};
+
+template <int V>
+struct Pack<int, V> {
+  using type = Int<V>;
+};
+
+}  // namespace util
+
+#endif  //CRISP_PACK_HPP

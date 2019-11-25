@@ -17,6 +17,10 @@
 #ifndef CRISP_UTIL_HPP
 #define CRISP_UTIL_HPP
 #include <iostream>
+#include "Error.hpp"
+#include "Pack.hpp"
+#include "Size.hpp"
+#include "TemplateUtil.hpp"
 #include "interpreter/AST.hpp"
 
 namespace util {
@@ -31,131 +35,11 @@ inline void output(bool v) {
   std::cout << (v ? "true" : "false");
 }
 
-/// -------------------------------------------------------------------------------------------
-/// Use this type in static_assert to trigger a compile error.
-template <typename...>
-struct Error {
-  static const bool always_false = false;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Convert A<Args...> to B<Args...>
-template <typename A, template <typename...> class B>
-struct Convert;
-
-template <template <typename...> class A, template <typename...> class B, typename... Args>
-struct Convert<A<Args...>, B> {
-  using type = B<Args...>;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Test if given type is a template
-template <typename T>
-struct IsTemplate {
-  static const bool value = false;
-};
-
-template <template <typename...> class C, typename... Args>
-struct IsTemplate<C<Args...>> {
-  static const bool value = true;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Test if the 2 given types are instances of a same template
-/// e.g. IsSameTemplate<A<...>,A<...>>::value will be true
-///      IsSameTemplate<A<...>,B<...>>::value will be false
-template <typename A, typename B>
-struct IsSameTemplate {
-  static const bool value = false;
-};
-
-template <template <typename...> class A, typename... Args1, typename... Args2>
-struct IsSameTemplate<A<Args1...>, A<Args2...>> {
-  static const bool value = true;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Check if given type `T` is a instance of template `C`
-/// e.g. IsTemplate<Array, Array<Int<1>,Int<2>>>::value will be true
-template <template <typename...> class C, typename T>
-struct IsTemplateOf {
-  static const bool value = false;
-};
-
-template <template <typename...> class C, typename... Args>
-struct IsTemplateOf<C, C<Args...>> {
-  static const bool value = true;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Check if given type `T` is a instance of template `C`
-/// e.g. IsTemplate<Array, Array<Int<1>,Int<2>>>::value will be true
-template <typename ValueType, template <ValueType...> class C, typename T>
-struct IsValueTemplateOf {
-  static const bool value = false;
-};
-
-template <typename ValueType, template <ValueType...> class C, ValueType... Args>
-struct IsValueTemplateOf<ValueType, C, C<Args...>> {
-  static const bool value = true;
-};
-
 template <typename T>
 struct IsVar : IsValueTemplateOf<char, Var, T> {};
 
 template <typename T>
 struct IsNil : std::is_same<T, Nil> {};
-
-/// -------------------------------------------------------------------------------------------
-/// Merge two argument list into one.
-/// e.g. MergeArgs< Array<Int<1>>, Array<Int<2>> >::type
-/// will be Array<Int<1>,Int<2>>`
-template <typename...>
-struct MergeArgs;
-
-template <template <typename...> class C, typename... LeftArgs, typename... RightArgs>
-struct MergeArgs<C<LeftArgs...>, C<RightArgs...>> {
-  using type = C<LeftArgs..., RightArgs...>;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Merge the argument list of a template.
-/// e.g. ReverseArgs< Array<Int<1>,Int<2>> >::type
-/// will be Array<Int<2>,Int<1>>`
-template <typename T>
-struct ReverseArgs;
-
-template <template <typename...> class C>
-struct ReverseArgs<C<>> {
-  using type = C<>;
-};
-
-template <template <typename...> class C, typename Head, typename... Tail>
-struct ReverseArgs<C<Head, Tail...>> {
-  using type = typename MergeArgs<typename ReverseArgs<C<Tail...>>::type,
-                                  C<Head>>::type;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Pack a const value(int/char/bool) into Value type.
-/// e.g. PackToValue<int, 1>::packed_type will be Value<Int<1>>.
-template <typename T, T V>
-struct PackToType;
-
-template <bool V>
-struct PackToType<bool, V> {
-  using type = Bool<V>;
-};
-
-template <char V>
-struct PackToType<char, V> {
-  using type = Char<V>;
-};
-
-template <int V>
-struct PackToType<int, V> {
-  using type = Int<V>;
-};
 
 /// -------------------------------------------------------------------------------------------
 /// Check if an expression is callable or not.
@@ -167,21 +51,6 @@ struct IsCallable {
 template <typename... Args>
 struct IsCallable<Closure<Args...>> {
   static const bool value = true;
-};
-
-/// -------------------------------------------------------------------------------------------
-/// Get the size of a parameter list.
-template <typename... Args>
-struct Size;
-
-template <>
-struct Size<> {
-  static const u_long value = 0;
-};
-
-template <typename Head, typename... Tails>
-struct Size<Head, Tails...> {
-  static const u_long value = 1 + Size<Tails...>::value;
 };
 
 /// -------------------------------------------------------------------------------------------
