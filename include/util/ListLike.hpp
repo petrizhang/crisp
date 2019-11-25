@@ -46,6 +46,30 @@ struct TemplateHead<V<Head, Args...>> {
 };
 
 /**
+ * Get the last element of a template T<e1,...>.
+ * e.g. TemplateLast<T<int,bool>>::type will be `bool`.
+ *
+ * @tparam V
+ */
+template <typename V>
+struct TemplateLast;
+
+template <template <typename...> class V, typename... Args>
+struct TemplateLast<V<Args...>> {
+  static_assert(Size<Args...>::value != 0, "Cannot apply head method on an empty vector.");
+};
+
+template <template <typename...> class V, typename Last>
+struct TemplateLast<V<Last>> {
+  using type = Last;
+};
+
+template <template <typename...> class V, typename Head, typename... Args>
+struct TemplateLast<V<Head, Args...>> {
+  using type = typename TemplateLast<V<Args...>>::type;
+};
+
+/**
  * Get the tail elements of a vector-like template T<e1,...>.
  * e.g. TemplateTail<T<int,bool,char>>::type will be `T<bool,char>`.
  *
