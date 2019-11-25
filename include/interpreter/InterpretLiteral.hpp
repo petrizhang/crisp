@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_VARIABLE_HPP
-#define CRISP_VARIABLE_HPP
+#ifndef CRISP_INTERPRETLITERAL_HPP
+#define CRISP_INTERPRETLITERAL_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -23,14 +23,34 @@ using namespace ast;
 using namespace util;
 
 /// -------------------------------------------------------------------------------------------
-/// Interpret variable reference. e.g. Var<'n'>
-template <char... args, typename Environ>
-struct Interp<Var<args...>, Environ> {
+/// Interpret value types.
+template <typename Environ, bool V>
+struct Interpret<Bool<V>, Environ> {
   using env = Environ;
-  using type = typename EnvLookup<Environ, Var<args...>>::type;
+  using type = Bool<V>;
+  static constexpr bool Run() { return V; }
+};
 
-  static decltype(type::c_value()) Run() { return type::c_value(); }
+template <typename Environ, char V>
+struct Interpret<Char<V>, Environ> {
+  using env = Environ;
+  using type = Char<V>;
+  static constexpr char Run() { return V; }
+};
+
+template <typename Environ, int V>
+struct Interpret<Int<V>, Environ> {
+  using env = Environ;
+  using type = Int<V>;
+  static constexpr int Run() { return V; }
+};
+
+template <typename Environ, char... chars>
+struct Interpret<String<chars...>, Environ> {
+  using env = Environ;
+  using type = String<chars...>;
+  static std::string Run() { return type::c_value(); }
 };
 }  // namespace crisp
 
-#endif  //CRISP_VARIABLE_HPP
+#endif  //CRISP_INTERPRETLITERAL_HPP

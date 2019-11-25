@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_CALL_HPP
-#define CRISP_CALL_HPP
+#ifndef CRISP_INTERPRETCALL_HPP
+#define CRISP_INTERPRETCALL_HPP
 #include "Common.hpp"
 #include "util/InternalList.hpp"
 
@@ -29,7 +29,7 @@ using namespace util;
  * @tparam Environ 
  */
 template <typename Environ>
-struct Interp<internal::InternalList<>, Environ> {
+struct Interpret<internal::InternalList<>, Environ> {
   using env = Environ;
   using type = internal::InternalList<>;
 
@@ -37,11 +37,11 @@ struct Interp<internal::InternalList<>, Environ> {
 };
 
 template <typename Environ, typename Head, typename... Tail>
-struct Interp<internal::InternalList<Head, Tail...>, Environ> {
-  using HeadInterp = Interp<Head, Environ>;
+struct Interpret<internal::InternalList<Head, Tail...>, Environ> {
+  using HeadInterp = Interpret<Head, Environ>;
   using HeadValue = typename HeadInterp::type;
 
-  using TailInterp = Interp<internal::InternalList<Tail...>, Environ>;
+  using TailInterp = Interpret<internal::InternalList<Tail...>, Environ>;
   using TailValue = typename TailInterp::type;
 
   using env = Environ;
@@ -80,7 +80,7 @@ struct CallClosure<CallSiteEnviron,
 
   using env = CallSiteEnviron;
   // Interpret function body
-  using BodyInterp = Interp<Body, executionEnv>;
+  using BodyInterp = Interpret<Body, executionEnv>;
   using type = typename BodyInterp::type;
 
   static decltype(type::c_value()) Run() {
@@ -90,13 +90,13 @@ struct CallClosure<CallSiteEnviron,
 };
 
 template <typename Environ, typename Func, typename... Args>
-struct Interp<Call<Func, Args...>, Environ> {
+struct Interpret<Call<Func, Args...>, Environ> {
   // Interpret the expression to get a closure value.
-  using ClosureInterp = Interp<Func, Environ>;
+  using ClosureInterp = Interpret<Func, Environ>;
   using ClosureValue = typename ClosureInterp::type;
 
   // Interpret argument list.
-  using ArgInterp = Interp<internal::InternalList<Args...>, Environ>;
+  using ArgInterp = Interpret<internal::InternalList<Args...>, Environ>;
   using ArgValues = typename ArgInterp::type;
   static_assert(IsCallable<ClosureValue>::value,
                 "Expected a callable function/closure.");
@@ -113,11 +113,11 @@ struct Interp<Call<Func, Args...>, Environ> {
 };
 
 template <typename Environ, typename... Args>
-struct Interp<Closure<Args...>, Environ> {
+struct Interpret<Closure<Args...>, Environ> {
   using env = Environ;
   using type = Closure<Args...>;
 
   static constexpr const char *Run() { return "#closure"; }
 };
 }  // namespace crisp
-#endif  //CRISP_CALL_HPP
+#endif  //CRISP_INTERPRETCALL_HPP

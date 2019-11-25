@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_DEFINE_HPP
-#define CRISP_DEFINE_HPP
+#ifndef CRISP_INTERPRETLAMBDA_HPP
+#define CRISP_INTERPRETLAMBDA_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -23,18 +23,13 @@ using namespace ast;
 using namespace util;
 
 /// -------------------------------------------------------------------------------------------
-/// Interpret variable definition. e.g. Define<Var<'a'>,Int<1>>
-template <typename Environ, typename Ident, typename Value>
-struct Interp<Define<Ident, Value>, Environ> {
-  using ValueInterp = Interp<Value, Environ>;
+/// Interpret lambda instantiation.
+template <typename Environ, typename Body, typename ParamL>
+struct Interpret<Lambda<ParamL, Body>, Environ> {
+  using env = Environ;
+  using type = Closure<Environ, Lambda<ParamL, Body>>;
 
-  using env = typename EnvPut<Environ, Ident, typename ValueInterp::type>::type;
-  using type = Undefined;
-
-  static decltype(type::c_value()) Run() {
-    ValueInterp::Run();
-    return type::c_value();
-  }
+  static constexpr const char *Run() { return "#closure"; }
 };
 }  // namespace crisp
-#endif  //CRISP_DEFINE_HPP
+#endif  //CRISP_INTERPRETLAMBDA_HPP

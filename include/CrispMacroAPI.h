@@ -49,7 +49,7 @@ using crisp::_;
 #define case_(C, E) crisp::Case<C, E>
 #define default_(E) crisp::Default<E>
 #define capture(T, V) crisp::Capture<T, V>
-#define interp(expr) crisp::Interp<expr, crisp::Env<>>::type
-#define run(expr) crisp::Interp<expr, crisp::Env<>>::Run()
+#define interpret(expr) crisp::Interpret<expr, crisp::Env<>>::type
+#define run(expr) crisp::Interpret<expr, crisp::Env<>>::Run()
 
 #endif  //CRISP_MACROS_H

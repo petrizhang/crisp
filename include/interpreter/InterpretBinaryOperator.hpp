@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_BINARY_OPERATOR_HPP
-#define CRISP_BINARY_OPERATOR_HPP
+#ifndef CRISP_INTERPRETBINARYOPERATOR_HPP
+#define CRISP_INTERPRETBINARYOPERATOR_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -25,11 +25,11 @@ using namespace util;
 /// -------------------------------------------------------------------------------------------
 /// Interp IsEqual<L,R>
 template <typename Environ, typename L, typename R>
-struct Interp<IsEqual<L, R>, Environ> {
+struct Interpret<IsEqual<L, R>, Environ> {
   using env = Environ;
 
-  using LInterp = Interp<L, Environ>;
-  using RInterp = Interp<R, Environ>;
+  using LInterp = Interpret<L, Environ>;
+  using RInterp = Interpret<R, Environ>;
 
   using type = typename IsEqualImpl<typename LInterp::type,
                                     typename RInterp::type>::type;
@@ -43,11 +43,11 @@ struct Interp<IsEqual<L, R>, Environ> {
 
 #define InterpForBinaryOperator(OpName)                               \
   template <typename Environ, typename L, typename R>                 \
-  struct Interp<OpName<L, R>, Environ> {                              \
+  struct Interpret<OpName<L, R>, Environ> {                              \
     using env = Environ;                                              \
                                                                       \
-    using LInterp = Interp<L, Environ>;                               \
-    using RInterp = Interp<R, Environ>;                               \
+    using LInterp = Interpret<L, Environ>;                               \
+    using RInterp = Interpret<R, Environ>;                               \
                                                                       \
     using type = typename OpName##Impl<typename LInterp::type,        \
                                        typename RInterp::type>::type; \
@@ -64,4 +64,4 @@ InterpForBinaryOperator(IsLessThan);
 InterpForBinaryOperator(IsGreaterEqual);
 InterpForBinaryOperator(IsLessEqual);
 }  // namespace crisp
-#endif  //CRISP_BINARY_OPERATOR_HPP
+#endif  //CRISP_INTERPRETBINARYOPERATOR_HPP

@@ -29,6 +29,6 @@ using namespace ast;
 using namespace util;
 
 template <typename Expr, typename Environ = Env<>>
-struct Interp;
+struct Interpret;
 }  // namespace crisp
 #endif  //CRISP_COMMON_HPP

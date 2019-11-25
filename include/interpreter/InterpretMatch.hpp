@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_MATCH_HPP
-#define CRISP_MATCH_HPP
+#ifndef CRISP_INTERPRETMATCH_HPP
+#define CRISP_INTERPRETMATCH_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -34,7 +34,7 @@ using namespace util;
  */
 template <typename Environ, typename Expr, typename CaseBranch,
           typename DefaultBranch>
-struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
+struct Interpret<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
   static_assert(IsTemplateOf<Quote, Expr>::value,
                 "only quote matches are supported now");
   static_assert(IsTemplateOf<Case, CaseBranch>::value,
@@ -42,7 +42,7 @@ struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
   static_assert(IsTemplateOf<Default, DefaultBranch>::value,
                 "expected a default branch");
 
-  using ExprInterp = Interp<Expr, Environ>;
+  using ExprInterp = Interpret<Expr, Environ>;
   using AST = typename ExprInterp::type;
 
   using CaseCondition = typename GetCaseCondition<CaseBranch>::type;
@@ -70,7 +70,7 @@ struct Interp<Match<Expr, CaseBranch, DefaultBranch>, Environ> {
 
 template <typename Environ, typename Expr, typename Branch1, typename Branch2,
           typename Branch3, typename... Branches>
-struct Interp<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
+struct Interpret<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
   static_assert(IsTemplateOf<Quote, Expr>::value,
                 "only quote matches are supported now");
   static_assert(IsTemplateOf<Case, Branch1>::value,
@@ -95,7 +95,7 @@ struct Interp<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
 
   using ResultInterp = typename ConditionalApply<
       When<_CaseBranchMatched, DeferConstruct<Replace, Result, CapturedDict>>,
-      Else<DeferConstruct<Interp, Match<Expr, Branch2, Branch3, Branches...>,
+      Else<DeferConstruct<Interpret, Match<Expr, Branch2, Branch3, Branches...>,
                           Environ>>>::type;
 
   using type = typename ResultInterp::type;
@@ -107,4 +107,4 @@ struct Interp<Match<Expr, Branch1, Branch2, Branch3, Branches...>, Environ> {
   }
 };
 }  // namespace crisp
-#endif  //CRISP_MATCH_HPP
+#endif  //CRISP_INTERPRETMATCH_HPP

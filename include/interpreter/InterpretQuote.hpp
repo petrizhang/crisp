@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_LAMBDA_HPP
-#define CRISP_LAMBDA_HPP
+#ifndef CRISP_INTERPRETQUOTE_HPP
+#define CRISP_INTERPRETQUOTE_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -23,13 +23,13 @@ using namespace ast;
 using namespace util;
 
 /// -------------------------------------------------------------------------------------------
-/// Interpret lambda instantiation.
-template <typename Environ, typename Body, typename ParamL>
-struct Interp<Lambda<ParamL, Body>, Environ> {
-  using env = Environ;
-  using type = Closure<Environ, Lambda<ParamL, Body>>;
+/// Interpret quote expression.
+template <typename Environ, typename AST>
+struct Interpret<Quote<AST>, Environ> {
+using env = Environ;
+using type = AST;
 
-  static constexpr const char *Run() { return "#closure"; }
+static decltype(type::c_value()) Run() { return type::c_value(); }
 };
-}  // namespace crisp
-#endif  //CRISP_LAMBDA_HPP
+}
+#endif  //CRISP_INTERPRETQUOTE_HPP

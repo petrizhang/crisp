@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_CHAIN_OPERATOR_HPP
-#define CRISP_CHAIN_OPERATOR_HPP
+#ifndef CRISP_INTERPRETCHAINOPERATOR_HPP
+#define CRISP_INTERPRETCHAINOPERATOR_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -25,10 +25,10 @@ using namespace util;
 /// -------------------------------------------------------------------------------------------
 /// Interp Add<n1,n2,n3,...>
 template <typename Environ, typename L, typename R>
-struct Interp<Add<L, R>, Environ> {
+struct Interpret<Add<L, R>, Environ> {
   using env = Environ;
-  using LInterp = Interp<L, Environ>;
-  using RInterp = Interp<R, Environ>;
+  using LInterp = Interpret<L, Environ>;
+  using RInterp = Interpret<R, Environ>;
   typedef typename AddImpl<typename LInterp::type, typename RInterp::type>::type
       type;
 
@@ -40,13 +40,13 @@ struct Interp<Add<L, R>, Environ> {
 };
 
 template <typename Environ, typename L, typename R, typename... Args>
-struct Interp<Add<L, R, Args...>, Environ> {
-  using LInterp = Interp<L, Environ>;
-  using RInterp = Interp<R, Environ>;
+struct Interpret<Add<L, R, Args...>, Environ> {
+  using LInterp = Interpret<L, Environ>;
+  using RInterp = Interpret<R, Environ>;
   using LT =
       typename AddImpl<typename LInterp::type, typename RInterp::type>::type;
 
-  using TailInterp = Interp<Add<Args...>, Environ>;
+  using TailInterp = Interpret<Add<Args...>, Environ>;
   using RT = typename TailInterp::type;
 
   using env = Environ;
@@ -64,10 +64,10 @@ struct Interp<Add<L, R, Args...>, Environ> {
 /// Interp chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
 #define InterpForChainOperator(OpName)                                  \
   template <typename Environ, typename L, typename R>                   \
-  struct Interp<OpName<L, R>, Environ> {                                \
+  struct Interpret<OpName<L, R>, Environ> {                                \
     using env = Environ;                                                \
-    using LInterp = Interp<L, Environ>;                                 \
-    using RInterp = Interp<R, Environ>;                                 \
+    using LInterp = Interpret<L, Environ>;                                 \
+    using RInterp = Interpret<R, Environ>;                                 \
     typedef typename OpName##Impl<typename LInterp::type,               \
                                   typename RInterp::type>::type type;   \
                                                                         \
@@ -79,13 +79,13 @@ struct Interp<Add<L, R, Args...>, Environ> {
   };                                                                    \
                                                                         \
   template <typename Environ, typename L, typename R, typename... Args> \
-  struct Interp<OpName<L, R, Args...>, Environ> {                       \
-    using LInterp = Interp<L, Environ>;                                 \
-    using RInterp = Interp<R, Environ>;                                 \
+  struct Interpret<OpName<L, R, Args...>, Environ> {                       \
+    using LInterp = Interpret<L, Environ>;                                 \
+    using RInterp = Interpret<R, Environ>;                                 \
     using LT = typename OpName##Impl<typename LInterp::type,            \
                                      typename RInterp::type>::type;     \
-    using TailInterp = Interp<Add<Args...>, Environ>;                   \
-    using RT = typename Interp<OpName<Args...>, Environ>::type;         \
+    using TailInterp = Interpret<Add<Args...>, Environ>;                   \
+    using RT = typename Interpret<OpName<Args...>, Environ>::type;         \
                                                                         \
     using env = Environ;                                                \
     using type = typename OpName##Impl<LT, RT>::type;                   \
@@ -104,4 +104,4 @@ InterpForChainOperator(Mod);
 InterpForChainOperator(And);
 InterpForChainOperator(Or);
 }  // namespace crisp
-#endif  //CRISP_CHAIN_OPERATOR_HPP
+#endif  //CRISP_INTERPRETCHAINOPERATOR_HPP

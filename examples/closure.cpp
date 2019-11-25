@@ -24,12 +24,12 @@ using prgram_make_addx = lambda(params(y),
                                 lambda(params(x), add(x, y)));
 
 int main() {
-  using make_addx = interp(prgram_make_addx);
-  using add1 = interp(call(make_addx, v(1)));
-  using add2 = interp(call(make_addx, v(2)));
+  using make_addx = interpret(prgram_make_addx);
+  using add1 = interpret(call(make_addx, v(1)));
+  using add2 = interpret(call(make_addx, v(2)));
 
-  using r1 = interp(call(add1, v(1)));
-  using r2 = interp(call(add2, v(1)));
+  using r1 = interpret(call(add1, v(1)));
+  using r2 = interpret(call(add2, v(1)));
 
   static_assert(r1::c_value() == 2, "");
   std::cout << r1::c_value() << std::endl;

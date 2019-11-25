@@ -52,9 +52,9 @@ int main() {
 int main() {
   // The `Println` part of the expression is evaluated at runtime rather than at compile time.  
   // To strictly use compile time evaluation:
-  //   - use `using Result = Interp<Add<Int<1>, Int<1>>>::type;` to get the result type
+  //   - use `using Result = Interpret<Add<Int<1>, Int<1>>>::type;` to get the result type
   //   - use `constexpr auto value = Result::c_value();` to get the constexpr result value
-  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
+  Interpret<Println<Add<Int<1>, Int<1>>>>::Run();
   return 0;
 }
 ```

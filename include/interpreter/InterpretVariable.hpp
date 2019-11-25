@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_QUOTE_HPP
-#define CRISP_QUOTE_HPP
+#ifndef CRISP_INTERPRETVARIABLE_HPP
+#define CRISP_INTERPRETVARIABLE_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -23,13 +23,14 @@ using namespace ast;
 using namespace util;
 
 /// -------------------------------------------------------------------------------------------
-/// Interpret quote expression.
-template <typename Environ, typename AST>
-struct Interp<Quote<AST>, Environ> {
-using env = Environ;
-using type = AST;
+/// Interpret variable reference. e.g. Var<'n'>
+template <char... args, typename Environ>
+struct Interpret<Var<args...>, Environ> {
+  using env = Environ;
+  using type = typename EnvLookup<Environ, Var<args...>>::type;
 
-static decltype(type::c_value()) Run() { return type::c_value(); }
+  static decltype(type::c_value()) Run() { return type::c_value(); }
 };
-}
-#endif  //CRISP_QUOTE_HPP
+}  // namespace crisp
+
+#endif  //CRISP_INTERPRETVARIABLE_HPP

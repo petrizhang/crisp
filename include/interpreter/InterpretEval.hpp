@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_EVAL_HPP
-#define CRISP_EVAL_HPP
+#ifndef CRISP_INTERPRETEVAL_HPP
+#define CRISP_INTERPRETEVAL_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -26,15 +26,15 @@ using namespace util;
 /// Interpret eval expression (evaluate an expression with current environment).
 // TODO: fix quote here
 template <typename Environ, typename Expr>
-struct Interp<Eval<Expr>, Environ> {
-  using ExprInterp = Interp<Expr, Environ>;
+struct Interpret<Eval<Expr>, Environ> {
+  using ExprInterp = Interpret<Expr, Environ>;
   using InterpEnv = typename ExprInterp::env;
   using InterpResult = typename ExprInterp::type;
 
   static_assert(IsTemplateOf<Quote, InterpResult>::value,
                 "eval could only be applied to a quoted expression");
   using AST = typename GetQuoteAST<InterpResult>::type;
-  using ASTInterp = Interp<AST, Environ>;
+  using ASTInterp = Interpret<AST, Environ>;
 
   using type = typename ASTInterp::type;
   using env = typename ASTInterp::env;
@@ -46,4 +46,4 @@ struct Interp<Eval<Expr>, Environ> {
   }
 };
 }  // namespace crisp
-#endif  //CRISP_EVAL_HPP
+#endif  //CRISP_INTERPRETEVAL_HPP

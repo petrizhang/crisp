@@ -17,19 +17,19 @@
 #ifndef CRISP_INTERPRETER_HPP
 #define CRISP_INTERPRETER_HPP
 
-#include "BinaryOperator.hpp"
-#include "Block.hpp"
-#include "Call.hpp"
-#include "ChainOperator.hpp"
 #include "Common.hpp"
-#include "Define.hpp"
-#include "Eval.hpp"
-#include "If.hpp"
-#include "Lambda.hpp"
-#include "Literal.hpp"
-#include "Match.hpp"
-#include "Println.hpp"
-#include "Quote.hpp"
-#include "Variable.hpp"
+#include "InterpretBinaryOperator.hpp"
+#include "InterpretBlock.hpp"
+#include "InterpretCall.hpp"
+#include "InterpretChainOperator.hpp"
+#include "InterpretDefine.hpp"
+#include "InterpretEval.hpp"
+#include "InterpretIf.hpp"
+#include "InterpretLambda.hpp"
+#include "InterpretLiteral.hpp"
+#include "InterpretMatch.hpp"
+#include "InterpretPrintln.hpp"
+#include "InterpretQuote.hpp"
+#include "InterpretVariable.hpp"
 
 #endif  //CRISP_INTERPRETER_HPP

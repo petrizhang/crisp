@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_IF_HPP
-#define CRISP_IF_HPP
+#ifndef CRISP_INTERPRETIF_HPP
+#define CRISP_INTERPRETIF_HPP
 #include "Common.hpp"
 
 // TODO: Refine if implementation
@@ -28,7 +28,7 @@ using namespace util;
 template <typename Environ, typename CondInterpretd, typename Body,
           typename ElseBody>
 struct DelayIf {
-  using BodyInterp = Interp<Body, Environ>;
+  using BodyInterp = Interpret<Body, Environ>;
   using type = typename BodyInterp::type;
 
   static decltype(type::c_value()) Run() {
@@ -39,7 +39,7 @@ struct DelayIf {
 
 template <typename Environ, typename Body, typename ElseBody>
 struct DelayIf<Environ, Bool<false>, Body, ElseBody> {
-  using ElseBodyInterp = Interp<ElseBody, Environ>;
+  using ElseBodyInterp = Interpret<ElseBody, Environ>;
   using type = typename ElseBodyInterp::type;
 
   static decltype(type::c_value()) Run() {
@@ -49,10 +49,10 @@ struct DelayIf<Environ, Bool<false>, Body, ElseBody> {
 };
 
 template <typename Environ, typename Cond, typename Body, typename ElseBody>
-struct Interp<If<Cond, Body, ElseBody>, Environ> {
+struct Interpret<If<Cond, Body, ElseBody>, Environ> {
   using env = Environ;
 
-  using CondInterp = Interp<Cond, Environ>;
+  using CondInterp = Interpret<Cond, Environ>;
   using CondValue = typename CondInterp::type;
 
   using DelayIfInterp = DelayIf<Environ, CondValue, Body, ElseBody>;
@@ -65,4 +65,4 @@ struct Interp<If<Cond, Body, ElseBody>, Environ> {
   }
 };
 }  // namespace crisp
-#endif  //CRISP_IF_HPP
+#endif  //CRISP_INTERPRETIF_HPP

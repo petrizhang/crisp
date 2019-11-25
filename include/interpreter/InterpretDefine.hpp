@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_LITERAL_HPP
-#define CRISP_LITERAL_HPP
+#ifndef CRISP_INTERPRETDEFINE_HPP
+#define CRISP_INTERPRETDEFINE_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -23,34 +23,18 @@ using namespace ast;
 using namespace util;
 
 /// -------------------------------------------------------------------------------------------
-/// Interpret value types.
-template <typename Environ, bool V>
-struct Interp<Bool<V>, Environ> {
-  using env = Environ;
-  using type = Bool<V>;
-  static constexpr bool Run() { return V; }
-};
+/// Interpret variable definition. e.g. Define<Var<'a'>,Int<1>>
+template <typename Environ, typename Ident, typename Value>
+struct Interpret<Define<Ident, Value>, Environ> {
+  using ValueInterp = Interpret<Value, Environ>;
 
-template <typename Environ, char V>
-struct Interp<Char<V>, Environ> {
-  using env = Environ;
-  using type = Char<V>;
-  static constexpr char Run() { return V; }
-};
+  using env = typename EnvPut<Environ, Ident, typename ValueInterp::type>::type;
+  using type = Undefined;
 
-template <typename Environ, int V>
-struct Interp<Int<V>, Environ> {
-  using env = Environ;
-  using type = Int<V>;
-  static constexpr int Run() { return V; }
-};
-
-template <typename Environ, char... chars>
-struct Interp<String<chars...>, Environ> {
-  using env = Environ;
-  using type = String<chars...>;
-  static std::string Run() { return type::c_value(); }
+  static decltype(type::c_value()) Run() {
+    ValueInterp::Run();
+    return type::c_value();
+  }
 };
 }  // namespace crisp
-
-#endif  //CRISP_LITERAL_HPP
+#endif  //CRISP_INTERPRETDEFINE_HPP

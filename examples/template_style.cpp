@@ -17,6 +17,6 @@
 #include "CrispTemplateAPI.h"
 
 int main() {
-  Interp<Println<Add<Int<1>, Int<1>>>>::Run();
+  Interpret<Println<Add<Int<1>, Int<1>>>>::Run();
   return 0;
 }

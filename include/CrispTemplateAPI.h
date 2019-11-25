@@ -56,6 +56,6 @@ using crisp::Quote;
 
 using crisp::Eval;
 
-using crisp::Interp;
+using crisp::Interpret;
 
 #endif  //CRISP_TEMPLATES_H

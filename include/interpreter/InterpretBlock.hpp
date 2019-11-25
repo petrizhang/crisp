@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_BLOCK_HPP
-#define CRISP_BLOCK_HPP
+#ifndef CRISP_INTERPRETBLOCK_HPP
+#define CRISP_INTERPRETBLOCK_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -27,12 +27,12 @@ using namespace util;
 /// Var<'n'>> The result of a block is the result of the last expression int
 /// this block
 template <typename Environ, typename Head, typename... Tail>
-struct Interp<Block<Head, Tail...>, Environ> {
+struct Interpret<Block<Head, Tail...>, Environ> {
   using env = Environ;
 
-  using HeadInterp = Interp<Head, Environ>;
+  using HeadInterp = Interpret<Head, Environ>;
   // Pass the resulted env from `Head` to the next expression's execution
-  using TailInterp = Interp<Block<Tail...>, typename HeadInterp::env>;
+  using TailInterp = Interpret<Block<Tail...>, typename HeadInterp::env>;
   using type = typename TailInterp::type;
 
   static decltype(type::c_value()) Run() {
@@ -43,8 +43,8 @@ struct Interp<Block<Head, Tail...>, Environ> {
 };
 
 template <typename Environ, typename Head>
-struct Interp<Block<Head>, Environ> {
-  using HeadInterp = Interp<Head, Environ>;
+struct Interpret<Block<Head>, Environ> {
+  using HeadInterp = Interpret<Head, Environ>;
 
   using env = typename HeadInterp::env;
   using type = typename HeadInterp::type;
@@ -55,4 +55,4 @@ struct Interp<Block<Head>, Environ> {
   }
 };
 }  // namespace crisp
-#endif  //CRISP_BLOCK_HPP
+#endif  //CRISP_INTERPRETBLOCK_HPP

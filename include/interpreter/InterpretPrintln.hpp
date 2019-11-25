@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_PRINTLN_HPP
-#define CRISP_PRINTLN_HPP
+#ifndef CRISP_INTERPRETPRINTLN_HPP
+#define CRISP_INTERPRETPRINTLN_HPP
 #include "Common.hpp"
 
 namespace crisp {
@@ -24,12 +24,12 @@ using namespace util;
 /// -------------------------------------------------------------------------------------------
 /// Interpret println
 template <typename Environ, typename Head, typename... Args>
-struct Interp<Println<Head, Args...>, Environ> {
+struct Interpret<Println<Head, Args...>, Environ> {
   static const char *Run() {
-    auto value = Interp<Head, Environ>::Run();
+    auto value = Interpret<Head, Environ>::Run();
     output(value);
     std::cout << " ";
-    Interp<Println<Args...>, Environ>::Run();
+    Interpret<Println<Args...>, Environ>::Run();
     return "#undefined";
   };
 
@@ -38,9 +38,9 @@ struct Interp<Println<Head, Args...>, Environ> {
 };
 
 template <typename Environ, typename Head>
-struct Interp<Println<Head>, Environ> {
+struct Interpret<Println<Head>, Environ> {
   static const char *Run() {
-    auto value = Interp<Head, Environ>::Run();
+    auto value = Interpret<Head, Environ>::Run();
     output(value);
     std::cout << std::endl;
     return "#undefined";
@@ -51,7 +51,7 @@ struct Interp<Println<Head>, Environ> {
 };
 
 template <typename Environ>
-struct Interp<Println<>, Environ> {
+struct Interpret<Println<>, Environ> {
   static const char *Run() {
     std::cout << std::endl;
     return "#undefined";
@@ -62,4 +62,4 @@ struct Interp<Println<>, Environ> {
 };
 
 }  // namespace crisp
-#endif  //CRISP_PRINTLN_HPP
+#endif  //CRISP_INTERPRETPRINTLN_HPP
