@@ -20,8 +20,10 @@
 #include <string>
 
 namespace ast {
-/// -------------------------------------------------------------------------------------------
-/// Boolean value type.
+/**
+ * Boolean literal.
+ * @tparam V
+ */
 template <bool V>
 struct Bool {
   static constexpr const char *repr = "Bool";
@@ -29,8 +31,10 @@ struct Bool {
   static const bool value = V;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Char value type.
+/**
+ * Char literal.
+ * @tparam V
+ */
 template <char V>
 struct Char {
   static constexpr const char *repr = "Char";
@@ -38,8 +42,10 @@ struct Char {
   static const char value = V;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Int value type.
+/**
+ * Int literal.
+ * @tparam V
+ */
 template <int V>
 struct Int {
   static constexpr const char *repr = "Int";
@@ -47,8 +53,10 @@ struct Int {
   static const int value = V;
 };
 
-/// -------------------------------------------------------------------------------------------
-/// String value type.
+/**
+ * String literal.
+ * @tparam args
+ */
 template <char... args>
 struct String;
 
@@ -65,298 +73,418 @@ struct String<c, args...> {
   static const std::string c_value() { return std::string(1, c) + String<args...>::c_value(); }
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Nil type. It likes the `void` type in C++.
+/**
+ * Nil literal, which equals to `null` in many programming languages.
+ */
 struct Nil {
   static constexpr const char *repr = "Nil";
   static constexpr const char *c_value() { return "#nil"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Undefined type. We use this value when we cannot resolve a variable reference.
+/**
+ * Undefined.
+ * We use this value when we cannot resolve a variable reference.
+ */
 struct Undefined {
   static constexpr const char *repr = "Undefined";
   static constexpr const char *c_value() { return "#undefined"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Variable reference or an identifier used in function parameters and variable definition.
+/**
+ * Variable reference or an identifier used in function parameters and variable definition.
+ * @tparam args
+ */
 template <char... args>
 struct Var : String<args...> {};
 
-/// -------------------------------------------------------------------------------------------
-/// Pair(tuple2) value type.
+/**
+ * Pair(tuple2) value type.
+ * @tparam L
+ * @tparam R
+ */
 template <typename L, typename R>
 struct Pair {
   static constexpr const char *repr = "Pair";
   static constexpr const char *c_value() { return "#pair"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// quote, which will prevent the interpreter's evaluation for given `AST`.
-/// Note: Quote< Var<...> > is equivalent to String<...>
 // TODO print ast nodes prettily
+/**
+ * Quote, which will prevent the interpreter's evaluation for given `AST`.
+ * @tparam AST
+ */
 template <typename AST>
 struct Quote {
   static constexpr const char *repr = "Quote";
   static constexpr const char *c_value() { return "#quote"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// evaluate a quoted expression in current environment
+/**
+ * Evaluate a quoted expression in current environment.
+ * @tparam QuotedExpr
+ */
 template <typename QuotedExpr>
 struct Eval {
   static constexpr const char *repr = "Eval";
   static constexpr const char *c_value() { return "#eval"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Closure type. We use this type to represent a function value
+/**
+ * Closure. We use this type to represent a function value.
+ * @tparam Environ
+ * @tparam Func
+ */
 template <typename Environ, typename Func>
 struct Closure {
   static constexpr const char *repr = "Closure";
   static constexpr const char *c_value() { return "#closure"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// We use this type to represent a `println` event
+/**
+ * We use this type to represent a `println` event
+ * @tparam Args
+ */
 template <typename... Args>
 struct Println {
   static constexpr const char *repr = "Println";
   static constexpr const char *c_value() { return "#println"; };
 };
 
+/**
+ * Block.
+ * A sequence of expressions.
+ * It's result is the result of it's last expression.
+ * @tparam Args
+ */
 template <typename... Args>
 struct Block {
   static constexpr const char *repr = "Block";
   static constexpr const char *c_value() { return "#block"; };
 };
 
+/**
+ * Parameter list used in function definition.
+ * @tparam Params
+ */
 template <typename... Params>
 struct ParamList {
   static constexpr const char *repr = "ParamList";
   static constexpr const char *c_value() { return "#paramList"; };
 };
 
+/**
+ * If-then-else expression.
+ * @tparam Cond
+ * @tparam Body
+ * @tparam ElseBody
+ */
 template <typename Cond, typename Body, typename ElseBody>
 struct If {
   static constexpr const char *repr = "If";
   static constexpr const char *c_value() { return "#if"; };
 };
 
+/**
+ * Define statement.
+ * @tparam Args
+ */
 template <typename... Args>
 struct Define {
   static constexpr const char *repr = "Define";
   static constexpr const char *c_value() { return "#define"; };
 };
 
+/**
+ * Function call.
+ * @tparam Args
+ */
 template <typename... Args>
 struct Call {
   static constexpr const char *repr = "Call";
   static constexpr const char *c_value() { return "#call"; };
 };
 
+/**
+ * Lambda literal.
+ * @tparam Params
+ * @tparam Body
+ */
 template <typename Params, typename Body>
 struct Lambda {
   static constexpr const char *repr = "Lambda";
   static constexpr const char *c_value() { return "#lambda"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// List(x,x,x,...)
-/// e.g. List<Int<1>, Int<2>> will be Pair<Int<1>,Pair<Int<2>, Nil>>.
+/**
+ * List
+ * @tparam T
+ * @tparam Args
+ */
 template <typename T, typename... Args>
 struct List {
   static constexpr const char *repr = "List";
   static constexpr const char *c_value() { return "#list"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// cons: construct Pair<L,R> from L and R.
+/**
+ * Cons: construct Pair<L,R> from L and R.
+ * @tparam L
+ * @tparam R
+ */
 template <typename L, typename R>
 struct Cons {
   static constexpr const char *repr = "Cons";
   static constexpr const char *c_value() { return "#cons"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// car: get the first element of a Pair, e.g. Car<Pair<L,R>> will be L.
+/**
+ * Car: get the first element of a Pair, e.g. Car<Pair<L,R>> will be L.
+ * @tparam T
+ */
 template <typename T>
 struct Car {
   static constexpr const char *repr = "Car";
   static constexpr const char *c_value() { return "#car"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// cdr: get the second element of a Pair, e.g. Cdr<Pair<L,R>> will be R.
+/**
+ * cdr: get the second element of a Pair, e.g. Cdr<Pair<L,R>> will be R.
+ */
 template <typename T>
 struct Cdr {
   static constexpr const char *repr = "Cdr";
   static constexpr const char *c_value() { return "#cdr"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// +
+/**
+ * +
+ * @tparam L
+ * @tparam R
+ * @tparam Args
+ */
 template <typename L, typename R, typename... Args>
 struct Add {
   static constexpr const char *repr = "+";
   static constexpr const char *c_value() { return "#+"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// -
+/**
+ * -
+ * @tparam L
+ * @tparam R
+ * @tparam Args
+ */
 template <typename L, typename R, typename... Args>
 struct Sub {
   static constexpr const char *repr = "-";
   static constexpr const char *c_value() { return "#-"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// *
+/**
+ * *
+ * @tparam L
+ * @tparam R
+ * @tparam Args
+ */
 template <typename L, typename R, typename... Args>
 struct Mul {
   static constexpr const char *repr = "*";
   static constexpr const char *c_value() { return "#*"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// /
+/**
+ * /
+ * @tparam L
+ * @tparam R
+ * @tparam Args
+ */
 template <typename L, typename R, typename... Args>
 struct Mod {
   static constexpr const char *repr = "/";
   static constexpr const char *c_value() { return "#/"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// &&
+/**
+ * &&
+ * @tparam L
+ * @tparam R
+ * @tparam Args
+ */
 template <typename L, typename R, typename... Args>
 struct And {
   static constexpr const char *repr = "and";
   static constexpr const char *c_value() { return "#and"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// ||
+/**
+ * ||
+ * @tparam L
+ * @tparam R
+ * @tparam Args
+ */
 template <typename L, typename R, typename... Args>
 struct Or {
   static constexpr const char *repr = "or";
   static constexpr const char *c_value() { return "#or"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// ==
+/**
+ * ==
+ * @tparam L
+ * @tparam R
+ */
 template <typename L, typename R>
 struct IsEqual {
   static constexpr const char *repr = "==";
   static constexpr const char *c_value() { return "#=="; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// >
+/**
+ * >
+ * @tparam L
+ * @tparam R
+ */
 template <typename L, typename R>
 struct IsGreaterThan {
   static constexpr const char *repr = ">";
   static constexpr const char *c_value() { return "#>"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// <
+/**
+ * <
+ * @tparam L
+ * @tparam R
+ */
 template <typename L, typename R>
 struct IsLessThan {
   static constexpr const char *repr = "<";
   static constexpr const char *c_value() { return "#<"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// >=
+/**
+ * >=
+ * @tparam L
+ * @tparam R
+ */
 template <typename L, typename R>
 struct IsGreaterEqual {
   static constexpr const char *repr = ">=";
 };
 
-/// -------------------------------------------------------------------------------------------
-/// <=
+/**
+ * <=
+ * @tparam L
+ * @tparam R
+ */
 template <typename L, typename R>
 struct IsLessEqual {
   static constexpr const char *repr = "<=";
   static constexpr const char *c_value() { return "#<="; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Placeholder used in match expression which will match any value
+/**
+ * Placeholder used in match expression which will match any value.
+ */
 struct _ {
   static constexpr const char *repr = "_";
   static constexpr const char *c_value() { return "#_"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// Placeholder used in match expression which will match any sequence
-/// e.g.
-/// ```
-///    Match< List<Int<1>, Int<2>, Int<3>, Int<4> >,
-///           Case< List<___, Var<'l','a','s','t'> >, Var<'l','a','s','t'> >
-/// ```
-/// will be ```Int<4>```
+/**
+ * Placeholder used in match expression which will match any sequence.
+ * e.g.
+ * @code
+ * Match<List<Int<1>, Int<2>, Int<3>, Int<4> >,
+ *       Case< List<___, Var<'l','a','s','t'> >, Var<'l','a','s','t'>
+ *       Default< Nil >>
+ * @endcode
+ * will be ```Int<4>```
+ */
 struct ___ {
   static constexpr const char *repr = "___";
   static constexpr const char *c_value() { return "#___"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// case branch used in `Match` expression
+/**
+ * Case branch used in `Match` expression.
+ *
+ * @tparam Condition
+ * @tparam Result
+ */
 template <typename Condition, typename Result>
 struct Case {
   static constexpr const char *repr = "Case";
   static constexpr const char *c_value() { return "#case"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// default branch used in `Match` and `Cond` expression
+/**
+ * Default branch used in `Match` and `Cond` expression.
+ * @tparam Expr
+ */
 template <typename Expr>
 struct Default {
   static constexpr const char *repr = "Default";
   static constexpr const char *c_value() { return "#default"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// when, branch used in `Match` expression
+/**
+ * When branch used in `Match` expression.
+ * @tparam Condition
+ * @tparam Result
+ */
 template <typename Condition, typename Result>
 struct When {
   static constexpr const char *repr = "When";
   static constexpr const char *c_value() { return "#when"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// else, branch used in `Match` and `Cond` expression
+/**
+ * Else branch used in `Match` and `Cond` expression.
+ * @tparam Expr
+ */
 template <typename Expr>
 struct Else {
   static constexpr const char *repr = "Else";
   static constexpr const char *c_value() { return "#else"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// match, e.g. Match< Add< Int<1>, Int<2> >,
-///                    Case< Add<_,_>, Str<'+'> >,
-///                    Case< Mul<_,_>, Str<'*'> >,
-///                    Default< Str<' '>> >
+/**
+ * Pattern match expression.
+ * @tparam AST
+ * @tparam Branch1
+ * @tparam Branch2
+ * @tparam Branches
+ */
 template <typename AST, typename Branch1, typename Branch2, typename... Branches>
 struct Match {
   static constexpr const char *repr = "Match";
   static constexpr const char *c_value() { return "#match"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// capture in match expression
+/**
+ * Capture in match expression.
+ * @tparam Target
+ * @tparam VarName
+ */
 template <typename Target, typename VarName>
 struct Capture {
   static constexpr const char *repr = "capture";
   static constexpr const char *c_value() { return "#capture"; };
 };
 
-/// -------------------------------------------------------------------------------------------
-/// cond, e.g. Cond< When<true, Int<1>>,
-///                  When<false, Int<2>>,
-///                  Else<Int<3>> >
+/**
+ * Cond expression.
+ *
+ * e.g.
+ * @code
+ * Cond< When<true, Int<1>>,
+ *       When<false, Int<2>>,
+ *       Else<Int<3>> >
+ * @endcode
+ * @tparam Branch1
+ * @tparam Branch2
+ * @tparam Branches
+ */
 template <typename Branch1, typename Branch2, typename... Branches>
 struct Cond {
   static constexpr const char *repr = "Cond";
