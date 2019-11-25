@@ -59,10 +59,10 @@ struct IsCallable<Closure<Args...>> {
 /// -------------------------------------------------------------------------------------------
 /// A map-like collection type.
 template <typename... Pairs>
-using Dict = Vector<Pairs...>;
+using Dict = List<Pairs...>;
 
 template <typename dict, typename pair>
-using DictPut = VectorPushFront<dict, pair>;
+using DictPut = ListPushFront<dict, pair>;
 
 template <typename dict, typename K>
 struct DictGet {
@@ -203,13 +203,13 @@ struct ConditionalApply {
 /// Environment stack implementation.
 /// Every element in the stack is a symbol table for a specific lexical scope.
 template <typename... Dicts>
-using Env = Vector<Dicts...>;
+using Env = List<Dicts...>;
 
 template <typename Environ, typename Extra>
-using EnvExtendBack = VectorExtendBack<Environ, Extra>;
+using EnvExtendBack = ListExtendBack<Environ, Extra>;
 
 template <typename env, typename dict>
-using EnvPushFront = VectorPushFront<env, dict>;
+using EnvPushFront = ListPushFront<env, dict>;
 
 /// -------------------------------------------------------------------------------------------
 /// Bind a variable name `K` with a value `V` in current scope
@@ -599,12 +599,12 @@ struct QuoteMatchCase<Environ, Source, Source> {
   // When match Capture<_, Var<...> > with Capture<_, Var<...> >,
   // put `Capture<_, Var<...> >` to current environment.
   // When match Capture<___, Var<...> > with Capture<___, Var<...> >,
-  // put `Vector< Capture<_, Var<...>> >` to current environment.
+  // put `List< Capture<_, Var<...>> >` to current environment.
   using MaybeEnv = typename ConditionalApply<
       When<Bool<IsCaptureAnySingle<Source>::value>,
            DeferApply<DictPut, Environ, Pair<SomeVarName, Source>>>,
       When<Bool<IsCaptureAnyList<Source>::value>,
-           DeferApply<DictPut, Environ, Pair<SomeVarName, Vector<Source>>>>,
+           DeferApply<DictPut, Environ, Pair<SomeVarName, List<Source>>>>,
       Else<DeferApply<NilF>>>::type;
 
   // If `Source` is a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
@@ -633,10 +633,10 @@ struct QuoteMatchCase<Environ, Source, Source> {
    *
    * 2. When match C<Args...> with C<Args...>, we still need to match `Args` recursively.
    * Consider the follow example:
-   *   QuoteMatchCase< T, Vector< Capture<A, Var<'a'>> >
+   *   QuoteMatchCase< T, List< Capture<A, Var<'a'>> >
    * Users use this line to match a single element array and capture it's first element `A` to `Var<'a'>`.
-   * But when the given `T` is `Vector< Capture<A, Var<'a'> >`.
-   * we got `QuoteMatchCase< Vector< Capture<A, Var<'a'> >, Vector< Capture<A, Var<'a'>> > >`
+   * But when the given `T` is `List< Capture<A, Var<'a'> >`.
+   * we got `QuoteMatchCase< List< Capture<A, Var<'a'> >, List< Capture<A, Var<'a'>> > >`
    * In this case, we regard it as a match failure, because the first element of the array is
    * `Capture<_, Var<'a'>`, and it doesn't match `A`.
    */

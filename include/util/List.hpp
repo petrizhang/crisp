@@ -17,46 +17,46 @@
 #ifndef CRISP_LIST_HPP
 #define CRISP_LIST_HPP
 
+#include "ast/AST.hpp"
 #include "VectorLike.hpp"
 
 namespace util {
+using ast::List;
 
 /**
- *  A vector-like collection type.
+ *  List operations.
  */
-template <typename... Elements>
-struct Vector {};
 
 template <typename T>
-struct VectorHead;
+struct ListHead;
 
 template <typename... Elements>
-struct VectorHead<Vector<Elements...>> : TemplateHead<Vector<Elements...>> {};
+struct ListHead<List<Elements...>> : TemplateHead<List<Elements...>> {};
 
 template <typename T>
-struct VectorTail;
+struct ListTail;
 
 template <typename... Elements>
-struct VectorTail<Vector<Elements...>> : TemplateTail<Vector<Elements...>> {};
+struct ListTail<List<Elements...>> : TemplateTail<List<Elements...>> {};
 
 template <typename T, typename Elem>
-struct VectorPushFront;
+struct ListPushFront;
 
 template <typename... Elements, typename Elem>
-struct VectorPushFront<Vector<Elements...>, Elem> : TemplatePushFront<Vector<Elements...>, Elem> {};
+struct ListPushFront<List<Elements...>, Elem> : TemplatePushFront<List<Elements...>, Elem> {};
 
 template <typename T, typename Elem>
-struct VectorPushBack;
+struct ListPushBack;
 
 template <typename... Elements, typename Elem>
-struct VectorPushBack<Vector<Elements...>, Elem> : TemplatePushBack<Vector<Elements...>, Elem> {};
+struct ListPushBack<List<Elements...>, Elem> : TemplatePushBack<List<Elements...>, Elem> {};
 
 template <typename L, typename R>
-struct VectorExtendBack;
+struct ListExtendBack;
 
 template <typename... LElements, typename... RElements>
-struct VectorExtendBack<Vector<LElements...>, Vector<RElements...>>
-    : TemplateConcat<Vector<LElements...>, Vector<RElements...>> {};
+struct ListExtendBack<List<LElements...>, List<RElements...>>
+    : TemplateConcat<List<LElements...>, List<RElements...>> {};
 
 }  // namespace util
 

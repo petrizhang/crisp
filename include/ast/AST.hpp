@@ -217,10 +217,9 @@ struct Lambda {
 
 /**
  * List
- * @tparam T
  * @tparam Args
  */
-template <typename T, typename... Args>
+template <typename... Args>
 struct List {
   static constexpr const char *repr = "List";
   static constexpr const char *c_value() { return "#list"; };
