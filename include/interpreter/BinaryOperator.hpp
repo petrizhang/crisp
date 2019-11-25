@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_BINARYOPERATOR_HPP
-#define CRISP_BINARYOPERATOR_HPP
+#ifndef CRISP_BINARY_OPERATOR_HPP
+#define CRISP_BINARY_OPERATOR_HPP
 #include "Common.h"
 
 namespace crisp {
@@ -64,4 +64,4 @@ InterpForBinaryOperator(IsLessThan);
 InterpForBinaryOperator(IsGreaterEqual);
 InterpForBinaryOperator(IsLessEqual);
 }  // namespace crisp
-#endif  //CRISP_BINARYOPERATOR_HPP
+#endif  //CRISP_BINARY_OPERATOR_HPP

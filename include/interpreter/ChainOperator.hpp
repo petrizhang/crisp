@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_CHAINOPERATOR_HPP
-#define CRISP_CHAINOPERATOR_HPP
+#ifndef CRISP_CHAIN_OPERATOR_HPP
+#define CRISP_CHAIN_OPERATOR_HPP
 #include "Common.h"
 
 namespace crisp {
@@ -104,4 +104,4 @@ InterpForChainOperator(Mod);
 InterpForChainOperator(And);
 InterpForChainOperator(Or);
 }  // namespace crisp
-#endif  //CRISP_CHAINOPERATOR_HPP
+#endif  //CRISP_CHAIN_OPERATOR_HPP
