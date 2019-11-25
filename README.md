@@ -285,8 +285,8 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
 
 1. **Copy `crisp/include` into your project**.
 2. 
-    - To use **Crisp macro api**, **`#include "crisp_macros.h"`**.
-    - To use **Crisp template api**, **`#include "crisp_templates.h"`**.
+    - To use **Crisp macro api**, **`#include "CrispMacroAPI.h"`**.
+    - To use **Crisp template api**, **`#include "CrispTemplateAPI.h"`**.
 3. **Enjoy it**.
 
 ### Notes
@@ -300,10 +300,10 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
 ## API
 
 ### Macro Style
-Users could find a complete macro api list at [include/crisp_macros.h](https://github.com/pzque/crisp/blob/master/include/crisp_macros.h).
+Users could find a complete macro api list at [include/crisp_macros.h](https://github.com/pzque/crisp/blob/master/include/CrispMacroAPI.h).
   
 ### Template Style
-Users could find a complete template api list at [include/crisp_templates.h](https://github.com/pzque/crisp/blob/master/include/crisp_templates.h)..
+Users could find a complete template api list at [include/CrispTemplateAPI.h](https://github.com/pzque/crisp/blob/master/include/CrispTemplateAPI.h)..
 
 ## Build and Dependency
 If you want to explore Crisp source code and run Crisp examples and tests, you need to:
