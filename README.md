@@ -76,7 +76,8 @@ Similarly to **s-expressions**, this kind of expressions are called **m-expressi
 which could also be treated as a tree structure(AST) that encodes a program.
 
 Then we could use C++ template meta-programming techniques to write a interpreter that
-interprets these kinds of AST at compile time.
+interprets these kinds of AST at compile time,
+as the [Crisp interpreter](https://github.com/pzque/crisp/tree/master/include/interpreter) does.
 
 #### Feature 2
 We have **nested templates as AST** now, but C++ doesn't provide convenient tools for users to process nested templates.
