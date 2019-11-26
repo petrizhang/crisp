@@ -14,7 +14,7 @@ with C++ templates at **compile time**.
 Yes, C++ templates are powerful enough to build arbitrarily complex programs. 
 But the tedious syntax and obscure semantic of C++ prevent people to do such thing.   
 
-Now, Crisp brings a **convenient, flexible and elegant** way for people to play with C++ templates and build
+Now, Crisp brings a **convenient, flexible and elegant** way for users to play with C++ templates and build
 compile-time programs.
 
 In short, Crisp is a Lisp-like and Turing-complete DSL built upon C++ templates.
