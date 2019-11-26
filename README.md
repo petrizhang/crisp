@@ -50,9 +50,9 @@ For example: `((1+2)*(3+4))` in Lisp will be:
 This gives users a chance to process code as data(lists), which makes meta-programming easier.
 
 ### Crisp
-The two core features make Lisp elegant are:
+In conclusion, the two most important features make Lisp elegant are:
 1. Lisp exposes the AST structure(lists) directly to users.
-2. Lisp provides tools(list processing functions) for users to easily process AST(lists).
+2. Lisp provides tools(macros and list processing functions) for users to easily access and process AST(lists).
 
 #### Feature 1
 We found that feature 1 is natural in C++ templates, because C++ templates are very similar to lists and 
@@ -73,7 +73,7 @@ Mul< Add<1, 2>,
 ```
 
 Similarly to **s-expressions**, this kind of expressions are called **m-expressions**, 
-which could also form the program AST.
+which could also be treated as a tree structure(AST) that encodes a program.
 
 Then we could use C++ template meta-programming techniques to write a interpreter that
 interprets these kinds of AST at compile time.
