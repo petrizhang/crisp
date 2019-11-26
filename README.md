@@ -83,8 +83,23 @@ as the [Crisp interpreter](https://github.com/pzque/crisp/tree/master/include/in
 We have **nested templates as AST** now, but C++ doesn't provide convenient tools for users to process nested templates.
 It is very hard to modifies a deep level of a nested template and transform it to another one.
 
-Crisp brings the novel **pattern match** feature for users to process such nested templates,
-which makes it dramatically easy to process Crisp program code just like Lisp.   
+Crisp brings the novel **pattern match** feature for users to process such nested templates.
+Due to that, processing program code in Crisp is dramatically easy. 
+
+Here is a simple example demonstrates how to transform an addition expression to a multiplication expression
+throw a function: 
+
+```cpp
+  block(define(var("add2mul"), lambda(params(var("x")),
+                                      match(var("x"),
+                                            case_(add(var("left"), var("right")),
+                                                  mul(var("left"), var("right"))),
+                                            default_(var("x"))))),
+        call(var("add2mul"), quote(add(v(1), v(2)))));
+``` 
+
+Crisp supports Lisp-style macros as well. Further more, Crisp provides the **plugin** system which allows users to
+freely modify the program AST before it being interpreted. These advance topics will be discussed later.  
 
 ## Getting Started
 Let's start with two simple but complete examples.
