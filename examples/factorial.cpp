@@ -17,8 +17,8 @@
 #include <iostream>
 #include "CrispMacroAPI.h"
 
-using n = var('n');
-using factorial = var('f', 'a', 'c', 't', 'o', 'r', 'i', 'a', 'l');
+using n = var("n");
+using factorial = var("factorial");
 
 using factorialDef = define(factorial, lambda(params(n),
                                               if_(eq_(n, v(1)),
@@ -27,9 +27,9 @@ using factorialDef = define(factorial, lambda(params(n),
 
 int main() {
   constexpr auto r0 = interpret(block(factorialDef,
-                                 call(factorial, v(3))))::c_value();
+                                      call(factorial, v(3))))::c_value();
   constexpr auto r1 = interpret(block(factorialDef,
-                                 call(factorial, v(10))))::c_value();
+                                      call(factorial, v(10))))::c_value();
 
   // factorial(3) = 6
   static_assert(r0 == 6, "");

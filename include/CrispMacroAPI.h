@@ -20,12 +20,14 @@
 #include "interpreter/Interpreter.hpp"
 
 using crisp::_;
+using crisp::operator""_s;
+using crisp::operator""_v;
 // TODO using crisp::___;
 
 #define v(x) crisp::Pack<decltype(x), x>::type
 #define quote(e) crisp::Quote<e>
 #define eval(expr) crisp::Eval<expr>
-#define str(args...) crisp::String<args>
+#define str(x) decltype(x##_s)
 #define add(args...) crisp::Add<args>
 #define sub(args...) crisp::Sub<args>
 #define mul(args...) crisp::Mul<args>
@@ -39,7 +41,7 @@ using crisp::_;
 #define and_(args...) crisp::And<args>
 #define if_(cond, body, elseBody) crisp::If<cond, body, elseBody>
 #define params(args...) crisp::ParamList<args>
-#define var(args...) crisp::Var<args>
+#define var(x) decltype(x##_v)
 #define define(args...) crisp::Define<args>
 #define lambda(args...) crisp::Lambda<args>
 #define call(f, args...) crisp::Call<f, args>

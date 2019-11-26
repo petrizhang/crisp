@@ -15,26 +15,12 @@
  */
 
 #include <iostream>
-#include "CrispMacroAPI.h"
 
-using x = var("x");
-using y = var("y");
-
-using prgram_make_addx = lambda(params(y),
-                                lambda(params(x), add(x, y)));
+#include "ast/AST.hpp"
+using namespace ast;
 
 int main() {
-  using make_addx = interpret(prgram_make_addx);
-  using add1 = interpret(call(make_addx, v(1)));
-  using add2 = interpret(call(make_addx, v(2)));
-
-  using r1 = interpret(call(add1, v(1)));
-  using r2 = interpret(call(add2, v(1)));
-
-  static_assert(r1::c_value() == 2, "");
-  std::cout << r1::c_value() << std::endl;
-  static_assert(r2::c_value() == 3, "");
-  std::cout << r2::c_value() << std::endl;
-
+  using t = decltype("1234"_s);
+  std::cout << t::value;
   return 0;
 }

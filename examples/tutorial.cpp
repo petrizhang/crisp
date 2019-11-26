@@ -33,7 +33,7 @@ int main() {
     // char
     run(println(v('c')));
     // string
-    run(println(str('s', 'y', 'm', 'b', 'o', 'l')));
+    run(println(str("symbol")));
   }
   //-### Block
   {
@@ -70,12 +70,12 @@ int main() {
   //-### Variable definition
   {
     /*
-       * int a = 100;
-       * println(a);
-       */
-    run(block(define(var('a'), v(100)),
-              var('a'),
-              println(var('a'))));
+     * int a = 100;
+     * println(a);
+     */
+    run(block(define(var("a"), v(100)),
+              var("a"),
+              println(var("a"))));
   }
   //-### If-then-else
   {
@@ -84,18 +84,18 @@ int main() {
   }
   //-### Function definition
   {
-    run(block(define(var('+'), lambda(params(var('x'), var('y')),
-                                      add(var('x'), var('y')))),
-              define(var('s'), call(var('+'), v(10), v(20))),
-              println(var('s'))));
+    run(block(define(var("+"), lambda(params(var("x"), var("y")),
+                                      add(var("x"), var("y")))),
+              define(var("s"), call(var("+"), v(10), v(20))),
+              println(var("s"))));
   }
   //-### Closure
   {
-    using x = var('x');
-    using y = var('y');
-    using add1 = var('a', 'd', 'd', '1');
-    using add2 = var('a', 'd', 'd', '2');
-    using makeAddX = var('m', 'a', 'k', 'e', 'A', 'd', 'd', 'X');
+    using x = var("x");
+    using y = var("y");
+    using add1 = var("add1");
+    using add2 = var("add2");
+    using makeAddX = var("makeAddX");
 
     // 11, 12
     run(block(define(makeAddX, lambda(params(y),
@@ -107,8 +107,8 @@ int main() {
   }
   //-### Recursive Function
   {
-    using n = var('n');
-    using factorial = var('f', 'a', 'c', 't', 'o', 'r', 'i', 'a', 'l');
+    using n = var("n");
+    using factorial = var("factorial");
 
     // 3628800
     run(block(define(factorial, lambda(params(n),
@@ -117,48 +117,39 @@ int main() {
                                            mul(n, call(factorial, sub(n, v(1))))))),
               println(call(factorial, v(10)))));
   }
-  //-### Quote, QuoteF, Unquote and Eval
+  //-### Quote and Eval
   {
-//    // quote
-//    using quoted_add = quote(add(v(1), v(2)));
-//    // eval
-//    run(println(eval(quoted_add)));
-//
-//    // quotef
-//    // e.g. quotef(f( args...))
-//    // here `args` will be evaluated to `evaluatedArgs`
-//    // and the result will be `quote(f(evaluatedArgs...))`
-//    run(println(eval(quotef(mul(unquote(quoted_add), unquote(quoted_add))))));
+      //    // quote
+      //    using quoted_add = quote(add(v(1), v(2)));
+      //    // eval
+      //    run(println(eval(quoted_add)));
   }
   //-### Pattern Match
   {
-//    using x = var('x');
-//    using y = var('y');
-//
-//    /*
-//     * Add(1, 2) match {
-//     *   case Sub(_, _) => '-'
-//     *   case Add(_, _) => '0'
-//     *   case _ => '?'
-//     * }
-//     *
-//     * Note: In order to prevent Crisp interpreter's evaluation,
-//     *       you need to quote an expression before match it.
-//     * Here we quote the expression `add(v(1), v(2))` before match it.
-//     */
-//    // the result is '+'
-//    run(println(match(quote(add(v(1), v(2))),
-//                      case_(sub(_, _), v('-')),
-//                      case_(add(_, _), v('+')),
-//                      default_(v('?')))));
-//
-//    // Capture the first parameter of an `add` expression with `x`.
-//    // Note: When match a quoted expression, the value of captured variables
-//    //       are also quoted expressions.
-//    // Here the expressioin `v(1)` is captured as `quote(v(1))`,
-//    // thus we need use `unquote` to get the orginal AST `v(1)`.
-//    run(println(match(quote(add(v(1), v(2))),
-//                      case_(add(capture(_, x), _), unquote(x)),
-//                      default_(v('?')))));
+    using x = var("x");
+    using y = var("y");
+
+    /*
+         * Add(1, 2) match {
+         *   case Sub(_, _) => '-'
+         *   case Add(_, _) => '0'
+         *   case _ => '?'
+         * }
+         *
+         * Note: In order to prevent Crisp interpreter's evaluation,
+         *       you need to quote an expression before match it.
+         * Here we quote the expression `add(v(1), v(2))` before match it.
+         */
+    // the result is '+'
+    run(println(match(quote(add(v(1), v(2))),
+                      case_(sub(_, _), v('-')),
+                      case_(add(_, _), v('+')),
+                      default_(v('?')))));
+
+    // Capture the first parameter of an `add` expression with `x`.
+    // Here the expression `v(1)` is captured as `v(1)`,
+    run(println(match(quote(add(v(1), v(2))),
+                      case_(add(capture(_, x), _), x),
+                      default_(v('?')))));
   }
 }

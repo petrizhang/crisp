@@ -58,20 +58,29 @@ struct Int {
  * @tparam args
  */
 template <char... args>
-struct String;
-
-template <char c>
-struct String<c> {
-  static constexpr const char *repr = "String";
-  static const std::string c_value() { return std::string(1, c); }
+struct String {
+  static constexpr const char *c_value() { return value; };
+  static constexpr const char value[sizeof...(args) + 1] = {args..., '\0'};
 };
 
-template <char c, char... args>
-struct String<c, args...> {
-  /// These members and methods are used for interacting with c++ at runtime.
-  static constexpr const char *repr = "String";
-  static const std::string c_value() { return std::string(1, c) + String<args...>::c_value(); }
-};
+template <char... args>
+constexpr const char String<args...>::value[sizeof...(args) + 1];
+
+/**
+ * Convert a string literal to a String<...> instance.
+ * e.g.
+ * @code
+ *   using t = decltype("hello"_s);
+ *   std::cout << t::value; // hello
+ * @endcode
+ * @tparam CharT
+ * @tparam Chars
+ * @return
+ */
+template <typename CharT, CharT... Chars>
+constexpr auto operator""_s() {
+  return String<static_cast<char>(Chars)...>{};
+}
 
 /**
  * Nil literal, which equals to `null` in many programming languages.
@@ -96,6 +105,17 @@ struct Undefined {
  */
 template <char... args>
 struct Var : String<args...> {};
+
+/**
+ * Convert a string literal to a Var<...> instance.
+ * @tparam CharT
+ * @tparam Chars
+ * @return
+ */
+template <typename CharT, CharT... Chars>
+constexpr auto operator""_v() {
+  return Var<static_cast<char>(Chars)...>{};
+}
 
 /**
  * Pair(tuple2) value type.
