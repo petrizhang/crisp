@@ -4,7 +4,7 @@ Crisp: ***C***ompile Time Interprete***r*** for L***isp*** Written in C++ Templa
 ![language](https://img.shields.io/badge/language-c++-orange.svg)
 ![license](https://img.shields.io/badge/license-Apache2-green.svg)
 ![platform](https://img.shields.io/badge/platform-linux-lightgrey.svg)
-![std](https://img.shields.io/badge/c++->=11-blue.svg)
+![std](https://img.shields.io/badge/c++->=14-blue.svg)
 
 ## About Crisp
 You may have been told that **C++ templates are Turing-complete**.
@@ -295,7 +295,7 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
 
 ### Notes
 
-1. Your compiler must support **C++11**.
+1. Your compiler must support **C++14**.
 2. Remember to set the **`-ftemplate-depth-5000`** flag to avoid insufficient template expansion depth.
 3. You'd better **use Crisp headers as the last ones of your includes**. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
 4. **Never mix macros and templates style together**. In C++, expressions like `println(Var<'a', 'b'>)` will be recognized as `println(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
@@ -304,7 +304,7 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
 ## API
 
 ### Macro Style
-Users could find a complete macro api list at [include/crisp_macros.h](https://github.com/pzque/crisp/blob/master/include/CrispMacroAPI.h).
+Users could find a complete macro api list at [include/CrispMacroAPI.h](https://github.com/pzque/crisp/blob/master/include/CrispMacroAPI.h).
   
 ### Template Style
 Users could find a complete template api list at [include/CrispTemplateAPI.h](https://github.com/pzque/crisp/blob/master/include/CrispTemplateAPI.h)..
@@ -312,7 +312,7 @@ Users could find a complete template api list at [include/CrispTemplateAPI.h](ht
 ## Build and Dependency
 If you want to explore Crisp source code and run Crisp examples and tests, you need to:
 
-1. Prepare "cmake" and "make" and a C++ compiler supports C++11 in your system.
+1. Prepare "cmake" and "make" and a C++ compiler supports C++14 in your system.
 2. Clone this project.
 2. In the project root directory, run commands:
 ```
