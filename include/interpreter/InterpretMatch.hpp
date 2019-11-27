@@ -44,9 +44,11 @@ struct Interpret<Match<Expr, Branches...>, Environ> {
   using type = typename Interpret<MatchList<InterpretedExpr, Branches...>>::type;
   using env = Environ;
 
-  static decltype(type::c_value()) Run() {
+  inline static auto Run() {
     ExprInterp::Run();
-    return type::c_value();
+    // TODO: fix Run method fails when `type` is a primitive type
+    // return type::c_value();
+    return "#undefined";
   }
 };
 
@@ -72,8 +74,10 @@ struct Interpret<MatchList<AST, CaseBranch, DefaultBranch>, Environ> {
   using type = typename Replace<FirstResult, CapturedDict>::type;
   using env = Environ;
 
-  static decltype(type::c_value()) Run() {
-    return type::c_value();
+  inline static auto Run() {
+    // TODO: fix Run method fails when `type` is a primitive type
+    // return type::c_value();
+    return "#undefined";
   }
 };
 
@@ -107,8 +111,10 @@ struct Interpret<MatchList<Expr, Branch1, Branch2, Branch3, Branches...>, Enviro
   using type = typename Result::type;
   using env = Environ;
 
-  static decltype(type::c_value()) Run() {
-    return type::c_value();
+  inline static auto Run() {
+    // TODO: fix Run method fails when `type` is a primitive type
+    // return type::c_value();
+    return "#undefined";
   }
 };
 

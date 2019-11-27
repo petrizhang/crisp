@@ -33,7 +33,11 @@ struct Interpret<Var<args...>, Environ> {
   using env = Environ;
   using type = typename EnvLookup<Environ, Var<args...>>::type;
 
-  static decltype(type::c_value()) Run() { return type::c_value(); }
+  inline static auto Run() {
+    // TODO: fix Run method fails when `type` is a primitive type
+    // return type::c_value();
+    return "#undefined";
+  }
 };
 }  // namespace crisp
 
