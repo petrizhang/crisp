@@ -30,15 +30,12 @@ using namespace util;
  */
 template <typename Environ, typename Expr>
 struct Interpret<Eval<Expr>, Environ> {
+  // First evaluate the given expression to get a valid AST
   using ExprInterp = Interpret<Expr, Environ>;
-  using InterpEnv = typename ExprInterp::env;
-  using InterpResult = typename ExprInterp::type;
+  using AST = typename ExprInterp::type;
 
-  static_assert(IsTemplateOf<Quote, InterpResult>::value,
-                "eval could only be applied to a quoted expression");
-  using AST = typename GetQuoteAST<InterpResult>::type;
+  // Then evaluate the AST in current environment
   using ASTInterp = Interpret<AST, Environ>;
-
   using type = typename ASTInterp::type;
   using env = typename ASTInterp::env;
 
