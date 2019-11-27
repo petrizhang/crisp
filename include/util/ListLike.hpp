@@ -21,6 +21,9 @@
 
 namespace util {
 
+template <typename...>
+struct ListLike {};
+
 /**
  * Get the first element of a list-like template T<e1,...>.
  * e.g. TemplateHead<T<int,bool>>::type will be `bool`.
@@ -33,15 +36,16 @@ struct ListLikeHead;
 template <template <typename...> class V, typename... Args>
 struct ListLikeHead<V<Args...>> {
   static_assert(sizeof...(Args) != 0, "cannot apply head method on an empty list.");
+  using type = typename ListLikeHead<ListLike<Args...>>::type;
 };
 
-template <template <typename...> class V, typename Head>
-struct ListLikeHead<V<Head>> {
+template <typename Head>
+struct ListLikeHead<ListLike<Head>> {
   using type = Head;
 };
 
-template <template <typename...> class V, typename Head, typename... Args>
-struct ListLikeHead<V<Head, Args...>> {
+template <typename Head, typename... Args>
+struct ListLikeHead<ListLike<Head, Args...>> {
   using type = Head;
 };
 
@@ -57,16 +61,17 @@ struct ListLikeLast;
 template <template <typename...> class V, typename... Args>
 struct ListLikeLast<V<Args...>> {
   static_assert(sizeof...(Args) != 0, "Cannot apply head method on an empty vector.");
+  using type = typename ListLikeLast<ListLike<Args...>>::type;
 };
 
-template <template <typename...> class V, typename Last>
-struct ListLikeLast<V<Last>> {
+template <typename Last>
+struct ListLikeLast<ListLike<Last>> {
   using type = Last;
 };
 
-template <template <typename...> class V, typename Head, typename... Args>
-struct ListLikeLast<V<Head, Args...>> {
-  using type = typename ListLikeLast<V<Args...>>::type;
+template <typename Head, typename... Args>
+struct ListLikeLast<ListLike<Head, Args...>> {
+  using type = typename ListLikeLast<ListLike<Args...>>::type;
 };
 
 /**

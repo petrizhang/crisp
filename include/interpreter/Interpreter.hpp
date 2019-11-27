@@ -22,6 +22,7 @@
 #include "InterpretBlock.hpp"
 #include "InterpretCall.hpp"
 #include "InterpretChainOperator.hpp"
+#include "InterpretCond.hpp"
 #include "InterpretDefine.hpp"
 #include "InterpretEval.hpp"
 #include "InterpretIf.hpp"

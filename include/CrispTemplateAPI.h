@@ -47,6 +47,10 @@ using crisp::Define;
 using crisp::Call;
 using crisp::Block;
 
+using crisp::Cond;
+using crisp::When;
+using crisp::Else;
+
 using crisp::Match;
 using crisp::Capture;
 using crisp::Case;
