@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_INTERPRETER_HPP
-#define CRISP_INTERPRETER_HPP
+#include <type_traits>
+#include "interpreter/Interpreter.hpp"
 
-#include "Common.hpp"
-#include "InterpretBinaryOperator.hpp"
-#include "InterpretBlock.hpp"
-#include "InterpretCall.hpp"
-#include "InterpretChainOperator.hpp"
-#include "InterpretDefine.hpp"
-#include "InterpretEval.hpp"
-#include "InterpretIf.hpp"
-#include "InterpretInternalList.hpp"
-#include "InterpretLambda.hpp"
-#include "InterpretList.hpp"
-#include "InterpretLiteral.hpp"
-#include "InterpretMatch.hpp"
-#include "InterpretPrintln.hpp"
-#include "InterpretQuote.hpp"
-#include "InterpretVariable.hpp"
+using namespace ast;
+using namespace util;
+using namespace crisp;
+using std::is_same;
 
-#endif  //CRISP_INTERPRETER_HPP
+int main() {
+  /**
+   * A test group
+   */
+  {
+    using list = List<Int<1>, Add<Int<1>, Int<2>>>;
+    using t0 = typename Interpret<list>::type;
+    static_assert(is_same<t0, List<Int<1>, Int<3>>>::value, "");
+  }
+  return 0;
+}

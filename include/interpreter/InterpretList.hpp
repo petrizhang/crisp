@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_INTERPRETER_HPP
-#define CRISP_INTERPRETER_HPP
-
+#ifndef CRISP_INTERPRETLIST_HPP
+#define CRISP_INTERPRETLIST_HPP
 #include "Common.hpp"
-#include "InterpretBinaryOperator.hpp"
-#include "InterpretBlock.hpp"
-#include "InterpretCall.hpp"
-#include "InterpretChainOperator.hpp"
-#include "InterpretDefine.hpp"
-#include "InterpretEval.hpp"
-#include "InterpretIf.hpp"
-#include "InterpretInternalList.hpp"
-#include "InterpretLambda.hpp"
-#include "InterpretList.hpp"
-#include "InterpretLiteral.hpp"
-#include "InterpretMatch.hpp"
-#include "InterpretPrintln.hpp"
-#include "InterpretQuote.hpp"
-#include "InterpretVariable.hpp"
 
-#endif  //CRISP_INTERPRETER_HPP
+namespace crisp {
+using namespace ast;
+using namespace util;
+using util::internal::InternalList;
+
+template <typename Environ, typename... Elements>
+struct Interpret<List<Elements...>, Environ> {
+  using ElementsInterp = Interpret<InternalList<Elements...>, Environ>;
+  using ElementsValue = typename ElementsInterp::type;
+
+  using env = Environ;
+  using type = typename Convert<ElementsValue, List>::type;
+  static auto Run() {
+    return ElementsInterp::Run();
+  }
+};
+
+}  // namespace crisp
+
+#endif  //CRISP_INTERPRETLIST_HPP

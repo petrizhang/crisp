@@ -17,43 +17,14 @@
 #ifndef CRISP_INTERPRETCALL_HPP
 #define CRISP_INTERPRETCALL_HPP
 #include "Common.hpp"
+#include "InterpretInternalList.hpp"
 #include "util/InternalList.hpp"
 
 // TODO: Refine `call` implementation.
 namespace crisp {
 using namespace ast;
 using namespace util;
-
-/**
- * Interpret argument list for function calls.
- * @tparam Environ 
- */
-template <typename Environ>
-struct Interpret<internal::InternalList<>, Environ> {
-  using env = Environ;
-  using type = internal::InternalList<>;
-
-  static constexpr const char *Run() { return "#undefined"; }
-};
-
-template <typename Environ, typename Head, typename... Tail>
-struct Interpret<internal::InternalList<Head, Tail...>, Environ> {
-  using HeadInterp = Interpret<Head, Environ>;
-  using HeadValue = typename HeadInterp::type;
-
-  using TailInterp = Interpret<internal::InternalList<Tail...>, Environ>;
-  using TailValue = typename TailInterp::type;
-
-  using env = Environ;
-  using type = typename internal::InternalListPushFront<TailValue, HeadValue>::type;
-
-  static const char *Run() {
-    HeadInterp::Run();
-    TailInterp::Run();
-    return "#undefined";
-  }
-};
-
+using util::internal::InternalList;
 
 /**
  * Interpret function calls.
@@ -68,7 +39,7 @@ template <typename CallSiteEnviron, typename ClosureEnviron, typename Body,
           typename... Params, typename... ArgValues>
 struct CallClosure<CallSiteEnviron,
                    Closure<ClosureEnviron, Lambda<ParamList<Params...>, Body>>,
-                   internal::InternalList<ArgValues...>> {
+                   InternalList<ArgValues...>> {
   // Check arguments number
   static_assert(Size<Params...>::value == Size<ArgValues...>::value,
                 "Arguments number does't match.");
@@ -101,7 +72,7 @@ struct Interpret<Call<Func, Args...>, Environ> {
   using ClosureValue = typename ClosureInterp::type;
 
   // Interpret argument list.
-  using ArgInterp = Interpret<internal::InternalList<Args...>, Environ>;
+  using ArgInterp = Interpret<InternalList<Args...>, Environ>;
   using ArgValues = typename ArgInterp::type;
   static_assert(IsCallable<ClosureValue>::value,
                 "Expected a callable function/closure.");
