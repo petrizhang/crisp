@@ -67,7 +67,7 @@ struct Interpret<Add<L, R, Args...>, Environ> {
 /**
  * Interp chain operator like Add<n1,n2,n3,...>, Sub<n1,n2,n3,...>, ...
  */
-#define InterpretForChainOperator(OpName)                               \
+#define InterpretChainOperator(OpName)                                  \
   template <typename Environ, typename L, typename R>                   \
   struct Interpret<OpName<L, R>, Environ> {                             \
     using env = Environ;                                                \
@@ -103,10 +103,10 @@ struct Interpret<Add<L, R, Args...>, Environ> {
     }                                                                   \
   };
 
-InterpretForChainOperator(Sub);
-InterpretForChainOperator(Mul);
-InterpretForChainOperator(Mod);
-InterpretForChainOperator(And);
-InterpretForChainOperator(Or);
+InterpretChainOperator(Sub);
+InterpretChainOperator(Mul);
+InterpretChainOperator(Mod);
+InterpretChainOperator(And);
+InterpretChainOperator(Or);
 }  // namespace crisp
 #endif  //CRISP_INTERPRETCHAINOPERATOR_HPP
