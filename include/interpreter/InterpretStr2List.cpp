@@ -28,7 +28,7 @@ struct Interpret<Str2List<Expr>, Environ> {
   using ExprValue = typename ExprInterp::type;
 
   using env = Environ;
-  using type = Bool<IsEmptyImpl<ExprValue>::value>;
+  using type = typename Str2ListImpl<ExprValue>::type;
 
   inline static auto Run() {
     ExprInterp ::Run();

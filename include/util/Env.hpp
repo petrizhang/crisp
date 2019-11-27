@@ -67,6 +67,7 @@ struct EnvLookup {
   using type = Undefined;
 };
 
+// TODO - Fix bugs here: don't use Nil to indicate a invoking failure.
 template <typename K, typename dict>
 struct EnvLookup<Env<dict>, K> {
   using V = typename DictGet<dict, K>::type;

@@ -22,34 +22,40 @@ namespace crisp {
 using namespace ast;
 using namespace util;
 
+template <typename Environ>
+struct Interpret<Nil, Environ> {
+  using env = Environ;
+  using type = Nil;
+  inline static auto Run() { return "#nil"; }
+};
+
 template <typename Environ, bool V>
 struct Interpret<Bool<V>, Environ> {
   using env = Environ;
   using type = Bool<V>;
-  static constexpr bool Run() { return V; }
+  inline static constexpr bool Run() { return V; }
 };
 
 template <typename Environ, char V>
 struct Interpret<Char<V>, Environ> {
   using env = Environ;
   using type = Char<V>;
-  static constexpr char Run() { return V; }
+  inline static constexpr char Run() { return V; }
 };
 
 template <typename Environ, int V>
 struct Interpret<Int<V>, Environ> {
   using env = Environ;
   using type = Int<V>;
-  static constexpr int Run() { return V; }
+  inline static constexpr int Run() { return V; }
 };
 
 template <typename Environ, char... chars>
 struct Interpret<Str<chars...>, Environ> {
   using env = Environ;
   using type = Str<chars...>;
-  static std::string Run() { return type::c_value(); }
+  inline static std::string Run() { return type::c_value(); }
 };
-
 
 }  // namespace crisp
 

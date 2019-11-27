@@ -15,16 +15,11 @@
  */
 
 #include <cstdio>
-#include <iostream>
 #include <type_traits>
 #include "CrispMacroAPI.h"
 
-using std::printf;
-
-struct SafePrintf {
-};
-
-int main() {
+class SafePrintf {
+ private:
   using check = var("check");
   using fmt = var("fmt");
   using flag = var("flag");
@@ -33,7 +28,7 @@ int main() {
   using result = var("result");
   using fmt_type = var("fmt_type");
 
-  using check_func =
+  using check_def =
       define(check,
              lambda(params(fmt, result, flag),
                     if_(is_empty(fmt),
@@ -47,14 +42,37 @@ int main() {
                                                                case_(v('f'), double),
                                                                case_(v('c'), char),
                                                                case_(v('s'), const char *),
-                                                               default_(nil))),
-                                        if_(is_nil(fmt_type),
+                                                               default_(v('-')))),
+                                        if_(eq_(fmt_type, v('-')),
                                             call(check, fmt_tail, result, v(false)),
                                             call(check, fmt_tail, push_last(result, fmt_type), v(false)))),
                                   call(check, fmt_tail, result, eq_(fmt_head, v('%'))))))));
 
-  using l = list(v('a'), v('b'), v('%'), v('s'), v('a'));
-  using types = interpret(block(check_func,
-                                call(check, l, list(), v(false))));
+ public:
+  template <typename Format, typename... Args>
+  static void SafePrintfImpl(Args... args) {
+    using GivenTypes = list(Args...);
+    using ExpectedTypes =
+        typename interpret(block(check_def,
+                                 call(check, str2list(Format), list(), v(false))));
+
+    static_assert(std::is_same<GivenTypes, ExpectedTypes>::value, "type mismatch");
+    std::printf(Format::value, args...);
+  }
+};
+
+#define safe_printf(fmt, args...) SafePrintf::SafePrintfImpl<str(fmt)>(args)
+
+int main() {
+  // These lines are OK
+  safe_printf("Hello world\n");
+  safe_printf("Hello world %% %d\n", 10);
+  safe_printf("Hello world - %s %d - pi=%f\n", "Crisp", 2019, 3.141592654);
+
+  // These lines will trigger compile errors
+  // safe_printf("Hello world %d", "1");
+  // safe_printf("Hello world %d");
+  // safe_printf("Hello world %s", 1);
+
   return 0;
 }
