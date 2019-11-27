@@ -43,13 +43,39 @@ template <typename T, typename Elem>
 struct ListPushLeft;
 
 template <typename... Elements, typename Elem>
-struct ListPushLeft<List<Elements...>, Elem> : ListLikePushLeft<List<Elements...>, Elem> {};
+struct ListPushLeft<List<Elements...>, Elem> : ListLikePushHead<List<Elements...>, Elem> {};
 
-template <typename T, typename Elem>
-struct ListPushRight;
+template <typename T>
+struct ListPopHead;
 
-template <typename... Elements, typename Elem>
-struct ListPushRight<List<Elements...>, Elem> : ListLikePushRight<List<Elements...>, Elem> {};
+template <typename... Elements>
+struct ListPopHead<List<Elements...>> {
+  using type = typename ListLikePopHeadImpl<List<Elements...>>::poped;
+};
+
+template <typename T>
+struct ListPopLast;
+
+template <typename... Elements>
+struct ListPopLast<List<Elements...>> {
+  using type = typename ListLikePopLastImpl<List<Elements...>>::poped;
+};
+
+template <typename T>
+struct ListDropHead;
+
+template <typename... Elements>
+struct ListDropHead<List<Elements...>> {
+  using type = typename ListLikePopHeadImpl<List<Elements...>>::rest;
+};
+
+template <typename T>
+struct ListDropLast;
+
+template <typename... Elements>
+struct ListDropLast<List<Elements...>> {
+  using type = typename ListLikePopLastImpl<List<Elements...>>::rest;
+};
 
 template <typename L, typename R>
 struct ListConcat;
@@ -57,8 +83,6 @@ struct ListConcat;
 template <typename... LElements, typename... RElements>
 struct ListConcat<List<LElements...>, List<RElements...>>
     : ListLikeConcat<List<LElements...>, List<RElements...>> {};
-
-
 
 }  // namespace util
 

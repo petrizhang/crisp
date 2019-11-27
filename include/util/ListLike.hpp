@@ -17,10 +17,12 @@
 #ifndef CRISP_VECTOR_LIKE_HPP
 #define CRISP_VECTOR_LIKE_HPP
 
+#include "TemplateUtil.hpp"
+
 namespace util {
 
 /**
- * Get the first element of a template T<e1,...>.
+ * Get the first element of a list-like template T<e1,...>.
  * e.g. TemplateHead<T<int,bool>>::type will be `bool`.
  *
  * @tparam V
@@ -30,7 +32,7 @@ struct ListLikeHead;
 
 template <template <typename...> class V, typename... Args>
 struct ListLikeHead<V<Args...>> {
-  static_assert(sizeof...(Args) != 0, "Cannot apply head method on an empty vector.");
+  static_assert(sizeof...(Args) != 0, "cannot apply head method on an empty list.");
 };
 
 template <template <typename...> class V, typename Head>
@@ -44,7 +46,7 @@ struct ListLikeHead<V<Head, Args...>> {
 };
 
 /**
- * Get the last element of a template T<e1,...>.
+ * Get the last element of a list-like template T<e1,...>.
  * e.g. TemplateLast<T<int,bool>>::type will be `bool`.
  *
  * @tparam V
@@ -87,31 +89,69 @@ struct ListLikeTail<V<Head, Args...>> {
 };
 
 /**
- * Push an element to the front of a template.
- * e.g. VectorLikePushFront<T<t1,t2>,t0>::type will be T<t0,t1,t2>.
+ * Push an element to the front of a list-like template.
+ * e.g. ListLikePushLeft<T<t1,t2>,t0>::type will be T<t0,t1,t2>.
  * @tparam V a template type, e.g., T<t1,t2,t3...>
  * @tparam E an element type
  */
 template <typename V, typename E>
-struct ListLikePushLeft;
+struct ListLikePushHead;
 
 template <template <typename...> class V, typename... Args, typename E>
-struct ListLikePushLeft<V<Args...>, E> {
+struct ListLikePushHead<V<Args...>, E> {
   using type = V<E, Args...>;
 };
 
 /**
- * Push an element to the end of a template.
- * e.g. VectorLikePushFront<T<t0,t1>,t2>::type will be T<t0,t1,t2>.
+ * Push an element to the end of a list-like template.
+ * e.g. ListLikePushRight<T<t0,t1>,t2>::type will be T<t0,t1,t2>.
  * @tparam V a template type, e.g., T<t1,t2,t3...>
  * @tparam E an element type
  */
 template <typename V, typename E>
-struct ListLikePushRight;
+struct ListLikePushLast;
 
 template <template <typename...> class V, typename... Args, typename E>
-struct ListLikePushRight<V<Args...>, E> {
+struct ListLikePushLast<V<Args...>, E> {
   using type = V<Args..., E>;
+};
+
+/**
+  * Pop an element from the front of a list-like template.
+  * @tparam V
+  */
+template <typename V>
+struct ListLikePopHeadImpl {
+  static_assert(!IsEmpty<V>::value, "cannot apply pop method on an empty list.");
+};
+
+template <template <typename...> class V, typename Head, typename... Args>
+struct ListLikePopHeadImpl<V<Head, Args...>> {
+  using poped = Head;
+  using rest = V<Args...>;
+};
+
+/**
+ * Pop an element from the end of a list-like template.
+ * @tparam V
+ */
+template <typename V>
+struct ListLikePopLastImpl {
+  static_assert(!IsEmpty<V>::value, "cannot apply pop method on an empty list.");
+};
+
+template <template <typename...> class V, typename Head>
+struct ListLikePopLastImpl<V<Head>> {
+  using poped = Head;
+  using rest = V<>;
+};
+
+template <template <typename...> class V, typename Head, typename... Args>
+struct ListLikePopLastImpl<V<Head, Args...>> {
+  using poped = typename ListLikePopLastImpl<V<Args...>>::poped;
+  using rest = typename ListLikePushHead<
+      typename ListLikePopLastImpl<V<Args...>>::rest,
+      Head>::type;
 };
 
 /**

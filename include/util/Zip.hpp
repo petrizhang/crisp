@@ -34,7 +34,7 @@ struct Zip;
 template <template <typename...> class C, typename K, typename V, typename... Keys, typename... Values>
 struct Zip<C<K, Keys...>, C<V, Values...>> {
   using tailResult = typename Zip<C<Keys...>, C<Values...>>::type;
-  using type = typename ListLikePushLeft<tailResult, Pair<K, V>>::type;
+  using type = typename ListLikePushHead<tailResult, Pair<K, V>>::type;
 };
 
 template <template <typename...> class C>

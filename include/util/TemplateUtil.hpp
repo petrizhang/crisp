@@ -22,6 +22,7 @@
 namespace util {
 using ast::Closure;
 using ast::Var;
+using ast::Nil;
 
 /**
  * Convert A<Args...> to B<Args...>
