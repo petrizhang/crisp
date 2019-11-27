@@ -36,7 +36,7 @@ template <typename Environ, typename Extra>
 using EnvExtendBack = ListConcat<Environ, Extra>;
 
 template <typename env, typename dict>
-using EnvPushFront = ListPushLeft<env, dict>;
+using EnvPushFront = ListPushHead<env, dict>;
 
 /**
  * Bind a variable name `K` with a value `V` in current scope.

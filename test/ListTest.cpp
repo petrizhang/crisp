@@ -24,7 +24,7 @@ using std::is_same;
 
 int main() {
   /**
-   * A test group
+   * List tests
    */
   {
     using list = List<Int<1>, Add<Int<1>, Int<2>>>;
@@ -51,5 +51,90 @@ int main() {
     using t0 = typename Interpret<Tail<list>>::type;
     static_assert(is_same<t0, List<Int<2>, Int<3>, Int<4>>>::value, "");
   }
+
+  /**
+    * Concat tests
+    */
+  {
+    using l1 = List<Int<1>, Char<'2'>>;
+    using l2 = List<Int<3>, Char<'4'>>;
+    using t0 = typename Interpret<Concat<l1, l2>>::type;
+    static_assert(is_same<t0, List<Int<1>, Char<'2'>, Int<3>, Char<'4'>>>::value, "");
+
+    using l3 = List<Int<5>, Add<Int<3>, Int<3>>>;
+    using t1 = typename Interpret<Concat<l1, l3>>::type;
+    static_assert(is_same<t1, List<Int<1>, Char<'2'>, Int<5>, Int<6>>>::value, "");
+  }
+
+  /**
+    * PushHead tests
+    */
+  {
+    using l0 = List<Int<1>, Int<2>>;
+    using t0 = typename Interpret<PushHead<l0, Int<3>>>::type;
+    static_assert(is_same<t0, List<Int<3>, Int<1>, Int<2>>>::value, "");
+
+    using l1 = List<>;
+    using t1 = typename Interpret<PushHead<l1, Int<3>>>::type;
+    static_assert(is_same<t1, List<Int<3>>>::value, "");
+  }
+
+  /**
+    * PushLast tests
+    */
+  {
+    using l0 = List<Int<1>, Int<2>>;
+    using t0 = typename Interpret<PushLast<l0, Int<3>>>::type;
+    static_assert(is_same<t0, List<Int<1>, Int<2>, Int<3>>>::value, "");
+
+    using l1 = List<>;
+    using t1 = typename Interpret<PushLast<l1, Int<3>>>::type;
+    static_assert(is_same<t1, List<Int<3>>>::value, "");
+  }
+
+  /**
+    * PopHead tests
+    */
+  {
+    using l0 = List<Int<1>, Int<2>>;
+    using t0 = typename Interpret<PopHead<l0>>::type;
+    static_assert(is_same<t0, Int<1>>::value, "");
+  }
+
+  /**
+    * PopLast tests
+    */
+  {
+    using l0 = List<Int<1>, Int<2>>;
+    using t0 = typename Interpret<PopLast<l0>>::type;
+    static_assert(is_same<t0, Int<2>>::value, "");
+  }
+
+  /**
+    * PopHead tests
+    */
+  {
+    using l0 = List<Int<1>, Int<2>>;
+    using t0 = typename Interpret<DropHead<l0>>::type;
+    static_assert(is_same<t0, List<Int<2>>>::value, "");
+
+    using l1 = List<Int<1>>;
+    using t1 = typename Interpret<DropHead<l1>>::type;
+    static_assert(is_same<t1, List<>>::value, "");
+  }
+
+  /**
+    * PopLast tests
+    */
+  {
+    using l0 = List<Int<1>, Int<2>>;
+    using t0 = typename Interpret<DropLast<l0>>::type;
+    static_assert(is_same<t0, List<Int<1>>>::value, "");
+
+    using l1 = List<Int<1>>;
+    using t1 = typename Interpret<DropLast<l1>>::type;
+    static_assert(is_same<t1, List<>>::value, "");
+  }
+
   return 0;
 }

@@ -31,7 +31,7 @@ template <typename... Pairs>
 using Dict = List<Pairs...>;
 
 template <typename dict, typename pair>
-using DictPut = ListPushLeft<dict, pair>;
+using DictPut = ListPushHead<dict, pair>;
 
 template <typename dict, typename K>
 struct DictGet {

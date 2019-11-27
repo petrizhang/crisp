@@ -258,27 +258,27 @@ struct Tail {
 };
 
 template <typename... Args>
-struct PopLeft {
-  static constexpr const char *repr = "PopLeft";
-  static constexpr const char *c_value() { return "#pop_left"; };
+struct PopHead {
+  static constexpr const char *repr = "PopHead";
+  static constexpr const char *c_value() { return "#pop_head"; };
 };
 
 template <typename... Args>
-struct PopRight {
-  static constexpr const char *repr = "PopRight";
-  static constexpr const char *c_value() { return "#pop_right"; };
+struct PopLast {
+  static constexpr const char *repr = "PopLast";
+  static constexpr const char *c_value() { return "#pop_last"; };
 };
 
 template <typename... Args>
-struct PushLeft {
+struct PushHead {
   static constexpr const char *repr = "PushLeft";
-  static constexpr const char *c_value() { return "#push_left"; };
+  static constexpr const char *c_value() { return "#push_head"; };
 };
 
 template <typename... Args>
-struct PushRight {
-  static constexpr const char *repr = "PushRight";
-  static constexpr const char *c_value() { return "#push_right"; };
+struct PushLast {
+  static constexpr const char *repr = "PushLast";
+  static constexpr const char *c_value() { return "#push_last"; };
 };
 
 template <typename... Args>

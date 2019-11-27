@@ -40,10 +40,16 @@ template <typename... Elements>
 struct ListTail<List<Elements...>> : ListLikeTail<List<Elements...>> {};
 
 template <typename T, typename Elem>
-struct ListPushLeft;
+struct ListPushHead;
 
 template <typename... Elements, typename Elem>
-struct ListPushLeft<List<Elements...>, Elem> : ListLikePushHead<List<Elements...>, Elem> {};
+struct ListPushHead<List<Elements...>, Elem> : ListLikePushHead<List<Elements...>, Elem> {};
+
+template <typename T, typename Elem>
+struct ListPushLast;
+
+template <typename... Elements, typename Elem>
+struct ListPushLast<List<Elements...>, Elem> : ListLikePushLast<List<Elements...>, Elem> {};
 
 template <typename T>
 struct ListPopHead;
