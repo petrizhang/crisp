@@ -52,6 +52,17 @@ using crisp::Capture;
 using crisp::Case;
 using crisp::Default;
 
+using crisp::List;
+using crisp::Head;
+using crisp::Tail;
+using crisp::Concat;
+using crisp::PushHead;
+using crisp::PushLast;
+using crisp::PopHead;
+using crisp::PopLast;
+using crisp::DropHead;
+using crisp::DropLast;
+
 using crisp::Quote;
 
 using crisp::Eval;

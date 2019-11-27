@@ -27,8 +27,8 @@ int main() {
    * List tests
    */
   {
-    using list = List<Int<1>, Add<Int<1>, Int<2>>>;
-    using t0 = typename Interpret<list>::type;
+    using l0 = List<Int<1>, Add<Int<1>, Int<2>>>;
+    using t0 = typename Interpret<l0>::type;
     static_assert(is_same<t0, List<Int<1>, Int<3>>>::value, "");
   }
 
@@ -36,8 +36,8 @@ int main() {
    * Head tests
    */
   {
-    using list = List<Int<1>, Add<Int<1>, Int<2>>>;
-    using t0 = typename Interpret<Head<list>>::type;
+    using l0 = List<Int<1>, Add<Int<1>, Int<2>>>;
+    using t0 = typename Interpret<Head<l0>>::type;
     // This line will trigger a compile error:
     // using t1 = typename Interpret<Head<List<>>>::type;
     static_assert(is_same<t0, Int<1>>::value, "");
@@ -47,8 +47,8 @@ int main() {
     * Tail tests
     */
   {
-    using list = List<Int<1>, Int<2>, Int<3>, Add<Int<2>, Int<2>>>;
-    using t0 = typename Interpret<Tail<list>>::type;
+    using l0 = List<Int<1>, Int<2>, Int<3>, Add<Int<2>, Int<2>>>;
+    using t0 = typename Interpret<Tail<l0>>::type;
     static_assert(is_same<t0, List<Int<2>, Int<3>, Int<4>>>::value, "");
   }
 

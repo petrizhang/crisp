@@ -51,6 +51,18 @@ using crisp::operator""_v;
 #define case_(C, E) crisp::Case<C, E>
 #define default_(E) crisp::Default<E>
 #define capture(T, V) crisp::Capture<T, V>
+
+#define list(args...) crisp::List<args>
+#define head(l) crisp::Head<l>
+#define tail(l) crisp::Tail<l>
+#define concat(l1, l2) crsip::Concat<l1, l2>
+#define push_head(l, e) crisp::PushHead<l, e>
+#define push_last(l, e) crisp::PushLast<l, e>
+#define pop_head(l) crisp::PopHead<l>
+#define pop_last(l) crisp::PopLast<l>
+#define drop_head(l) crisp::DropHead<l>
+#define drop_last(l) crisp::DropLast<l>
+
 #define interpret(expr) crisp::Interpret<expr, crisp::Env<>>::type
 #define run(expr) crisp::Interpret<expr, crisp::Env<>>::Run()
 
