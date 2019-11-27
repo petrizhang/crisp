@@ -69,6 +69,19 @@ struct IsSameTemplate<A<Args1...>, A<Args2...>> {
   static const bool value = true;
 };
 
+
+/**
+ * Check if a template is empty.
+ * @tparam T
+ */
+template <typename T>
+struct IsEmpty;
+
+template <template <typename...> class C, typename... Args>
+struct IsEmpty<C<Args...>> {
+  static const bool value = (sizeof...(Args) == 0);
+};
+
 /**
  * Check if given type `T` is a instance of template `C`.
  * e.g. IsTemplateOf<Array, Array<Int<1>,Int<2>>>::value will be true.

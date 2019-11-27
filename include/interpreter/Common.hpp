@@ -27,6 +27,7 @@
 namespace crisp {
 using namespace ast;
 using namespace util;
+using std::is_same;
 
 template <typename Expr, typename Environ = Env<>>
 struct Interpret;

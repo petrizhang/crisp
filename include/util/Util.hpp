@@ -28,7 +28,6 @@
 #include "Output.hpp"
 #include "Pack.hpp"
 #include "Replace.hpp"
-#include "Size.hpp"
 #include "TemplateUtil.hpp"
 #include "Zip.hpp"
 #include "ast/AST.hpp"

@@ -245,6 +245,60 @@ struct List {
   static constexpr const char *c_value() { return "#list"; };
 };
 
+template <typename... Args>
+struct Head {
+  static constexpr const char *repr = "Head";
+  static constexpr const char *c_value() { return "#head"; };
+};
+
+template <typename... Args>
+struct Tail {
+  static constexpr const char *repr = "Tail";
+  static constexpr const char *c_value() { return "#tail"; };
+};
+
+template <typename... Args>
+struct PopLeft {
+  static constexpr const char *repr = "PopLeft";
+  static constexpr const char *c_value() { return "#pop_left"; };
+};
+
+template <typename... Args>
+struct PopRight {
+  static constexpr const char *repr = "PopRight";
+  static constexpr const char *c_value() { return "#pop_right"; };
+};
+
+template <typename... Args>
+struct PushLeft {
+  static constexpr const char *repr = "PushLeft";
+  static constexpr const char *c_value() { return "#push_left"; };
+};
+
+template <typename... Args>
+struct PushRight {
+  static constexpr const char *repr = "PushRight";
+  static constexpr const char *c_value() { return "#push_right"; };
+};
+
+template <typename... Args>
+struct DropHead {
+  static constexpr const char *repr = "DropHead";
+  static constexpr const char *c_value() { return "#drop_head"; };
+};
+
+template <typename... Args>
+struct DropLast {
+  static constexpr const char *repr = "DropLast";
+  static constexpr const char *c_value() { return "#drop_last"; };
+};
+
+template <typename... Args>
+struct Concat {
+  static constexpr const char *repr = "Concat";
+  static constexpr const char *c_value() { return "#concat"; };
+};
+
 /**
  * Cons: construct Pair<L,R> from L and R.
  * @tparam L

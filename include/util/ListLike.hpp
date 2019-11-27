@@ -17,8 +17,6 @@
 #ifndef CRISP_VECTOR_LIKE_HPP
 #define CRISP_VECTOR_LIKE_HPP
 
-#include "Size.hpp"
-
 namespace util {
 
 /**
@@ -32,7 +30,7 @@ struct TemplateHead;
 
 template <template <typename...> class V, typename... Args>
 struct TemplateHead<V<Args...>> {
-  static_assert(Size<Args...>::value != 0, "Cannot apply head method on an empty vector.");
+  static_assert(sizeof...(Args) != 0, "Cannot apply head method on an empty vector.");
 };
 
 template <template <typename...> class V, typename Head>
@@ -56,7 +54,7 @@ struct TemplateLast;
 
 template <template <typename...> class V, typename... Args>
 struct TemplateLast<V<Args...>> {
-  static_assert(Size<Args...>::value != 0, "Cannot apply head method on an empty vector.");
+  static_assert(sizeof...(Args) != 0, "Cannot apply head method on an empty vector.");
 };
 
 template <template <typename...> class V, typename Last>

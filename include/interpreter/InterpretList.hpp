@@ -30,8 +30,42 @@ struct Interpret<List<Elements...>, Environ> {
 
   using env = Environ;
   using type = typename Convert<ElementsValue, List>::type;
-  static auto Run() {
-    return ElementsInterp::Run();
+  inline static auto Run() {
+    ElementsInterp::Run();
+    return type::c_value();
+  }
+};
+
+template <typename Environ, typename L>
+struct Interpret<Head<L>, Environ> {
+  using LInterp = Interpret<L, Environ>;
+  using ListValue = typename LInterp::type;
+
+  static_assert(IsTemplateOf<List, ListValue>::value && !IsEmpty<ListValue>::value,
+                "head operation expected a non-empty list.");
+
+  using env = Environ;
+  using type = typename ListHead<ListValue>::type;
+
+  inline static auto Run() {
+    LInterp::Run();
+    return type::c_value();
+  }
+};
+
+template <typename Environ, typename L>
+struct Interpret<Tail<L>, Environ> {
+  using LInterp = Interpret<L, Environ>;
+  using ListValue = typename LInterp::type;
+
+  static_assert(IsTemplateOf<List, ListValue>::value, "head operation expected a list.");
+
+  using env = Environ;
+  using type = typename ListTail<ListValue>::type;
+
+  inline static auto Run() {
+    LInterp::Run();
+    return type::c_value();
   }
 };
 

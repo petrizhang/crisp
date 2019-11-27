@@ -41,7 +41,7 @@ struct CallClosure<CallSiteEnviron,
                    Closure<ClosureEnviron, Lambda<ParamList<Params...>, Body>>,
                    InternalList<ArgValues...>> {
   // Check arguments number
-  static_assert(Size<Params...>::value == Size<ArgValues...>::value,
+  static_assert(sizeof...(Params) == sizeof...(ArgValues),
                 "Arguments number does't match.");
 
   // Pack parameters and given arguments to a dict
