@@ -26,3 +26,10 @@ FOREACH (path ${Tests})
     get_filename_component(name ${path} NAME_WE)
     add_executable(${name}.exe ${path} ${crisp})
 ENDFOREACH ()
+
+FILE(GLOB Demos demos/*)
+
+FOREACH (path ${Demos})
+    get_filename_component(name ${path} NAME_WE)
+    add_executable(${name}.exe ${path} ${crisp})
+ENDFOREACH ()
