@@ -63,7 +63,7 @@ struct Interpret<Concat<LeftList, RightList>, Environ> {
     using ListValue = typename LInterp::type;                                                              \
                                                                                                            \
     static_assert(IsTemplateOf<List, ListValue>::value, "the input type is not a List<...> instaniation"); \
-    static_assert(!IsEmpty<L>::value, "cannot apply `" #OpName "` on an empty list");                      \
+    static_assert(!IsEmptyImpl<ListValue>::value, "cannot apply `" #OpName "` on an empty list");          \
                                                                                                            \
     using env = Environ;                                                                                   \
     using type = typename List##OpName<ListValue>::type;                                                   \

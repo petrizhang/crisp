@@ -127,7 +127,7 @@ struct ListLikePushLast<V<Args...>, E> {
   */
 template <typename V>
 struct ListLikePopHeadImpl {
-  static_assert(!IsEmpty<V>::value, "cannot apply pop method on an empty list.");
+  static_assert(!IsEmptyImpl<V>::value, "cannot apply pop method on an empty list.");
 };
 
 template <template <typename...> class V, typename Head, typename... Args>
@@ -142,7 +142,7 @@ struct ListLikePopHeadImpl<V<Head, Args...>> {
  */
 template <typename V>
 struct ListLikePopLastImpl {
-  static_assert(!IsEmpty<V>::value, "cannot apply pop method on an empty list.");
+  static_assert(!IsEmptyImpl<V>::value, "cannot apply pop method on an empty list.");
 };
 
 template <template <typename...> class V, typename Head>

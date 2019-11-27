@@ -24,8 +24,12 @@ using crisp::operator""_s;
 using crisp::operator""_v;
 // TODO using crisp::___;
 
+#define nil crisp::Nil
 #define v(x) crisp::Pack<decltype(x), x>::type
 #define str(x) decltype(x##_s)
+
+#define is_empty(l) crisp::IsEmpty<l>
+#define is_nil(x) crisp::IsNil<x>
 
 #define add(args...) crisp::Add<args>
 #define sub(args...) crisp::Sub<args>

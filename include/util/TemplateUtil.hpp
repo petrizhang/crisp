@@ -76,10 +76,10 @@ struct IsSameTemplate<A<Args1...>, A<Args2...>> {
  * @tparam T
  */
 template <typename T>
-struct IsEmpty;
+struct IsEmptyImpl;
 
 template <template <typename...> class C, typename... Args>
-struct IsEmpty<C<Args...>> {
+struct IsEmptyImpl<C<Args...>> {
   static const bool value = (sizeof...(Args) == 0);
 };
 
@@ -121,7 +121,7 @@ template <typename T>
 struct IsVar : IsValueTemplateOf<char, Var, T> {};
 
 template <typename T>
-struct IsNil : std::is_same<T, Nil> {};
+struct IsNilImpl : std::is_same<T, Nil> {};
 
 /**
  * Check if an expression is callable or not.

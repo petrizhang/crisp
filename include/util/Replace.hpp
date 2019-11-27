@@ -34,7 +34,7 @@ namespace util {
 template <typename T, typename ReplaceDict>
 struct Replace {
   using target = typename DictGet<ReplaceDict, T>::type;
-  using type = typename std::conditional<IsNil<target>::value,
+  using type = typename std::conditional<IsNilImpl<target>::value,
                                          T,
                                          target>::type;
 };

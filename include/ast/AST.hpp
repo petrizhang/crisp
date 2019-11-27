@@ -563,6 +563,19 @@ struct Cond {
   static constexpr const char *repr = "Cond";
   static constexpr const char *c_value() { return "#cond"; };
 };
+
+template <typename E>
+struct IsEmpty {
+  static constexpr const char *repr = "IsEmpty";
+  static constexpr const char *c_value() { return "#is_empty"; };
+};
+
+template <typename E>
+struct IsNil {
+  static constexpr const char *repr = "IsEmpty";
+  static constexpr const char *c_value() { return "#is_empty"; };
+};
+
 }  // namespace ast
 
 #endif  //CRISP_AST_HPP

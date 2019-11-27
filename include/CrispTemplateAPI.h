@@ -20,10 +20,14 @@
 #include "interpreter/Interpreter.hpp"
 
 // clang-format off
+using crisp::Nil;
 using crisp::Bool;
 using crisp::Char;
 using crisp::Int;
 using crisp::String;
+
+using crisp::IsEmpty;
+using crisp::IsNil;
 
 using crisp::Println;
 using crisp::Add;

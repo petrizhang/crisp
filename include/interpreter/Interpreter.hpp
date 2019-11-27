@@ -27,6 +27,7 @@
 #include "InterpretEval.hpp"
 #include "InterpretIf.hpp"
 #include "InterpretInternalList.hpp"
+#include "InterpretIsX.cpp"
 #include "InterpretLambda.hpp"
 #include "InterpretList.hpp"
 #include "InterpretLiteral.hpp"
