@@ -34,14 +34,14 @@ template <typename T, typename Elem>
 struct InternalListPushFront;
 
 template <typename... Elements, typename Elem>
-struct InternalListPushFront<InternalList<Elements...>, Elem> : TemplatePushFront<InternalList<Elements...>, Elem> {};
+struct InternalListPushFront<InternalList<Elements...>, Elem> : ListLikePushLeft<InternalList<Elements...>, Elem> {};
 
 template <typename L, typename R>
 struct InternalListExtendBack;
 
 template <typename... LElements, typename... RElements>
 struct InternalListExtendBack<InternalList<LElements...>, InternalList<RElements...>>
-    : TemplateConcat<InternalList<LElements...>, InternalList<RElements...>> {};
+    : ListLikeConcat<InternalList<LElements...>, InternalList<RElements...>> {};
 
 }  // namespace internal
 }  // namespace util

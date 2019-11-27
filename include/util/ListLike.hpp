@@ -26,20 +26,20 @@ namespace util {
  * @tparam V
  */
 template <typename V>
-struct TemplateHead;
+struct ListLikeHead;
 
 template <template <typename...> class V, typename... Args>
-struct TemplateHead<V<Args...>> {
+struct ListLikeHead<V<Args...>> {
   static_assert(sizeof...(Args) != 0, "Cannot apply head method on an empty vector.");
 };
 
 template <template <typename...> class V, typename Head>
-struct TemplateHead<V<Head>> {
+struct ListLikeHead<V<Head>> {
   using type = Head;
 };
 
 template <template <typename...> class V, typename Head, typename... Args>
-struct TemplateHead<V<Head, Args...>> {
+struct ListLikeHead<V<Head, Args...>> {
   using type = Head;
 };
 
@@ -50,21 +50,21 @@ struct TemplateHead<V<Head, Args...>> {
  * @tparam V
  */
 template <typename V>
-struct TemplateLast;
+struct ListLikeLast;
 
 template <template <typename...> class V, typename... Args>
-struct TemplateLast<V<Args...>> {
+struct ListLikeLast<V<Args...>> {
   static_assert(sizeof...(Args) != 0, "Cannot apply head method on an empty vector.");
 };
 
 template <template <typename...> class V, typename Last>
-struct TemplateLast<V<Last>> {
+struct ListLikeLast<V<Last>> {
   using type = Last;
 };
 
 template <template <typename...> class V, typename Head, typename... Args>
-struct TemplateLast<V<Head, Args...>> {
-  using type = typename TemplateLast<V<Args...>>::type;
+struct ListLikeLast<V<Head, Args...>> {
+  using type = typename ListLikeLast<V<Args...>>::type;
 };
 
 /**
@@ -74,15 +74,15 @@ struct TemplateLast<V<Head, Args...>> {
  * @tparam V
  */
 template <typename V>
-struct TemplateTail;
+struct ListLikeTail;
 
 template <template <typename...> class V>
-struct TemplateTail<V<>> {
+struct ListLikeTail<V<>> {
   using type = V<>;
 };
 
 template <template <typename...> class V, typename Head, typename... Args>
-struct TemplateTail<V<Head, Args...>> {
+struct ListLikeTail<V<Head, Args...>> {
   using type = V<Args...>;
 };
 
@@ -93,10 +93,10 @@ struct TemplateTail<V<Head, Args...>> {
  * @tparam E an element type
  */
 template <typename V, typename E>
-struct TemplatePushFront;
+struct ListLikePushLeft;
 
 template <template <typename...> class V, typename... Args, typename E>
-struct TemplatePushFront<V<Args...>, E> {
+struct ListLikePushLeft<V<Args...>, E> {
   using type = V<E, Args...>;
 };
 
@@ -107,10 +107,10 @@ struct TemplatePushFront<V<Args...>, E> {
  * @tparam E an element type
  */
 template <typename V, typename E>
-struct TemplatePushBack;
+struct ListLikePushRight;
 
 template <template <typename...> class V, typename... Args, typename E>
-struct TemplatePushBack<V<Args...>, E> {
+struct ListLikePushRight<V<Args...>, E> {
   using type = V<Args..., E>;
 };
 
@@ -121,10 +121,10 @@ struct TemplatePushBack<V<Args...>, E> {
  * @tparam VR
  */
 template <typename VL, typename VR>
-struct TemplateConcat;
+struct ListLikeConcat;
 
 template <template <typename...> class V, typename... LArgs, typename... RArgs>
-struct TemplateConcat<V<LArgs...>, V<RArgs...>> {
+struct ListLikeConcat<V<LArgs...>, V<RArgs...>> {
   using type = V<LArgs..., RArgs...>;
 };
 }  // namespace util

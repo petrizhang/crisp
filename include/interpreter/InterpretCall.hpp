@@ -48,11 +48,11 @@ struct CallClosure<CallSiteEnviron,
   using argDict = typename Zip<List<Params...>, List<ArgValues...>>::type;
 
   // Insert the arguments dict to the closest level of the closure's environment
-  using executionEnv0 = typename ListPushFront<ClosureEnviron, argDict>::type;
+  using executionEnv0 = typename ListPushLeft<ClosureEnviron, argDict>::type;
   // Add the call site's environment into the end of the environment list,
   // thus the recursive calls could be supported
   using executionEnv =
-      typename ListExtendBack<executionEnv0, CallSiteEnviron>::type;
+      typename ListConcat<executionEnv0, CallSiteEnviron>::type;
 
   using env = CallSiteEnviron;
   // Interpret function body

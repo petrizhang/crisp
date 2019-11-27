@@ -30,10 +30,10 @@ int main() {
     // This line will trigger a compile error:
     // using t0 = typename VectorLikeHead<A<>>::type;
 
-    using t1 = typename TemplateHead<A<int>>::type;
+    using t1 = typename ListLikeHead<A<int>>::type;
     static_assert(std::is_same<t1, int>::value, "");
 
-    using t2 = typename TemplateHead<A<bool, int, char>>::type;
+    using t2 = typename ListLikeHead<A<bool, int, char>>::type;
     static_assert(std::is_same<t2, bool>::value, "");
   }
 
@@ -44,10 +44,10 @@ int main() {
     // This line will trigger a compile error:
     // using t0 = typename VectorLikeLast<A<>>::type;
 
-    using t1 = typename TemplateLast<A<int>>::type;
+    using t1 = typename ListLikeLast<A<int>>::type;
     static_assert(std::is_same<t1, int>::value, "");
 
-    using t2 = typename TemplateLast<A<bool, int, char>>::type;
+    using t2 = typename ListLikeLast<A<bool, int, char>>::type;
     static_assert(std::is_same<t2, char>::value, "");
   }
 
@@ -55,13 +55,13 @@ int main() {
    *  TemplateTail tests
    */
   {
-    using t0 = typename TemplateTail<A<int>>::type;
+    using t0 = typename ListLikeTail<A<int>>::type;
     static_assert(std::is_same<t0, A<>>::value, "");
 
-    using t1 = typename TemplateTail<A<bool, int>>::type;
+    using t1 = typename ListLikeTail<A<bool, int>>::type;
     static_assert(std::is_same<t1, A<int>>::value, "");
 
-    using t2 = typename TemplateTail<A<bool, int, char>>::type;
+    using t2 = typename ListLikeTail<A<bool, int, char>>::type;
     static_assert(std::is_same<t2, A<int, char>>::value, "");
   }
 
@@ -69,10 +69,10 @@ int main() {
    * TemplatePushFront tests
    */
   {
-    using t0 = typename TemplatePushFront<A<>, int>::type;
+    using t0 = typename ListLikePushLeft<A<>, int>::type;
     static_assert(std::is_same<t0, A<int>>::value, "");
 
-    using t1 = typename TemplatePushFront<A<bool>, int>::type;
+    using t1 = typename ListLikePushLeft<A<bool>, int>::type;
     static_assert(std::is_same<t1, A<int, bool>>::value, "");
   }
 
@@ -80,10 +80,10 @@ int main() {
     * TemplatePushBack tests
     */
   {
-    using t0 = typename TemplatePushBack<A<>, int>::type;
+    using t0 = typename ListLikePushRight<A<>, int>::type;
     static_assert(std::is_same<t0, A<int>>::value, "");
 
-    using t1 = typename TemplatePushBack<A<bool>, int>::type;
+    using t1 = typename ListLikePushRight<A<bool>, int>::type;
     static_assert(std::is_same<t1, A<bool, int>>::value, "");
   }
 
@@ -91,16 +91,16 @@ int main() {
    * TemplateConcat tests
    */
   {
-    using t0 = typename TemplateConcat<A<>, A<>>::type;
+    using t0 = typename ListLikeConcat<A<>, A<>>::type;
     static_assert(std::is_same<t0, A<>>::value, "");
 
-    using t1 = typename TemplateConcat<A<int>, A<>>::type;
+    using t1 = typename ListLikeConcat<A<int>, A<>>::type;
     static_assert(std::is_same<t1, A<int>>::value, "");
 
-    using t2 = typename TemplateConcat<A<>, A<int>>::type;
+    using t2 = typename ListLikeConcat<A<>, A<int>>::type;
     static_assert(std::is_same<t2, A<int>>::value, "");
 
-    using t3 = typename TemplateConcat<A<int, bool>, A<int, char, bool>>::type;
+    using t3 = typename ListLikeConcat<A<int, bool>, A<int, char, bool>>::type;
     static_assert(std::is_same<t3, A<int, bool, int, char, bool>>::value, "");
   }
   return 0;

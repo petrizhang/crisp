@@ -31,32 +31,34 @@ template <typename T>
 struct ListHead;
 
 template <typename... Elements>
-struct ListHead<List<Elements...>> : TemplateHead<List<Elements...>> {};
+struct ListHead<List<Elements...>> : ListLikeHead<List<Elements...>> {};
 
 template <typename T>
 struct ListTail;
 
 template <typename... Elements>
-struct ListTail<List<Elements...>> : TemplateTail<List<Elements...>> {};
+struct ListTail<List<Elements...>> : ListLikeTail<List<Elements...>> {};
 
 template <typename T, typename Elem>
-struct ListPushFront;
+struct ListPushLeft;
 
 template <typename... Elements, typename Elem>
-struct ListPushFront<List<Elements...>, Elem> : TemplatePushFront<List<Elements...>, Elem> {};
+struct ListPushLeft<List<Elements...>, Elem> : ListLikePushLeft<List<Elements...>, Elem> {};
 
 template <typename T, typename Elem>
-struct ListPushBack;
+struct ListPushRight;
 
 template <typename... Elements, typename Elem>
-struct ListPushBack<List<Elements...>, Elem> : TemplatePushBack<List<Elements...>, Elem> {};
+struct ListPushRight<List<Elements...>, Elem> : ListLikePushRight<List<Elements...>, Elem> {};
 
 template <typename L, typename R>
-struct ListExtendBack;
+struct ListConcat;
 
 template <typename... LElements, typename... RElements>
-struct ListExtendBack<List<LElements...>, List<RElements...>>
-    : TemplateConcat<List<LElements...>, List<RElements...>> {};
+struct ListConcat<List<LElements...>, List<RElements...>>
+    : ListLikeConcat<List<LElements...>, List<RElements...>> {};
+
+
 
 }  // namespace util
 
