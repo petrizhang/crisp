@@ -58,13 +58,13 @@ struct Int {
  * @tparam args
  */
 template <char... args>
-struct String {
+struct Str {
   static constexpr const char *c_value() { return value; };
   static constexpr const char value[sizeof...(args) + 1] = {args..., '\0'};
 };
 
 template <char... args>
-constexpr const char String<args...>::value[sizeof...(args) + 1];
+constexpr const char Str<args...>::value[sizeof...(args) + 1];
 
 /**
  * Convert a string literal to a String<...> instance.
@@ -79,7 +79,7 @@ constexpr const char String<args...>::value[sizeof...(args) + 1];
  */
 template <typename CharT, CharT... Chars>
 constexpr auto operator""_s() {
-  return String<static_cast<char>(Chars)...>{};
+  return Str<static_cast<char>(Chars)...>{};
 }
 
 /**
@@ -104,7 +104,7 @@ struct Undefined {
  * @tparam args
  */
 template <char... args>
-struct Var : String<args...> {};
+struct Var : Str<args...> {};
 
 /**
  * Convert a string literal to a Var<...> instance.
@@ -572,8 +572,14 @@ struct IsEmpty {
 
 template <typename E>
 struct IsNil {
-  static constexpr const char *repr = "IsEmpty";
-  static constexpr const char *c_value() { return "#is_empty"; };
+  static constexpr const char *repr = "IsNil";
+  static constexpr const char *c_value() { return "#is_nil"; };
+};
+
+template <typename S>
+struct Str2List {
+  static constexpr const char *repr = "Str2List";
+  static constexpr const char *c_value() { return "#str2list"; };
 };
 
 }  // namespace ast

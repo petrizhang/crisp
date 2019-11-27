@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_SIZE_HPP
-#define CRISP_SIZE_HPP
-
-#include <cstdint>
+#ifndef CRISP_STR2LISTIMPL_HPP
+#define CRISP_STR2LISTIMPL_HPP
 
 namespace util {
-using std::uint64_t;
 
-/**
- * Get size of given `Args`.
- * @tparam Args
- */
-template <typename... Args>
-struct Size;
+template <typename>
+struct Str2ListImpl;
 
 template <>
-struct Size<> {
-  static const uint64_t value = 0;
+struct Str2ListImpl<Str<>> {
+  using type = List<>;
 };
 
-template <typename Head, typename... Tails>
-struct Size<Head, Tails...> {
-  static const uint64_t value = 1 + Size<Tails...>::value;
+template <char c, char... Chars>
+struct Str2ListImpl<Str<c, Chars...>> {
+  using type = typename ListPushHead<
+      typename Str2ListImpl<Str<Chars...>>::type,
+      Char<c>>::type;
 };
 
 }  // namespace util
 
-#endif  //CRISP_SIZE_HPP
+#endif  //CRISP_STR2LISTIMPL_HPP

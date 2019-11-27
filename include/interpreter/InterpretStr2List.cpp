@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_UTIL_HPP
-#define CRISP_UTIL_HPP
+#ifndef CRISP_STR2LIST_HPP
+#define CRISP_STR2LIST_HPP
+#include "Common.hpp"
 
-#include "Conditional.hpp"
-#include "Defer.hpp"
-#include "Dict.hpp"
-#include "Env.hpp"
-#include "Error.hpp"
-#include "InternalList.hpp"
-#include "List.hpp"
-#include "ListLike.hpp"
-#include "MatchUtil.hpp"
-#include "Operators.hpp"
-#include "Output.hpp"
-#include "Pack.hpp"
-#include "Replace.hpp"
-#include "Str2ListImpl.hpp"
-#include "TemplateUtil.hpp"
-#include "Zip.hpp"
-#include "ast/AST.hpp"
+namespace crisp {
+using namespace ast;
+using namespace util;
 
-#endif  //CRISP_UTIL_HPP
+template <typename Environ, typename Expr>
+struct Interpret<Str2List<Expr>, Environ> {
+  using ExprInterp = Interpret<Expr, Environ>;
+  using ExprValue = typename ExprInterp::type;
+
+  using env = Environ;
+  using type = Bool<IsEmptyImpl<ExprValue>::value>;
+
+  inline static auto Run() {
+    ExprInterp ::Run();
+    return type::c_value();
+  }
+};
+
+}  // namespace crisp
+#endif  //CRISP_STR2LIST_HPP

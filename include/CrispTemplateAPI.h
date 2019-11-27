@@ -24,7 +24,7 @@ using crisp::Nil;
 using crisp::Bool;
 using crisp::Char;
 using crisp::Int;
-using crisp::String;
+using crisp::Str;
 
 using crisp::IsEmpty;
 using crisp::IsNil;
@@ -60,6 +60,7 @@ using crisp::Capture;
 using crisp::Case;
 using crisp::Default;
 
+using crisp::Str2List;
 using crisp::List;
 using crisp::Head;
 using crisp::Tail;
@@ -72,9 +73,7 @@ using crisp::DropHead;
 using crisp::DropLast;
 
 using crisp::Quote;
-
 using crisp::Eval;
-
 using crisp::Interpret;
 
 #endif  //CRISP_TEMPLATES_H

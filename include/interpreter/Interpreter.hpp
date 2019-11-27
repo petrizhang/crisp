@@ -34,6 +34,7 @@
 #include "InterpretMatch.hpp"
 #include "InterpretPrintln.hpp"
 #include "InterpretQuote.hpp"
+#include "InterpretStr2List.cpp"
 #include "InterpretVariable.hpp"
 
 #endif  //CRISP_INTERPRETER_HPP

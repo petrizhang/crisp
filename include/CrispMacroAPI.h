@@ -68,6 +68,7 @@ using crisp::operator""_v;
 #define default_(E) crisp::Default<E>
 #define capture(T, V) crisp::Capture<T, V>
 
+#define str2list(s) crisp::Str2List<s>
 #define list(args...) crisp::List<args>
 #define head(l) crisp::Head<l>
 #define tail(l) crisp::Tail<l>

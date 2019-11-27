@@ -21,7 +21,6 @@
 
 using std::printf;
 
-
 struct SafePrintf {
 };
 
@@ -34,24 +33,25 @@ int main() {
   using result = var("result");
   using fmt_type = var("fmt_type");
 
-  using check_func = define(check,
-                            lambda(params(fmt, result, flag),
-                                   if_(is_empty(fmt),
-                                       result,
-                                       block(define(fmt_head, head(fmt)),
-                                             define(fmt_tail, tail(fmt)),
-                                             if_(flag,
-                                                 block(define(fmt_type, match(fmt_head,
-                                                                              case_(v('d'), int),
-                                                                              case_(v('u'), unsigned),
-                                                                              case_(v('f'), double),
-                                                                              case_(v('c'), char),
-                                                                              case_(v('s'), const char *),
-                                                                              default_(nil))),
-                                                       if_(is_nil(fmt_type),
-                                                           call(check, fmt_tail, result, v(false)),
-                                                           call(check, fmt_tail, push_last(result, fmt_type), v(false)))),
-                                                 call(check, fmt_tail, result, eq_(fmt_head, v('%'))))))));
+  using check_func =
+      define(check,
+             lambda(params(fmt, result, flag),
+                    if_(is_empty(fmt),
+                        result,
+                        block(define(fmt_head, head(fmt)),
+                              define(fmt_tail, tail(fmt)),
+                              if_(flag,
+                                  block(define(fmt_type, match(fmt_head,
+                                                               case_(v('d'), int),
+                                                               case_(v('u'), unsigned),
+                                                               case_(v('f'), double),
+                                                               case_(v('c'), char),
+                                                               case_(v('s'), const char *),
+                                                               default_(nil))),
+                                        if_(is_nil(fmt_type),
+                                            call(check, fmt_tail, result, v(false)),
+                                            call(check, fmt_tail, push_last(result, fmt_type), v(false)))),
+                                  call(check, fmt_tail, result, eq_(fmt_head, v('%'))))))));
 
   using l = list(v('a'), v('b'), v('%'), v('s'), v('a'));
   using types = interpret(block(check_func,

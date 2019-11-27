@@ -44,9 +44,9 @@ struct Interpret<Int<V>, Environ> {
 };
 
 template <typename Environ, char... chars>
-struct Interpret<String<chars...>, Environ> {
+struct Interpret<Str<chars...>, Environ> {
   using env = Environ;
-  using type = String<chars...>;
+  using type = Str<chars...>;
   static std::string Run() { return type::c_value(); }
 };
 
