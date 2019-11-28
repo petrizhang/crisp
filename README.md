@@ -36,7 +36,9 @@ Crisp is a simple but powerful functional programming language. The core feature
 
 ### Lisp
 [Lisp](https://en.wikipedia.org/wiki/Lisp_(programming_language)) is a family of computer programming languages with a long history.
+
 All program code of Lisp is written as **s-expressions**, or parenthesized lists. 
+
 A function call or syntactic form is written as a list with the function or operator's name first, 
 and the arguments following; for instance, a function f that takes three arguments would be called as `(f arg1 arg2 arg3)`.
 
