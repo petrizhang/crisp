@@ -55,8 +55,7 @@ In conclusion, the two most important features make Lisp elegant are:
 2. Lisp provides tools(macros and list processing functions) for users to easily access and process AST(lists).
 
 #### Feature 1
-We found that feature 1 is natural in C++ templates, because C++ templates are very similar to lists and 
-could also be considered as tree structures.
+We found that feature 1 is natural in C++ templates, because nested C++ templates are very similar to lists and could also be considered as tree structures.
 
 Consider this example:
 
@@ -65,7 +64,7 @@ Consider this example:
    (+ 3 4))
 ```
 
-To express this program, users could write C++ templates as:
+To express the same program, users could write C++ templates as:
 
 ```cpp
 Mul< Add<1, 2>,
@@ -76,7 +75,7 @@ Similarly to **s-expressions**, this kind of expressions are called **m-expressi
 which could also be treated as a tree structure(AST) that encodes a program.
 
 Then we could use C++ template meta-programming techniques to write a interpreter that
-interprets these kinds of AST at compile time,
+interprets this kind of AST at compile time,
 as the [Crisp interpreter](https://github.com/pzque/crisp/tree/master/include/interpreter) does.
 
 #### Feature 2
@@ -86,8 +85,7 @@ It is very hard to modifies a deep level of a nested template and transform it t
 Crisp brings the novel **pattern match** feature for users to process such nested templates.
 Due to that, processing program code in Crisp is dramatically easy. 
 
-Here is a simple example demonstrates how to transform an addition expression to a multiplication expression
-throw a function: 
+Here is a simple example demonstrates how to transform an addition expression to a multiplication expression through a function: 
 
 ```cpp
   block(define(var("add2mul"), lambda(params(var("x")),
@@ -251,7 +249,10 @@ In this example, we define a recursive function `factorial` which calls itself t
 
 ### Quote and Eval
 ```cpp
-
+    // quote
+    using quoted_add = quote(add(v(1), v(2)));
+    // eval
+    run(println(eval(quoted_add)));
 ```
 
 ### Pattern Match
@@ -321,6 +322,6 @@ make
 ```
 
 ## Acknowledgements
-This project is inspired by [TemplatedPL](https://github.com/Cheukyin/TemplatedPL). Thanks to the author's great idea.
+This project is inspired by [TemplatedPL](https://github.com/Cheukyin/TemplatedPL). Thanks for the author's great idea.
 
 Some basic API of Crisp and TemplatedPL look similar, but these 2 projects are implemented with **completly different techniques**.
