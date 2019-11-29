@@ -42,8 +42,8 @@ class SafePrintf {
                                                                case_(v('f'), double),
                                                                case_(v('c'), char),
                                                                case_(v('s'), const char *),
-                                                               default_(v('-')))),
-                                        if_(eq_(fmt_type, v('-')),
+                                                               default_(nil))),
+                                        if_(is_nil(fmt_type),
                                             call(check, fmt_tail, result, v(false)),
                                             call(check, fmt_tail, push_last(result, fmt_type), v(false)))),
                                   call(check, fmt_tail, result, eq_(fmt_head, v('%'))))))));
