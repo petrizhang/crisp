@@ -305,7 +305,7 @@ struct MatchCase {
 
   using dict = typename Conditional<
       When<_IsTargetMatchAny, CaptureDict>,
-      When<_TargetIsCapture, typename DictPut<typename CaptureMatch::dict, Pair<SomeVarName, Source>>::type>,
+      When<_TargetIsCapture, typename DictPutImpl<typename CaptureMatch::dict, SomeVarName, Source>::type>,
       When<_IsSameTemplateAndNotTargetIsCapture, typename TemplateMatch::dict>,
       Else<CaptureDict>>::type;
 };
@@ -328,9 +328,9 @@ struct MatchCase<CaptureDict, Source, Source> {
   // put `List< Capture<_, Var<...>> >` to current dictironment.
   using MaybeEnv = typename ConditionalApply<
       When<Bool<IsCaptureAnySingle<Source>::value>,
-           DeferApply<DictPut, CaptureDict, Pair<SomeVarName, Source>>>,
+           DeferApply<DictPutImpl, CaptureDict, SomeVarName, Source>>,
       When<Bool<IsCaptureAnyList<Source>::value>,
-           DeferApply<DictPut, CaptureDict, Pair<SomeVarName, List<Source>>>>,
+           DeferApply<DictPutImpl, CaptureDict, SomeVarName, List<Source>>>,
       Else<DeferApply<NilF>>>::type;
 
   // If `Source` is a template(C<Args...>) but not `Capture<_/___, Var<...> >`,
@@ -372,16 +372,16 @@ struct MatchCase<CaptureDict, Source, Source> {
 
 template <typename CaptureDict>
 struct MatchInternal<CaptureDict,
-                          internal::InternalList<>,
-                          internal::InternalList<>> {
+                     internal::InternalList<>,
+                     internal::InternalList<>> {
   static const bool matched = true;
   using dict = CaptureDict;
 };
 
 template <typename CaptureDict, typename Source, typename Target>
 struct MatchInternal<CaptureDict,
-                          internal::InternalList<Source>,
-                          internal::InternalList<Target>> {
+                     internal::InternalList<Source>,
+                     internal::InternalList<Target>> {
   using SubMatch = MatchCase<CaptureDict, Source, Target>;
 
   static const bool matched = SubMatch::matched;
@@ -392,8 +392,8 @@ template <typename CaptureDict,
           typename SourceHead, typename... SourceTail,
           typename TargetHead, typename... TargetTail>
 struct MatchInternal<CaptureDict,
-                          internal::InternalList<SourceHead, SourceTail...>,
-                          internal::InternalList<TargetHead, TargetTail...>> {
+                     internal::InternalList<SourceHead, SourceTail...>,
+                     internal::InternalList<TargetHead, TargetTail...>> {
   using HeadMatch = MatchCase<CaptureDict, SourceHead, TargetHead>;
   using HeadMatched = Bool<HeadMatch::matched>;
 

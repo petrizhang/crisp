@@ -32,7 +32,7 @@
 #include "Replace.hpp"
 #include "Str2ListImpl.hpp"
 #include "TemplateUtil.hpp"
-#include "Zip.hpp"
+#include "ZipToDict.hpp"
 #include "ast/AST.hpp"
 
 #endif  //CRISP_UTIL_HPP

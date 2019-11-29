@@ -45,18 +45,17 @@ struct CallClosure<CallSiteEnviron,
                 "Arguments number does't match.");
 
   // Pack parameters and given arguments to a dict
-  using argDict = typename Zip<List<Params...>, List<ArgValues...>>::type;
+  using ArgDict = typename ZipToDict<List<Params...>, List<ArgValues...>>::type;
 
   // Insert the arguments dict to the closest level of the closure's environment
-  using executionEnv0 = typename ListPushHead<ClosureEnviron, argDict>::type;
+  using ExecutionEnv0 = typename EnvPushHead<ClosureEnviron, ArgDict>::type;
   // Add the call site's environment into the end of the environment list,
   // thus the recursive calls could be supported
-  using executionEnv =
-      typename ListConcat<executionEnv0, CallSiteEnviron>::type;
+  using ExecutionEnv = typename EnvConcat<ExecutionEnv0, CallSiteEnviron>::type;
 
   using env = CallSiteEnviron;
   // Interpret function body
-  using BodyInterp = Interpret<Body, executionEnv>;
+  using BodyInterp = Interpret<Body, ExecutionEnv>;
   using type = typename BodyInterp::type;
 
   static decltype(type::c_value()) Run() {

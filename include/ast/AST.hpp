@@ -582,6 +582,9 @@ struct Str2List {
   static constexpr const char *c_value() { return "#str2list"; };
 };
 
+template <typename... Pairs>
+struct Dict {};
+
 }  // namespace ast
 
 #endif  //CRISP_AST_HPP

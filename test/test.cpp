@@ -20,22 +20,6 @@
 
 using namespace crisp;
 
-void TestDict() {
-  using x = Var<'x'>;
-  using y = Var<'y'>;
-  using d = Dict<>;
-  using d1 = DictPut<d, Pair<x, Int<1>>>::type;
-  using d2 = DictPut<d1, Pair<y, Int<2>>>::type;
-  using d3 = DictPut<d2, Pair<x, Int<3>>>::type;
-  using d4 = DictPut<d3, Pair<y, Int<4>>>::type;
-
-  static_assert(DictGet<d1, x>::type::c_value() == 1, "");
-  static_assert(DictGet<d2, x>::type::c_value() == 1, "");
-  static_assert(DictGet<d2, y>::type::c_value() == 2, "");
-  static_assert(DictGet<d3, x>::type::c_value() == 3, "");
-  static_assert(DictGet<d4, y>::type::c_value() == 4, "");
-}
-
 void TestEnv() {
   using x = Var<'x'>;
   using y = Var<'y'>;
@@ -43,7 +27,7 @@ void TestEnv() {
   using d1 = Dict<Pair<x, Int<2>>, Pair<y, Int<3>>>;
 
   using e0 = Env<d0>;
-  using e1 = EnvPushFront<e0, d1>::type;
+  using e1 = EnvPushHead<e0, d1>::type;
 
   static_assert(EnvLookup<e0, x>::type::c_value() == 1, "");
   static_assert(EnvLookup<e1, x>::type::c_value() == 2, "");

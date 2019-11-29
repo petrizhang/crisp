@@ -30,21 +30,21 @@ using ast::Undefined;
  * Every element in the stack is a symbol table for a specific lexical scope.
  */
 template <typename... Dicts>
-using Env = List<Dicts...>;
+struct Env {};
 
-template <typename Environ, typename Extra>
-using EnvExtendBack = ListConcat<Environ, Extra>;
+template <typename EnvA, typename EnvB>
+using EnvConcat = ListLikeConcat<EnvA, EnvB>;
 
-template <typename env, typename dict>
-using EnvPushFront = ListPushHead<env, dict>;
+template <typename EnvX, typename dict>
+using EnvPushHead = ListLikePushHead<EnvX, dict>;
 
 /**
  * Bind a variable name `K` with a value `V` in current scope.
- * @tparam env
+ * @tparam EnvX
  * @tparam K
  * @tparam V
  */
-template <typename env, typename K, typename V>
+template <typename EnvX, typename K, typename V>
 struct EnvPut;
 
 template <typename K, typename V>
@@ -52,36 +52,34 @@ struct EnvPut<Env<>, K, V> {
   using type = Env<Dict<Pair<K, V>>>;
 };
 
-template <typename K, typename V, typename dict, typename... Tail>
-struct EnvPut<Env<dict, Tail...>, K, V> {
-  using type = Env<typename DictPut<dict, Pair<K, V>>::type, Tail...>;
+template <typename K, typename V, typename DictX, typename... Tail>
+struct EnvPut<Env<DictX, Tail...>, K, V> {
+  using type = Env<typename DictPutImpl<DictX, K, V>::type, Tail...>;
 };
 
 /**
  * Lookup a variable by name `K` in current environment.
- * @tparam env
+ * @tparam EnvX
  * @tparam K
  */
-template <typename env, typename K>
+template <typename EnvX, typename K>
 struct EnvLookup {
   using type = Undefined;
 };
 
 // TODO - Fix bugs here: don't use Nil to indicate a invoking failure.
-template <typename K, typename dict>
-struct EnvLookup<Env<dict>, K> {
-  using V = typename DictGet<dict, K>::type;
-  using type = typename std::conditional<std::is_same<V, Nil>::value,
-                                         Undefined,
-                                         V>::type;
+template <typename K, typename DictX>
+struct EnvLookup<Env<DictX>, K> {
+  using type = typename DictGetImpl<DictX, K>::type;
 };
 
-template <typename K, typename dict, typename... Tail>
-struct EnvLookup<Env<dict, Tail...>, K> {
-  using current_scope_value = typename DictGet<dict, K>::type;
-  using type = typename std::conditional<std::is_same<current_scope_value, Nil>::value,
+// TODO - replace std::conditional with ConditionalApply
+template <typename K, typename DictX, typename... Tail>
+struct EnvLookup<Env<DictX, Tail...>, K> {
+  using CurrentScopeValue = typename DictGetImpl<DictX, K>::type;
+  using type = typename std::conditional<std::is_same<CurrentScopeValue, Undefined>::value,
                                          typename EnvLookup<Env<Tail...>, K>::type,
-                                         current_scope_value>::type;
+                                         CurrentScopeValue>::type;
 };
 }  // namespace util
 #endif  //CRISP_ENV_HPP

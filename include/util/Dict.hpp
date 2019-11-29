@@ -21,36 +21,71 @@
 #include "ast/AST.hpp"
 
 namespace util {
-using ast::Nil;
 using ast::Pair;
+using ast::Undefined;
+using ast::Dict;
 
 /**
- * A map-like collection type.
+ * Get the value associated with K in a dict.
+ * @tparam D
+ * @tparam K
  */
-template <typename... Pairs>
-using Dict = List<Pairs...>;
-
-template <typename dict, typename pair>
-using DictPut = ListPushHead<dict, pair>;
-
-template <typename dict, typename K>
-struct DictGet {
-  using type = Nil;
+template <typename D, typename K>
+struct DictGetImpl {
+  using type = Undefined;
 };
 
 template <typename K, typename V>
-struct DictGet<Dict<Pair<K, V>>, K> {
+struct DictGetImpl<Dict<Pair<K, V>>, K> {
   using type = V;
 };
 
 template <typename K, typename V, typename... Tail>
-struct DictGet<Dict<Pair<K, V>, Tail...>, K> {
+struct DictGetImpl<Dict<Pair<K, V>, Tail...>, K> {
   using type = V;
 };
 
-template <typename K, typename V, typename T, typename... Tail>
-struct DictGet<Dict<Pair<T, V>, Tail...>, K> {
-  using type = typename DictGet<Dict<Tail...>, K>::type;
+template <typename K, typename V, typename AnyK, typename... Tail>
+struct DictGetImpl<Dict<Pair<AnyK, V>, Tail...>, K> {
+  using type = typename DictGetImpl<Dict<Tail...>, K>::type;
+};
+
+template <typename Collected, typename Rest, typename K, typename V>
+struct DictPutImplHelper;
+
+template <typename... CollectedPairs, typename... RestPairs,
+          typename K, typename V, typename AnyV>
+struct DictPutImplHelper<Dict<CollectedPairs...>,
+                         Dict<Pair<K, AnyV>, RestPairs...>,
+                         K,
+                         V> {
+  using type = Dict<CollectedPairs..., Pair<K, V>, RestPairs...>;
+};
+
+template <typename... CollectedPairs, typename... RestPairs,
+          typename AnyV, typename AnyK, typename K, typename V>
+struct DictPutImplHelper<Dict<CollectedPairs...>,
+                         Dict<Pair<AnyK, AnyV>, RestPairs...>,
+                         K,
+                         V> {
+  using type = typename DictPutImplHelper<Dict<CollectedPairs..., Pair<AnyK, AnyV>>,
+                                          Dict<RestPairs...>,
+                                          K,
+                                          V>::type;
+};
+
+template <typename... CollectedPairs, typename K, typename V>
+struct DictPutImplHelper<Dict<CollectedPairs...>,
+                         Dict<>,
+                         K,
+                         V> {
+  using type = Dict<Pair<K, V>, CollectedPairs...>;
+};
+
+template <typename D, typename K, typename V>
+struct DictPutImpl {
+  static_assert(IsTemplateOf<Dict, D>::value, "expected a `Dict` instantiation");
+  using type = typename DictPutImplHelper<Dict<>, D, K, V>::type;
 };
 
 }  // namespace util

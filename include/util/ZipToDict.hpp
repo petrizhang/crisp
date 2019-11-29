@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_ZIP_HPP
-#define CRISP_ZIP_HPP
+#ifndef CRISP_ZIPTODICT_HPP
+#define CRISP_ZIPTODICT_HPP
 
 #include "ListLike.hpp"
 
@@ -29,19 +29,19 @@ namespace util {
  * @tparam Values
  */
 template <typename Keys, typename Values>
-struct Zip;
+struct ZipToDict;
 
 template <template <typename...> class C, typename K, typename V, typename... Keys, typename... Values>
-struct Zip<C<K, Keys...>, C<V, Values...>> {
-  using tailResult = typename Zip<C<Keys...>, C<Values...>>::type;
-  using type = typename ListLikePushHead<tailResult, Pair<K, V>>::type;
+struct ZipToDict<C<K, Keys...>, C<V, Values...>> {
+  using TailResult = typename ZipToDict<C<Keys...>, C<Values...>>::type;
+  using type = typename ListLikePushHead<TailResult, Pair<K, V>>::type;
 };
 
 template <template <typename...> class C>
-struct Zip<C<>, C<>> {
-  using type = C<>;
+struct ZipToDict<C<>, C<>> {
+  using type = Dict<>;
 };
 
 }  // namespace util
 
-#endif  //CRISP_ZIP_HPP
+#endif  //CRISP_ZIPTODICT_HPP

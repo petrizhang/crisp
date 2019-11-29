@@ -44,7 +44,7 @@ int main() {
     static_assert((MatchCase<Dict<>, List<Int<1>>, List<Capture<_, x>>>::matched), "");
     using t0 = MatchCase<Dict<>, List<Int<1>>, List<Capture<Int<1>, x>>>;
     static_assert((t0::matched), "");
-    static_assert((std::is_same<typename DictGet<t0::dict, x>::type, Int<1>>::value), "");
+    static_assert((std::is_same<typename DictGetImpl<t0::dict, x>::type, Int<1>>::value), "");
 
     static_assert((!MatchCase<Dict<>, List<Int<1>>, List<Capture<Int<2>, x>>>::matched), "");
 
@@ -72,14 +72,14 @@ int main() {
     using target1 = List<List<_, _>, Capture<_, x>>;
     using match1 = MatchCase<Dict<>, l, target1>;
     static_assert(match1::matched, "");
-    static_assert((std::is_same<typename DictGet<match1::dict, x>::type,
+    static_assert((std::is_same<typename DictGetImpl<match1::dict, x>::type,
                                 List<List<Int<3>, List<Int<4>, Char<'x'>>>>>::value),
                   "");
 
     using target2 = List<List<_, _>, List<List<Capture<_, x>, _>>>;
     using match2 = MatchCase<Dict<>, l, target2>;
     static_assert(match2::matched, "");
-    static_assert((std::is_same<typename DictGet<match2::dict, x>::type,
+    static_assert((std::is_same<typename DictGetImpl<match2::dict, x>::type,
                                 Int<3>>::value),
                   "");
 
@@ -107,7 +107,7 @@ int main() {
                          List<Int<1>, Int<2>>,
                          List<Capture<Int<1>, x>, Int<2>>>;
     static_assert((t0::matched), "");
-    static_assert((std::is_same<typename DictGet<t0::dict, x>::type, Int<1>>::value), "");
+    static_assert((std::is_same<typename DictGetImpl<t0::dict, x>::type, Int<1>>::value), "");
   }
 
   /**
