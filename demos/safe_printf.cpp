@@ -52,9 +52,8 @@ class SafePrintf {
   template <typename Format, typename... Args>
   static void SafePrintfImpl(Args... args) {
     using GivenTypes = list(Args...);
-    using ExpectedTypes =
-        typename interpret(block(check_def,
-                                 call(check, str2list(Format), list(), v(false))));
+    using ExpectedTypes = typename interpret(block(check_def,
+                                                   call(check, str2list(Format), list(), v(false))));
 
     static_assert(std::is_same<GivenTypes, ExpectedTypes>::value, "type mismatch");
     std::printf(Format::value, args...);
