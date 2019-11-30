@@ -78,7 +78,7 @@ which could also be treated as a tree structure(AST) that encodes a program.
 
 Then we could use C++ template meta-programming techniques to write a interpreter that
 interprets this kind of AST at compile time,
-as the [Crisp interpreter](https://github.com/pzque/crisp/tree/master/include/interpreter) does.
+as the [Crisp interpreter](https://github.com/pzque/crisp/tree/master/src/interpreter) does.
 
 #### Feature 2
 We have **nested templates as AST** now, but C++ doesn't provide convenient tools for users to process nested templates.
@@ -290,7 +290,7 @@ In this example, we define a recursive function `factorial` which calls itself t
 ### Use Crisp in Your Project
 Crisp is a header-only library, users could use Crisp by including Crisp header files in their projects.
 
-1. **Copy `crisp/include` into your project**.
+1. **Copy `crisp/src` into your project**.
 2. 
     - To use **Crisp macro api**, **`#include "CrispMacroAPI.h"`**.
     - To use **Crisp template api**, **`#include "CrispTemplateAPI.h"`**.
@@ -307,10 +307,10 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
 ## API
 
 ### Macro Style
-Users could find a complete macro api list at [include/CrispMacroAPI.h](https://github.com/pzque/crisp/blob/master/include/CrispMacroAPI.h).
+Users could find a complete macro api list at [src/CrispMacroAPI.h](https://github.com/pzque/crisp/blob/master/src/CrispMacroAPI.h).
   
 ### Template Style
-Users could find a complete template api list at [include/CrispTemplateAPI.h](https://github.com/pzque/crisp/blob/master/include/CrispTemplateAPI.h)..
+Users could find a complete template api list at [src/CrispTemplateAPI.h](https://github.com/pzque/crisp/blob/master/src/CrispTemplateAPI.h)..
 
 ## Build and Dependency
 If you want to explore Crisp source code and run Crisp examples and tests, you need to:
