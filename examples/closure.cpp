@@ -15,7 +15,7 @@
  */
 
 #include <iostream>
-#include "CrispMacroAPI.h"
+#include "../CrispMacroAPI.h"
 
 using x = var("x");
 using y = var("y");

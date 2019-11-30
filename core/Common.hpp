@@ -14,9 +14,30 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_LIBAST_HPP
-#define CRISP_LIBAST_HPP
+#ifndef CRISP_COMMON_HPP
+#define CRISP_COMMON_HPP
 
-#include "library/Map.hpp"
+#include <array>
+#include <cassert>
+#include <iostream>
+#include <type_traits>
+#include "../ast/CoreAST.hpp"
+#include "../util/Util.hpp"
 
-#endif  //CRISP_LIBAST_HPP
+namespace crisp {
+using namespace crisp;
+using namespace util;
+using std::is_base_of;
+using std::is_same;
+
+template <typename Expr, typename Environ = Env<>>
+struct Interpret {
+  using env = Environ;
+  // Return unrecognized types transparently
+  using type = Expr;
+
+  inline static auto Run() { return "#omit"; };
+};
+
+}  // namespace crisp
+#endif  //CRISP_COMMON_HPP

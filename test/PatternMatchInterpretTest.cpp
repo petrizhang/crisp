@@ -16,7 +16,7 @@
 
 #include <type_traits>
 #include "ast/CoreAST.hpp"
-#include "interpreter/Interpreter.hpp"
+#include "core/Interpreter.hpp"
 #include "util/Util.hpp"
 
 using namespace crisp;

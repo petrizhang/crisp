@@ -16,7 +16,7 @@
 
 #include <cassert>
 #include <iostream>
-#include "CrispTemplateAPI.h"
+#include "../CrispTemplateAPI.h"
 
 using namespace crisp;
 

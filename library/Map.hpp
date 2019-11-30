@@ -18,7 +18,7 @@
 #define CRISP_MAP_HPP
 
 #include "ast/CoreAST.hpp"
-#include "interpreter/CrispFunction.hpp"
+#include "core/CrispFunction.hpp"
 
 #define map(l, f) crisp::Map<l, f>
 

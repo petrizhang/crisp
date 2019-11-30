@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_COMMON_HPP
-#define CRISP_COMMON_HPP
+#ifndef CRISP_MACROS_H
+#define CRISP_MACROS_H
 
-#include <array>
-#include <cassert>
-#include <iostream>
-#include <type_traits>
 #include "ast/CoreAST.hpp"
-#include "util/Util.hpp"
+#include "ast/LibAST.hpp"
+#include "core/Interpreter.hpp"
 
 namespace crisp {
-using namespace crisp;
-using namespace util;
-using std::is_base_of;
-using std::is_same;
+using PreDefinedEnv = Env<Dict<Pair<Map<_, _>::__name__, Closure<Env<>, Map<_, _>::__body__>>>>;
+}
 
-template <typename Expr, typename Environ = Env<>>
-struct Interpret {
-  using env = Environ;
-  // Return unrecognized types transparently
-  using type = Expr;
+#ifdef CRISP_USER_DEFINED_ENV
+#define interpret(expr) crisp::Interpret<expr, CRISP_USER_DEFINED_ENV>::type
+#else
+#define interpret(expr) crisp::Interpret<expr, crisp::PreDefinedEnv>::type
+#endif
 
-  inline static auto Run() { return "#omit"; };
-};
+#define run(expr) crisp::Interpret<expr, crisp::Env<>>::Run()
 
-}  // namespace crisp
-#endif  //CRISP_COMMON_HPP
+#endif  //CRISP_MACROS_H

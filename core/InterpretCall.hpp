@@ -16,9 +16,9 @@
 
 #ifndef CRISP_INTERPRETCALL_HPP
 #define CRISP_INTERPRETCALL_HPP
+#include "../util/InternalList.hpp"
 #include "Common.hpp"
 #include "InterpretInternalList.hpp"
-#include "util/InternalList.hpp"
 
 // TODO: Refine `call` implementation.
 namespace crisp {
