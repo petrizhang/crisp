@@ -17,12 +17,12 @@
 #ifndef CRISP_PACK_HPP
 #define CRISP_PACK_HPP
 
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::Bool;
-using ast::Char;
-using ast::Int;
+using crisp::Bool;
+using crisp::Char;
+using crisp::Int;
 
 /**
  * Pack a const value(int/char/bool) into Value type.

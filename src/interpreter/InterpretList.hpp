@@ -19,7 +19,7 @@
 #include "Common.hpp"
 
 namespace crisp {
-using namespace ast;
+using namespace crisp;
 using namespace util;
 using util::internal::InternalList;
 

@@ -17,10 +17,10 @@
 #ifndef CRISP_DEFER_HPP
 #define CRISP_DEFER_HPP
 
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::Nil;
+using crisp::Nil;
 
 /**
  * Save the context of a template `C` and it's arguments `Args`, and apply it later.

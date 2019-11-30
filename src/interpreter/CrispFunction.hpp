@@ -14,26 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_INTERPRETLAMBDA_HPP
-#define CRISP_INTERPRETLAMBDA_HPP
-#include "Common.hpp"
+#ifndef CRISP_CRISPFUNCTION_HPP
+#define CRISP_CRISPFUNCTION_HPP
 
 namespace crisp {
-using namespace crisp;
-using namespace util;
-
-/**
- * Interpret an lambda expression.
- * @tparam Environ
- * @tparam Body
- * @tparam ParamL
- */
-template <typename Environ, typename Body, typename ParamL>
-struct Interpret<Lambda<ParamL, Body>, Environ> {
-  using env = Environ;
-  using type = Closure<Environ, Lambda<ParamL, Body>>;
-
-  static constexpr const char *Run() { return "#closure"; }
-};
+struct CrispFunction {};
 }  // namespace crisp
-#endif  //CRISP_INTERPRETLAMBDA_HPP
+
+#endif  //CRISP_CRISPFUNCTION_HPP

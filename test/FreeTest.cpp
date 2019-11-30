@@ -16,8 +16,8 @@
 
 #include <iostream>
 
-#include "ast/AST.hpp"
-using namespace ast;
+#include "ast/CoreAST.hpp"
+using namespace crisp;
 
 int main() {
   using t = decltype("1234"_s);

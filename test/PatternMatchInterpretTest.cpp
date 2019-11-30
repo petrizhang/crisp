@@ -15,11 +15,11 @@
  */
 
 #include <type_traits>
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 #include "interpreter/Interpreter.hpp"
 #include "util/Util.hpp"
 
-using namespace ast;
+using namespace crisp;
 using namespace util;
 using namespace crisp;
 

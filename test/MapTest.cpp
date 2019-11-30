@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_INTERPRETLAMBDA_HPP
-#define CRISP_INTERPRETLAMBDA_HPP
-#include "Common.hpp"
+#include <type_traits>
+#include "CrispMacroAPI.h"
 
-namespace crisp {
-using namespace crisp;
-using namespace util;
+using std::is_same;
 
-/**
- * Interpret an lambda expression.
- * @tparam Environ
- * @tparam Body
- * @tparam ParamL
- */
-template <typename Environ, typename Body, typename ParamL>
-struct Interpret<Lambda<ParamL, Body>, Environ> {
-  using env = Environ;
-  using type = Closure<Environ, Lambda<ParamL, Body>>;
+int main() {
+  using x = var("x");
+  using add1 = lambda(params(x),
+                      add(x, v(1)));
+  /**
+   * A test group
+   */
+  {
+    using t0 = interpret(map(list(v(0), v(1), v(2), v(3), v(4)),
+                             add1));
+    static_assert(is_same<t0, list(v(1), v(2), v(3), v(4), v(5))>::value, "");
 
-  static constexpr const char *Run() { return "#closure"; }
-};
-}  // namespace crisp
-#endif  //CRISP_INTERPRETLAMBDA_HPP
+    using t1 = interpret(map(list(), add1));
+    static_assert(is_same<t1, list()>::value, "");
+  }
+  return 0;
+}

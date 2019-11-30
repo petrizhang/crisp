@@ -18,10 +18,10 @@
 #define CRISP_LIST_HPP
 
 #include "ListLike.hpp"
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::List;
+using crisp::List;
 
 /**
  *  List operations.

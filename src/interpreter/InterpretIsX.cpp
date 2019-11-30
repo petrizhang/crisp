@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_ISX_HPP
-#define CRISP_ISX_HPP
+#ifndef CRISP_INTERPRETISX_HPP
+#define CRISP_INTERPRETISX_HPP
 #include "Common.hpp"
 
 namespace crisp {
-using namespace ast;
+using namespace crisp;
 using namespace util;
 
 template <typename Environ, typename Expr>
@@ -50,4 +50,4 @@ struct Interpret<IsNil<Expr>, Environ> {
   }
 };
 }  // namespace crisp
-#endif  //CRISP_ISX_HPP
+#endif  //CRISP_INTERPRETISX_HPP

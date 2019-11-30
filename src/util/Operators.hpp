@@ -17,10 +17,10 @@
 #ifndef CRISP_OPERATOR_IMPL_HPP
 #define CRISP_OPERATOR_IMPL_HPP
 
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using namespace ast;
+using namespace crisp;
 
 /**
  * Implementation for `Add`.

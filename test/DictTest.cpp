@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#include <ast/AST.hpp>
+#include <ast/CoreAST.hpp>
 #include <iostream>
 #include <type_traits>
 #include "util/Dict.hpp"
 
 using std::is_same;
 
-using namespace ast;
+using namespace crisp;
 using namespace util;
 
 int main() {

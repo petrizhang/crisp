@@ -21,7 +21,7 @@
 #include "util/InternalList.hpp"
 
 namespace crisp {
-using namespace ast;
+using namespace crisp;
 using namespace util;
 
 template <typename...>

@@ -33,6 +33,6 @@
 #include "Str2ListImpl.hpp"
 #include "TemplateUtil.hpp"
 #include "ZipToDict.hpp"
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 #endif  //CRISP_UTIL_HPP

@@ -18,12 +18,12 @@
 #define CRISP_CONDITIONAL_HPP
 
 #include "Error.hpp"
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::Bool;
-using ast::Else;
-using ast::When;
+using crisp::Bool;
+using crisp::Else;
+using crisp::When;
 
 /**
  * Get result from branches according to branches' condition.

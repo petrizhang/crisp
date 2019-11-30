@@ -19,11 +19,11 @@
 
 #include "Dict.hpp"
 #include "List.hpp"
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::Pair;
-using ast::Undefined;
+using crisp::Pair;
+using crisp::Undefined;
 
 /**
  * Environment stack implementation.

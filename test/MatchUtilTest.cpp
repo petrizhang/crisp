@@ -16,10 +16,10 @@
 
 #include <type_traits>
 #include <util/Util.hpp>
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 #include "util/Util.hpp"
 
-using namespace ast;
+using namespace crisp;
 using namespace util;
 
 int main() {

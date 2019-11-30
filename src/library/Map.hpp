@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_COMMON_HPP
-#define CRISP_COMMON_HPP
+#ifndef CRISP_MAP_HPP
+#define CRISP_MAP_HPP
 
-#include <array>
-#include <cassert>
-#include <iostream>
-#include <type_traits>
 #include "ast/CoreAST.hpp"
-#include "util/Util.hpp"
+#include "interpreter/CrispFunction.hpp"
+
+#define map(l, f) crisp::Map<l, f>
 
 namespace crisp {
-using namespace crisp;
-using namespace util;
-using std::is_base_of;
-using std::is_same;
 
-template <typename Expr, typename Environ = Env<>>
-struct Interpret {
-  using env = Environ;
-  // Return unrecognized types transparently
-  using type = Expr;
-
-  inline static auto Run() { return "#omit"; };
+template <typename, typename>
+struct Map : CrispFunction {
+  using __name__ = var("map");
+  using __body__ = lambda(params(var("list"), var("func")),
+                          if_(is_empty(var("list")),
+                              list(),
+                              block(define(var("func(head)"), call(var("func"), head(var("list")))),
+                                    push_head(call(var("map"), tail(var("list")), var("func")),
+                                              var("func(head)")))));
 };
 
 }  // namespace crisp
-#endif  //CRISP_COMMON_HPP
+
+#endif  //CRISP_MAP_HPP

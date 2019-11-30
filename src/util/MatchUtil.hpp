@@ -21,15 +21,15 @@
 #include "Defer.hpp"
 #include "InternalList.hpp"
 #include "TemplateUtil.hpp"
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::_;
-using ast::___;
-using ast::Capture;
-using ast::Case;
-using ast::Default;
-using ast::Quote;
+using crisp::_;
+using crisp::___;
+using crisp::Capture;
+using crisp::Case;
+using crisp::Default;
+using crisp::Quote;
 
 /**
  * Get `Condition` in `Case<Condition,Result>`

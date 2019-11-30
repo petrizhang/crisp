@@ -17,12 +17,12 @@
 #ifndef CRISP_TEMPLATE_UTIL_HPP
 #define CRISP_TEMPLATE_UTIL_HPP
 
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::Closure;
-using ast::Var;
-using ast::Nil;
+using crisp::Closure;
+using crisp::Nil;
+using crisp::Var;
 
 /**
  * Convert A<Args...> to B<Args...>

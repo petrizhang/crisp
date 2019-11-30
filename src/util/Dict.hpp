@@ -18,12 +18,12 @@
 #define CRISP_DICT_HPP
 
 #include "List.hpp"
-#include "ast/AST.hpp"
+#include "ast/CoreAST.hpp"
 
 namespace util {
-using ast::Pair;
-using ast::Undefined;
-using ast::Dict;
+using crisp::Dict;
+using crisp::Pair;
+using crisp::Undefined;
 
 /**
  * Get the value associated with K in a dict.

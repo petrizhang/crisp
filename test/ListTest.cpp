@@ -17,7 +17,7 @@
 #include <type_traits>
 #include "interpreter/Interpreter.hpp"
 
-using namespace ast;
+using namespace crisp;
 using namespace util;
 using namespace crisp;
 using std::is_same;

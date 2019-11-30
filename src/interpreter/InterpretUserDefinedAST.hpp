@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_COMMON_HPP
-#define CRISP_COMMON_HPP
+#ifndef CRISP_INTERPRETUSERDEFINEDAST_HPP
+#define CRISP_INTERPRETUSERDEFINEDAST_HPP
 
-#include <array>
-#include <cassert>
-#include <iostream>
-#include <type_traits>
-#include "ast/CoreAST.hpp"
-#include "util/Util.hpp"
+#include "Common.hpp"
+#include "CrispFunction.hpp"
 
 namespace crisp {
-using namespace crisp;
-using namespace util;
-using std::is_base_of;
-using std::is_same;
+template <template <typename...> class F, typename Environ, typename... Args>
+struct Interpret<F<Args...>, Environ> {
+  using FApply = F<Args...>;
 
-template <typename Expr, typename Environ = Env<>>
-struct Interpret {
+  using FApplyInterp = typename ConditionalApply<
+      When<Bool<is_base_of<CrispFunction, FApply>::value>,
+           DeferConstruct<Interpret, Call<typename FApply::__name__, Args...>, Environ>>,
+      Else<DeferConstruct<Id, FApply>>>::type;
+
+  // TODO: check we should use which env carefully
   using env = Environ;
-  // Return unrecognized types transparently
-  using type = Expr;
+  using type = typename FApplyInterp::type;
 
   inline static auto Run() { return "#omit"; };
 };
-
 }  // namespace crisp
-#endif  //CRISP_COMMON_HPP
+
+#endif  //CRISP_INTERPRETUSERDEFINEDAST_HPP

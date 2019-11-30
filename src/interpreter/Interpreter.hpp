@@ -18,6 +18,7 @@
 #define CRISP_INTERPRETER_HPP
 
 #include "Common.hpp"
+#include "CrispFunction.hpp"
 #include "InterpretBinaryOperator.hpp"
 #include "InterpretBlock.hpp"
 #include "InterpretCall.hpp"
@@ -35,6 +36,7 @@
 #include "InterpretPrintln.hpp"
 #include "InterpretQuote.hpp"
 #include "InterpretStr2List.cpp"
+#include "InterpretUserDefinedAST.hpp"
 #include "InterpretVariable.hpp"
 
 #endif  //CRISP_INTERPRETER_HPP

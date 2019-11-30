@@ -5,8 +5,10 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_compile_options(-ftemplate-depth-5000)
 
-FILE(GLOB Source src/interpreter/*
-        src/util/*)
+FILE(GLOB Source
+        src/interpreter/*
+        src/util/*
+        src/library/*)
 set(crisp ${Source})
 
 include_directories(src)
