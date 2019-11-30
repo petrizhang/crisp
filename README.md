@@ -78,7 +78,7 @@ which could also be treated as a tree structure(AST) that encodes a program.
 
 Then we could use C++ template meta-programming techniques to write a interpreter that
 interprets this kind of AST at compile time,
-as the [Crisp interpreter](https://github.com/pzque/crisp/tree/master/src/interpreter) does.
+as the [Crisp interpreter](https://github.com/pzque/crisp/tree/master/core) does.
 
 #### Feature 2
 We have **nested templates as AST** now, but C++ doesn't provide convenient tools for users to process nested templates.
@@ -288,9 +288,9 @@ In this example, we define a recursive function `factorial` which calls itself t
 ## How to Use
 
 ### Use Crisp in Your Project
-Crisp is a header-only library, users could use Crisp by including Crisp header files in their projects.
+Crisp is a header-only library, you could use Crisp by simply including Crisp headers in your project.
 
-1. **Copy `crisp/src` into your project**.
+1. **Copy the `crisp` folder into your project**.
 2. 
     - To use **Crisp macro api**, **`#include "CrispMacroAPI.h"`**.
     - To use **Crisp template api**, **`#include "CrispTemplateAPI.h"`**.
@@ -300,24 +300,15 @@ Crisp is a header-only library, users could use Crisp by including Crisp header 
 
 1. Your compiler must support **C++14**.
 2. Remember to set the **`-ftemplate-depth-5000`** flag to avoid insufficient template expansion depth.
-3. You'd better **use Crisp headers as the last ones of your includes**. For that Crisp macros may potentially have the same names as symbols in other source files and cause compile errors.
+3. You'd better **use Crisp headers as the last ones of your includes**, due to that Crisp macros may have the same names as symbols in other files.
 4. **Never mix macros and templates style together**. In C++, expressions like `println(Var<'a', 'b'>)` will be recognized as `println(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
 
-
-## API
-
-### Macro Style
-Users could find a complete macro api list at [src/CrispMacroAPI.h](https://github.com/pzque/crisp/blob/master/src/CrispMacroAPI.h).
-  
-### Template Style
-Users could find a complete template api list at [src/CrispTemplateAPI.h](https://github.com/pzque/crisp/blob/master/src/CrispTemplateAPI.h)..
-
 ## Build and Dependency
-If you want to explore Crisp source code and run Crisp examples and tests, you need to:
+If you want to build Crisp from source and run Crisp examples, you need to:
 
-1. Prepare "cmake" and "make" and a C++ compiler supports C++14 in your system.
+1. Prepare "cmake", "make" and a C++ compiler supports C++14 in your system.
 2. Clone this project.
-2. In the project root directory, run commands:
+2. In the root directory of this project, run commands:
 ```
 cmake .
 make
