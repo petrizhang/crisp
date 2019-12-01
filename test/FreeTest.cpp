@@ -15,12 +15,82 @@
  */
 
 #include <iostream>
+#include <type_traits>
+#include "util/Conditional.hpp"
+#include "util/Defer.hpp"
+#include "util/Dict.hpp"
 
-#include "ast/CoreAST.hpp"
 using namespace crisp;
+using namespace util;
+using std::is_same;
+/**
+ * Helper template used in match implementation.
+ * It saves a `CaptureDict` and provides `matched` as false
+ * @tparam CaptureDict
+ */
+template <typename CaptureDict>
+struct MatchFailure {
+  static const bool matched = false;
+  using dict = CaptureDict;
+};
+
+/**
+ * Helper template used in match implementation
+ * It saves a `CaptureDict` and provides `matched` as true
+ * @tparam CaptureDict
+ */
+template <typename CaptureDict>
+struct MatchSuccess {
+  static const bool matched = true;
+  using dict = CaptureDict;
+};
+
+template <typename...>
+struct MatchList {};
+
+template <typename CaptureDict, typename Source, typename Target>
+struct MatchCaseImpl {
+  static const bool matched = is_same<Source, Target>::value;
+  using dict = CaptureDict;
+};
+
+template <typename CaptureDict, typename Source, char... args>
+struct MatchCaseImpl<CaptureDict, Source, Var<args...>> {
+  static const bool matched = true;
+  using dict = typename DictPutImpl<CaptureDict, Var<args...>, Source>::type;
+};
+
+template <typename CaptureDict, typename Source>
+struct MatchCaseImpl<CaptureDict, Source, _> {
+  static const bool matched = true;
+  using dict = CaptureDict;
+};
+
+template <typename CaptureDict, typename Source, typename CaptureTarget, typename CaptureVarName>
+struct MatchCaseImpl<CaptureDict, Source, Capture<CaptureTarget, CaptureVarName>> {
+  static_assert(IsVar<CaptureVarName>::value, "expected a `Var<...>` instantiation in `Capture` expression");
+  using TargetMatch = MatchCaseImpl<CaptureDict, Source, CaptureTarget>;
+  static const bool matched = TargetMatch::matched;
+  using dict = typename TargetMatch ::dict;
+};
+
+template <typename CaptureDict,
+          template <typename...> class Source, typename... SourceArgs,
+          template <typename...> class Target, typename... TargetArgs>
+struct MatchCaseImpl<CaptureDict, Source<SourceArgs...>, Target<TargetArgs...>> {
+  using NextMatch = MatchCaseImpl<CaptureDict, MatchList<SourceArgs...>, MatchList<TargetArgs...>>;
+  static const bool matched = NextMatch::matched;
+  using dict = typename NextMatch ::dict;
+};
+
+template <typename CaptureDict, typename... SourceArgs, typename... TargetArgs>
+struct MatchCaseImpl<CaptureDict, MatchList<SourceArgs...>, MatchList<TargetArgs...>> {
+  static const bool matched = false;
+  using dict = CaptureDict;
+};
 
 int main() {
-  using t = decltype("1234"_s);
-  std::cout << t::value;
+  auto a = MatchCaseImpl<Dict<>, MatchList<>, MatchList<>>::matched;
+  std::cout << a << "\n";
   return 0;
 }
