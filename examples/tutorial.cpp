@@ -69,7 +69,6 @@ int main() {
      * a;
      */
     interpret(block(define(var("a"), v(100)),
-                    var("a"),
                     var("a")));
   }
   //-### If-then-else

@@ -188,8 +188,7 @@ The value of the block is the value of the last expression.
      * a;
      */
     interpret(block(define(var("a"), v(100)),
-                    var("a"),
-                    var("a")));
+                    var("a"));
 ```
 ### If-then-else
 ```cpp
@@ -280,17 +279,17 @@ In this example, we define a recursive function `factorial` which calls itself t
 ### Use Crisp in Your Project
 Crisp is a header-only library, you could use Crisp by simply including Crisp headers in your project.
 
-1. **Copy the `crisp` folder into your project**.
+1. **Copy the `include` folder into your project. Set it as one of your including directories**.
 2. 
-    - To use **Crisp macro api**, **`#include "CrispMacroAPI.h"`**.
-    - To use **Crisp template api**, **`#include "CrispTemplateAPI.h"`**.
+    - Use **Crisp macro api** by **`#include "crisp/MacroAPI.h"`**.
+    - Use **Crisp template api** by **`#include "crisp/TemplateAPI.h"`**.
 3. **Enjoy it**.
 
 ### Notes
 
 1. Your compiler must support **C++14**.
 2. Remember to set the **`-ftemplate-depth-5000`** flag to avoid insufficient template expansion depth.
-3. You'd better **use Crisp headers as the last ones of your includes**, due to that Crisp macros may have the same names as symbols in other files.
+3. Since Crisp macros may have the same names as symbols in other files, you'd better **include Crisp headers as the last ones of your includes**.
 4. **Never mix macros and templates style together**. In C++, expressions like `println(Var<'a', 'b'>)` will be recognized as `println(` `Var<'a'`, `'b'>` `)`, which will cause a compile error. Thus the best practice to use Crisp is **always using one style in a single C++ source file**. 
 
 ## Build and Dependency
@@ -306,5 +305,3 @@ make
 
 ## Acknowledgements
 This project is inspired by [TemplatedPL](https://github.com/Cheukyin/TemplatedPL). Thanks for the author's great idea.
-
-Some basic API of Crisp and TemplatedPL look similar, but these 2 projects are implemented with **completly different techniques**.
