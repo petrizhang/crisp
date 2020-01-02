@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_TEMPLATES_H
-#define CRISP_TEMPLATES_H
+#ifndef CRISP_TEMPLATEAPI_H
+#define CRISP_TEMPLATEAPI_H
 
+#include "crisp/ast/CoreAST.hpp"
+#include "crisp/ast/LibAST.hpp"
 #include "crisp/core/Interpreter.hpp"
 
 // clang-format off
+using crisp::_;
+using crisp::___;
+using crisp::operator""_s;
+using crisp::operator""_v;
+
 using crisp::Nil;
 using crisp::Bool;
 using crisp::Char;
@@ -76,4 +83,6 @@ using crisp::Quote;
 using crisp::Eval;
 using crisp::Interpret;
 
-#endif  //CRISP_TEMPLATES_H
+using crisp::Map;
+
+#endif  //CRISP_TEMPLATEAPI_H

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "crisp/CrispTemplateAPI.h"
+#include "crisp/TemplateAPI.h"
 
 int main() {
   using result = Interpret<Add<Int<1>, Int<1>>>::type;

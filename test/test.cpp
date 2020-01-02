@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-#include "crisp/CrispTemplateAPI.h"
+#include "crisp/TemplateAPI.h"
 
 using namespace crisp;
 

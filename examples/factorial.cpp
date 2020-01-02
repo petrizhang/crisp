@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-#include "crisp/CrispMacroAPI.h"
+#include "crisp/MacroAPI.h"
 
 using n = var("n");
 using factorial = var("factorial");

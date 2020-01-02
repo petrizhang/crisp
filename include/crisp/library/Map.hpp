@@ -20,19 +20,25 @@
 #include "crisp/ast/CoreAST.hpp"
 #include "crisp/core/CrispFunction.hpp"
 
-#define map(l, f) crisp::Map<l, f>
-
 namespace crisp {
 
 template <typename, typename>
 struct Map : CrispFunction {
-  using __name__ = var("map");
-  using __body__ = lambda(params(var("list"), var("func")),
-                          if_(is_empty(var("list")),
-                              list(),
-                              block(define(var("func(head)"), call(var("func"), head(var("list")))),
-                                    push_head(call(var("map"), tail(var("list")), var("func")),
-                                              var("func(head)")))));
+ private:
+  using map = decltype("map"_v);
+  using h = decltype("h"_v);
+  using l = decltype("l"_v);
+  using func = decltype("func"_v);
+  using f_head = decltype("f_head"_v);
+
+ public:
+  using __name__ = map;
+  using __body__ = Lambda<ParamList<l, func>,
+                          If<IsEmpty<l>,
+                             List<>,
+                             Block<Define<f_head, Call<func, Head<l>>>,
+                                   PushHead<Call<map, Tail<l>, func>,
+                                            f_head>>>>;
 };
 
 }  // namespace crisp
