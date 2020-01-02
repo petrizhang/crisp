@@ -68,51 +68,51 @@ int main() {
   }
 
   /**
-    * PushHead tests
+    * PushFront tests
     */
   {
     using l0 = List<Int<1>, Int<2>>;
-    using t0 = typename Interpret<PushHead<l0, Int<3>>>::type;
+    using t0 = typename Interpret<PushFront<l0, Int<3>>>::type;
     static_assert(is_same<t0, List<Int<3>, Int<1>, Int<2>>>::value, "");
 
     using l1 = List<>;
-    using t1 = typename Interpret<PushHead<l1, Int<3>>>::type;
+    using t1 = typename Interpret<PushFront<l1, Int<3>>>::type;
     static_assert(is_same<t1, List<Int<3>>>::value, "");
   }
 
   /**
-    * PushLast tests
+    * PushBack tests
     */
   {
     using l0 = List<Int<1>, Int<2>>;
-    using t0 = typename Interpret<PushLast<l0, Int<3>>>::type;
+    using t0 = typename Interpret<PushBack<l0, Int<3>>>::type;
     static_assert(is_same<t0, List<Int<1>, Int<2>, Int<3>>>::value, "");
 
     using l1 = List<>;
-    using t1 = typename Interpret<PushLast<l1, Int<3>>>::type;
+    using t1 = typename Interpret<PushBack<l1, Int<3>>>::type;
     static_assert(is_same<t1, List<Int<3>>>::value, "");
   }
 
   /**
-    * PopHead tests
+    * PopFront tests
     */
   {
     using l0 = List<Int<1>, Int<2>>;
-    using t0 = typename Interpret<PopHead<l0>>::type;
+    using t0 = typename Interpret<PopFront<l0>>::type;
     static_assert(is_same<t0, Int<1>>::value, "");
   }
 
   /**
-    * PopLast tests
+    * PopBack tests
     */
   {
     using l0 = List<Int<1>, Int<2>>;
-    using t0 = typename Interpret<PopLast<l0>>::type;
+    using t0 = typename Interpret<PopBack<l0>>::type;
     static_assert(is_same<t0, Int<2>>::value, "");
   }
 
   /**
-    * PopHead tests
+    * PopFront tests
     */
   {
     using l0 = List<Int<1>, Int<2>>;
@@ -125,7 +125,7 @@ int main() {
   }
 
   /**
-    * PopLast tests
+    * PopBack tests
     */
   {
     using l0 = List<Int<1>, Int<2>>;

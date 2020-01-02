@@ -46,7 +46,7 @@ class SafePrintf {
                                                                default_(nil))),
                                         if_(is_nil(fmt_type),
                                             call(check, fmt_tail, result, v(false)),
-                                            call(check, fmt_tail, push_last(result, fmt_type), v(false)))),
+                                            call(check, fmt_tail, push_back(result, fmt_type), v(false)))),
                                   call(check, fmt_tail, result, eq_(fmt_head, v('%'))))))));
 
  public:

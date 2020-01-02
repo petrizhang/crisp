@@ -70,10 +70,10 @@ int main() {
    * TemplatePushFront tests
    */
   {
-    using t0 = typename ListLikePushHead<A<>, int>::type;
+    using t0 = typename ListLikePushFront<A<>, int>::type;
     static_assert(std::is_same<t0, A<int>>::value, "");
 
-    using t1 = typename ListLikePushHead<A<bool>, int>::type;
+    using t1 = typename ListLikePushFront<A<bool>, int>::type;
     static_assert(std::is_same<t1, A<int, bool>>::value, "");
   }
 
@@ -81,10 +81,10 @@ int main() {
     * TemplatePushBack tests
     */
   {
-    using t0 = typename ListLikePushLast<A<>, int>::type;
+    using t0 = typename ListLikePushBack<A<>, int>::type;
     static_assert(std::is_same<t0, A<int>>::value, "");
 
-    using t1 = typename ListLikePushLast<A<bool>, int>::type;
+    using t1 = typename ListLikePushBack<A<bool>, int>::type;
     static_assert(std::is_same<t1, A<bool, int>>::value, "");
   }
 

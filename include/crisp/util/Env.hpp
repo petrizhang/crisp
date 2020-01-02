@@ -36,7 +36,7 @@ template <typename EnvA, typename EnvB>
 using EnvConcat = ListLikeConcat<EnvA, EnvB>;
 
 template <typename EnvX, typename dict>
-using EnvPushHead = ListLikePushHead<EnvX, dict>;
+using EnvPushHead = ListLikePushFront<EnvX, dict>;
 
 /**
  * Bind a variable name `K` with a value `V` in current scope.

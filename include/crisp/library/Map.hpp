@@ -37,7 +37,7 @@ struct Map : CrispFunction {
                           If<IsEmpty<l>,
                              List<>,
                              Block<Define<f_head, Call<func, Head<l>>>,
-                                   PushHead<Call<map, Tail<l>, func>,
+                                   PushFront<Call<map, Tail<l>, func>,
                                             f_head>>>>;
 };
 

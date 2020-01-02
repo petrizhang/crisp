@@ -74,10 +74,10 @@ using crisp::___;
 #define head(l) crisp::Head<l>
 #define tail(l) crisp::Tail<l>
 #define concat(l1, l2) crsip::Concat<l1, l2>
-#define push_head(l, e) crisp::PushHead<l, e>
-#define push_last(l, e) crisp::PushLast<l, e>
-#define pop_head(l) crisp::PopHead<l>
-#define pop_last(l) crisp::PopLast<l>
+#define push_head(l, e) crisp::PushFront<l, e>
+#define push_back(l, e) crisp::PushBack<l, e>
+#define pop_front(l) crisp::PopHead<l>
+#define pop_back(l) crisp::PopBack<l>
 #define drop_head(l) crisp::DropHead<l>
 #define drop_last(l) crisp::DropLast<l>
 

@@ -197,16 +197,16 @@ template <typename... Args>
 struct Tail {};
 
 template <typename... Args>
-struct PopHead {};
+struct PopFront {};
 
 template <typename... Args>
-struct PopLast {};
+struct PopBack {};
 
 template <typename... Args>
-struct PushHead {};
+struct PushFront {};
 
 template <typename... Args>
-struct PushLast {};
+struct PushBack {};
 
 template <typename... Args>
 struct DropHead {};
@@ -216,27 +216,6 @@ struct DropLast {};
 
 template <typename... Args>
 struct Concat {};
-
-/**
- * Cons: construct Pair<L,R> from L and R.
- * @tparam L
- * @tparam R
- */
-template <typename L, typename R>
-struct Cons {};
-
-/**
- * Car: get the first element of a Pair, e.g. Car<Pair<L,R>> will be L.
- * @tparam T
- */
-template <typename T>
-struct Car {};
-
-/**
- * cdr: get the second element of a Pair, e.g. Cdr<Pair<L,R>> will be R.
- */
-template <typename T>
-struct Cdr {};
 
 /**
  * +
