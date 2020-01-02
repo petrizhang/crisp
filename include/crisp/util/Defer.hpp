@@ -17,7 +17,7 @@
 #ifndef CRISP_DEFER_HPP
 #define CRISP_DEFER_HPP
 
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::Nil;

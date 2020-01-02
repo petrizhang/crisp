@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef CRISP_UTIL_HPP
-#define CRISP_UTIL_HPP
+#ifndef CRISP_MACROS_H
+#define CRISP_MACROS_H
 
-#include "Conditional.hpp"
-#include "Defer.hpp"
-#include "Dict.hpp"
-#include "Env.hpp"
-#include "Error.hpp"
-#include "InternalList.hpp"
-#include "List.hpp"
-#include "ListLike.hpp"
-#include "MatchUtil.hpp"
-#include "Operators.hpp"
-#include "Output.hpp"
-#include "Pack.hpp"
-#include "Replace.hpp"
-#include "Str2ListImpl.hpp"
-#include "TemplateUtil.hpp"
-#include "ZipToDict.hpp"
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
+#include "crisp/ast/LibAST.hpp"
+#include "crisp/core/Interpreter.hpp"
 
-#endif  //CRISP_UTIL_HPP
+namespace crisp {
+using PreDefinedEnv = Env<Dict<Pair<Map<_, _>::__name__, Closure<Env<>, Map<_, _>::__body__>>>>;
+}
+
+#ifdef CRISP_USER_DEFINED_ENV
+#define interpret(expr) crisp::Interpret<expr, CRISP_USER_DEFINED_ENV>::type
+#else
+#define interpret(expr) crisp::Interpret<expr, crisp::PreDefinedEnv>::type
+#endif
+
+#define run(expr) crisp::Interpret<expr, crisp::Env<>>::Run()
+
+#endif  //CRISP_MACROS_H

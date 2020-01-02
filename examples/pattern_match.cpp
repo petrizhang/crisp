@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-#include "../CrispMacroAPI.h"
+#include "crisp/CrispMacroAPI.h"
 using namespace crisp;
-
-
 
 //
 //template <typename Environ, typename Source, char... chars>
@@ -111,11 +109,10 @@ using namespace crisp;
 //                             typename ReverseArgs<internal::MatchList<TargetArgs...>>::type> {
 //};
 
-
 int main() {
   using t = MatchInternal<Env<>,
-                               internal::InternalList<_>,
-                               internal::InternalList<_>>;
+                          internal::InternalList<_>,
+                          internal::InternalList<_>>;
   std::cout << t::matched;
 
   return 0;

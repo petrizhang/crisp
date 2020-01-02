@@ -17,7 +17,7 @@
 #ifndef CRISP_PACK_HPP
 #define CRISP_PACK_HPP
 
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::Bool;

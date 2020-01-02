@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include <cassert>
 #include <iostream>
-#include "../CrispTemplateAPI.h"
+
+#include "crisp/CrispTemplateAPI.h"
 
 using namespace crisp;
 
@@ -89,7 +89,6 @@ void TestIsTemplateOf() {
   static_assert((IsValueTemplateOf<bool, Bool, Bool<true>>::value), "");
   static_assert((!IsValueTemplateOf<bool, Bool, Int<1>>::value), "");
 }
-
 
 int main() {
   using x = Var<'x'>;

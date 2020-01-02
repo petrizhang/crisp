@@ -16,7 +16,8 @@
 
 #include <cstdio>
 #include <type_traits>
-#include "../CrispMacroAPI.h"
+
+#include "crisp/CrispMacroAPI.h"
 
 class SafePrintf {
  private:

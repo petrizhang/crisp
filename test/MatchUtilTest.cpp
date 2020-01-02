@@ -15,9 +15,9 @@
  */
 
 #include <type_traits>
-#include <util/Util.hpp>
-#include "ast/CoreAST.hpp"
-#include "util/Util.hpp"
+
+#include "crisp/ast/CoreAST.hpp"
+#include "crisp/util/Util.hpp"
 
 using namespace crisp;
 using namespace util;

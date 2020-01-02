@@ -18,7 +18,7 @@
 #define CRISP_LIST_HPP
 
 #include "ListLike.hpp"
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::List;

@@ -15,7 +15,8 @@
  */
 
 #include <type_traits>
-#include "../CrispMacroAPI.h"
+
+#include "crisp/CrispMacroAPI.h"
 
 using std::is_same;
 

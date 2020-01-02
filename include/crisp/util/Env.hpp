@@ -19,7 +19,7 @@
 
 #include "Dict.hpp"
 #include "List.hpp"
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::Pair;

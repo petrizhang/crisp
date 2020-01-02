@@ -17,8 +17,8 @@
 #ifndef CRISP_INTERPRETMATCH_HPP
 #define CRISP_INTERPRETMATCH_HPP
 
-#include "../util/InternalList.hpp"
 #include "Common.hpp"
+#include "crisp/util/InternalList.hpp"
 
 namespace crisp {
 using namespace crisp;

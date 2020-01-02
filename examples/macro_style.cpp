@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../CrispMacroAPI.h"
+#include "crisp/CrispMacroAPI.h"
 
 int main() {
   using result = interpret(add(v(1), v(1)));

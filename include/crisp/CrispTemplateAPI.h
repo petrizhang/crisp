@@ -17,7 +17,7 @@
 #ifndef CRISP_TEMPLATES_H
 #define CRISP_TEMPLATES_H
 
-#include "core/Interpreter.hpp"
+#include "crisp/core/Interpreter.hpp"
 
 // clang-format off
 using crisp::Nil;

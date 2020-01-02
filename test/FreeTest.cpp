@@ -16,9 +16,10 @@
 
 #include <iostream>
 #include <type_traits>
-#include "util/Conditional.hpp"
-#include "util/Defer.hpp"
-#include "util/Dict.hpp"
+
+#include "crisp/util/Conditional.hpp"
+#include "crisp/util/Defer.hpp"
+#include "crisp/util/Dict.hpp"
 
 using namespace crisp;
 using namespace util;

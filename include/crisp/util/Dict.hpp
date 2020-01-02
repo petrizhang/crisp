@@ -18,7 +18,7 @@
 #define CRISP_DICT_HPP
 
 #include "List.hpp"
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::Dict;

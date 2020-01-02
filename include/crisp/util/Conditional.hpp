@@ -18,7 +18,7 @@
 #define CRISP_CONDITIONAL_HPP
 
 #include "Error.hpp"
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::Bool;

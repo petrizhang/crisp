@@ -21,7 +21,7 @@
 #include "Defer.hpp"
 #include "InternalList.hpp"
 #include "TemplateUtil.hpp"
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::_;

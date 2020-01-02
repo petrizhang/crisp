@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include <ast/CoreAST.hpp>
 #include <iostream>
 #include <type_traits>
-#include "util/Dict.hpp"
+
+#include "crisp/ast/CoreAST.hpp"
+#include "crisp/util/Dict.hpp"
 
 using std::is_same;
 

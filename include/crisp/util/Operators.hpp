@@ -17,7 +17,7 @@
 #ifndef CRISP_OPERATOR_IMPL_HPP
 #define CRISP_OPERATOR_IMPL_HPP
 
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using namespace crisp;

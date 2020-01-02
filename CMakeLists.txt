@@ -6,12 +6,13 @@ set(CMAKE_CXX_STANDARD 14)
 add_compile_options(-ftemplate-depth-5000)
 
 FILE(GLOB Source
-        core/*
-        util/*
-        library/*)
+        include/crisp/ast/*
+        include/crisp/core/*
+        include/crisp/util/*
+        include/crisp/library/*)
 set(crisp ${Source})
 
-include_directories(${CMAKE_HOME_DIRECTORY})
+include_directories(include)
 
 # Add executables for files in "examples/"
 FILE(GLOB Examples examples/*)

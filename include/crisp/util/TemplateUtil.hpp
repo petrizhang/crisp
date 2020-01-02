@@ -17,7 +17,7 @@
 #ifndef CRISP_TEMPLATE_UTIL_HPP
 #define CRISP_TEMPLATE_UTIL_HPP
 
-#include "ast/CoreAST.hpp"
+#include "crisp/ast/CoreAST.hpp"
 
 namespace util {
 using crisp::Closure;

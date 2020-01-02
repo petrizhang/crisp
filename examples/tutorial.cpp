@@ -15,7 +15,8 @@
  */
 
 #include <iostream>
-#include "../CrispMacroAPI.h"
+
+#include "crisp/CrispMacroAPI.h"
 
 int main() {
   //-### Println
