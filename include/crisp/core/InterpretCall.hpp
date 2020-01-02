@@ -68,7 +68,7 @@ struct Interpret<Call<Func, Args...>, Environ> {
   // Interpret argument list.
   using ArgInterp = Interpret<InternalList<Args...>, Environ>;
   using ArgValues = typename ArgInterp::type;
-  static_assert(IsCallable<ClosureValue>::value,
+  static_assert(IsCallableImpl<ClosureValue>::value,
                 "Expected a callable function/closure.");
 
   using env = Environ;
@@ -80,8 +80,6 @@ template <typename Environ, typename... Args>
 struct Interpret<Closure<Args...>, Environ> {
   using env = Environ;
   using type = Closure<Args...>;
-
-  static constexpr const char *Run() { return "#closure"; }
 };
 }  // namespace crisp
 #endif  //CRISP_INTERPRETCALL_HPP

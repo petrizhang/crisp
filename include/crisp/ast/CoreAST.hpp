@@ -488,6 +488,41 @@ struct IsNil {
   static const char* repr() { return "nil?"; };
 };
 
+template <typename E>
+struct IsBool {
+  static const char* repr() { return "bool?"; };
+};
+
+template <typename E>
+struct IsChar {
+  static const char* repr() { return "char?"; };
+};
+
+template <typename E>
+struct IsInt {
+  static const char* repr() { return "int?"; };
+};
+
+template <typename E>
+struct IsStr {
+  static const char* repr() { return "str?"; };
+};
+
+template <typename E>
+struct IsVar {
+  static const char* repr() { return "var?"; };
+};
+
+template <typename Source, typename Target>
+struct IsInstanceOf {
+  static const char* repr() { return "IsInstanceOf"; };
+};
+
+template <typename Source, typename Target>
+struct Transform {
+  static const char* repr() { return "Transform"; };
+};
+
 template <typename S>
 struct Str2List {
   static const char* repr() { return "str2list"; };

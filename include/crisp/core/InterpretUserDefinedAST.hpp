@@ -21,17 +21,22 @@
 #include "CrispFunction.hpp"
 
 namespace crisp {
+
+template <typename Environ, typename F, typename... Args>
+struct CallCrispFunction {
+  using type = Interpret<Call<typename F::__name__, Args...>,
+                         Environ>;
+};
+
 template <template <typename...> class F, typename Environ, typename... Args>
 struct Interpret<F<Args...>, Environ> {
   using FApply = F<Args...>;
 
   using FApplyInterp = typename ConditionalApply<
       When<Bool<is_base_of<CrispFunction, FApply>::value>,
-           DeferConstruct<Interpret, Call<typename FApply::__name__, Args...>,
-                          Environ>>,
+           DeferApply<CallCrispFunction, Environ, FApply, Args...>>,
       Else<DeferConstruct<Id, FApply>>>::type;
 
-  // TODO: check we should use which env carefully
   using env = Environ;
   using type = typename FApplyInterp::type;
 };

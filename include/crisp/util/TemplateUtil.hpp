@@ -118,7 +118,7 @@ struct IsValueTemplateOf<ValueType, C, C<Args...>> {
 };
 
 template <typename T>
-struct IsVar : IsValueTemplateOf<char, Var, T> {};
+struct IsVarImpl : IsValueTemplateOf<char, Var, T> {};
 
 template <typename T>
 struct IsNilImpl : std::is_same<T, Nil> {};
@@ -128,12 +128,12 @@ struct IsNilImpl : std::is_same<T, Nil> {};
  * @tparam Args
  */
 template <typename... Args>
-struct IsCallable {
+struct IsCallableImpl {
   static const bool value = false;
 };
 
 template <typename... Args>
-struct IsCallable<Closure<Args...>> {
+struct IsCallableImpl<Closure<Args...>> {
   static const bool value = true;
 };
 

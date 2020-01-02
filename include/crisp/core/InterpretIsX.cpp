@@ -33,11 +33,51 @@ struct Interpret<IsEmpty<Expr>, Environ> {
 
 template <typename Environ, typename Expr>
 struct Interpret<IsNil<Expr>, Environ> {
-  using ExprInterp = Interpret<Expr, Environ>;
-  using ExprValue = typename ExprInterp::type;
+  using ExprValue = typename Interpret<Expr, Environ>::type;
 
   using env = Environ;
   using type = Bool<std::is_same<ExprValue, Nil>::value>;
 };
+
+template <typename Environ, typename Expr>
+struct Interpret<IsBool<Expr>, Environ> {
+  using ExprValue = typename Interpret<Expr, Environ>::type;
+
+  using env = Environ;
+  using type = Bool<IsValueTemplateOf<bool, Bool, ExprValue>::value>;
+};
+
+template <typename Environ, typename Expr>
+struct Interpret<IsChar<Expr>, Environ> {
+  using ExprValue = typename Interpret<Expr, Environ>::type;
+
+  using env = Environ;
+  using type = Bool<IsValueTemplateOf<char, Char, ExprValue>::value>;
+};
+
+template <typename Environ, typename Expr>
+struct Interpret<IsInt<Expr>, Environ> {
+  using ExprValue = typename Interpret<Expr, Environ>::type;
+
+  using env = Environ;
+  using type = Bool<IsValueTemplateOf<int, Int, ExprValue>::value>;
+};
+
+template <typename Environ, typename Expr>
+struct Interpret<IsVar<Expr>, Environ> {
+  using ExprValue = typename Interpret<Expr, Environ>::type;
+
+  using env = Environ;
+  using type = Bool<IsValueTemplateOf<char, Var, ExprValue>::value>;
+};
+
+template <typename Environ, typename Expr>
+struct Interpret<IsStr<Expr>, Environ> {
+  using ExprValue = typename Interpret<Expr, Environ>::type;
+
+  using env = Environ;
+  using type = Bool<IsValueTemplateOf<char, Str, ExprValue>::value>;
+};
+
 }  // namespace crisp
 #endif  //CRISP_INTERPRETISX_HPP

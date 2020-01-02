@@ -50,6 +50,7 @@ using check_def =
                                           call(check, fmt_tail, push_back(result, fmt_type), v(false)))),
                                 call(check, fmt_tail, result, eq_(fmt_head, v('%'))))))));
 using namespace crisp;
+
 int main() {
   DumpToLisp<check_def>::dump(std::cout, 4);
   return 0;
