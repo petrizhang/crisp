@@ -29,12 +29,7 @@ struct Interpret<Str2List<Expr>, Environ> {
 
   using env = Environ;
   using type = typename Str2ListImpl<ExprValue>::type;
-
-  inline static auto Run() {
-    ExprInterp ::Run();
-    return type::c_value();
-  }
 };
 
 }  // namespace crisp
-#endif  //CRISP_STR2LIST_HPP
+#endif  // CRISP_STR2LIST_HPP

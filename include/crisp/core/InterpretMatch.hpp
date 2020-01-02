@@ -43,13 +43,6 @@ struct Interpret<Match<Expr, Branches...>, Environ> {
 
   using type = typename Interpret<MatchList<InterpretedExpr, Branches...>>::type;
   using env = Environ;
-
-  inline static auto Run() {
-    ExprInterp::Run();
-    // TODO: fix Run method fails when `type` is a primitive type
-    // return type::c_value();
-    return "#undefined";
-  }
 };
 
 template <typename Environ, typename AST, typename CaseBranch, typename DefaultBranch>
@@ -73,12 +66,6 @@ struct Interpret<MatchList<AST, CaseBranch, DefaultBranch>, Environ> {
 
   using type = typename Replace<FirstResult, CapturedDict>::type;
   using env = Environ;
-
-  inline static auto Run() {
-    // TODO: fix Run method fails when `type` is a primitive type
-    // return type::c_value();
-    return "#undefined";
-  }
 };
 
 template <typename Environ, typename Expr, typename Branch1, typename Branch2,
@@ -110,12 +97,6 @@ struct Interpret<MatchList<Expr, Branch1, Branch2, Branch3, Branches...>, Enviro
 
   using type = typename Result::type;
   using env = Environ;
-
-  inline static auto Run() {
-    // TODO: fix Run method fails when `type` is a primitive type
-    // return type::c_value();
-    return "#undefined";
-  }
 };
 
 }  // namespace crisp

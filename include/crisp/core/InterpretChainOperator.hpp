@@ -35,12 +35,6 @@ struct Interpret<Add<L, R>, Environ> {
   using RInterp = Interpret<R, Environ>;
   typedef typename AddImpl<typename LInterp::type, typename RInterp::type>::type
       type;
-
-  static decltype(type::c_value()) Run() {
-    LInterp::Run();
-    RInterp::Run();
-    return type::c_value();
-  }
 };
 
 template <typename Environ, typename L, typename R, typename... Args>
@@ -55,13 +49,6 @@ struct Interpret<Add<L, R, Args...>, Environ> {
 
   using env = Environ;
   using type = typename AddImpl<LT, RT>::type;
-
-  static decltype(type::c_value()) Run() {
-    LInterp::Run();
-    RInterp::Run();
-    TailInterp::Run();
-    return type::c_value();
-  }
 };
 
 /**
@@ -75,12 +62,6 @@ struct Interpret<Add<L, R, Args...>, Environ> {
     using RInterp = Interpret<R, Environ>;                              \
     typedef typename OpName##Impl<typename LInterp::type,               \
                                   typename RInterp::type>::type type;   \
-                                                                        \
-    static decltype(type::c_value()) Run() {                            \
-      LInterp::Run();                                                   \
-      RInterp::Run();                                                   \
-      return type::c_value();                                           \
-    }                                                                   \
   };                                                                    \
                                                                         \
   template <typename Environ, typename L, typename R, typename... Args> \
@@ -94,13 +75,6 @@ struct Interpret<Add<L, R, Args...>, Environ> {
                                                                         \
     using env = Environ;                                                \
     using type = typename OpName##Impl<LT, RT>::type;                   \
-                                                                        \
-    static decltype(type::c_value()) Run() {                            \
-      LInterp::Run();                                                   \
-      RInterp::Run();                                                   \
-      TailInterp::Run();                                                \
-      return type::c_value();                                           \
-    }                                                                   \
   };
 
 InterpretChainOperator(Sub);
@@ -109,4 +83,4 @@ InterpretChainOperator(Mod);
 InterpretChainOperator(And);
 InterpretChainOperator(Or);
 }  // namespace crisp
-#endif  //CRISP_INTERPRETCHAINOPERATOR_HPP
+#endif  // CRISP_INTERPRETCHAINOPERATOR_HPP

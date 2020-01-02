@@ -36,7 +36,6 @@ using crisp::Str;
 using crisp::IsEmpty;
 using crisp::IsNil;
 
-using crisp::Println;
 using crisp::Add;
 using crisp::Mul;
 using crisp::Sub;

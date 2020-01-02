@@ -1,7 +1,7 @@
 /*
  * Copyright 2019 by Crisp Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License";
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,76 +19,70 @@
 #include "crisp/MacroAPI.h"
 
 int main() {
-  //-### Println
-  {
-    run(println());
-    run(println(v(3)));
-    run(println(v(5), v(true)));
-  }
   //-### Basic value types
   {
     // int
-    run(println(v(1)));
+    interpret(v(1));
     // bool
-    run(println(v(true)));
+    interpret(v(true));
     // char
-    run(println(v('c')));
+    interpret(v('c'));
     // string
-    run(println(str("symbol")));
+    interpret(str("symbol"));
   }
   //-### Block
   {
     // 3
-    run(println(block(v(1),
-                      v(2),
-                      v(3))));
+    interpret(block(v(1),
+                    v(2),
+                    v(3)));
   }
   //-### Basic operations
   {
     // 1+2 -> 3
-    run(println(add(v(1), v(2))));
+    interpret(add(v(1), v(2)));
     // 1-2 -> -1
-    run(println(sub(v(1), v(2))));
+    interpret(sub(v(1), v(2)));
     // 1*2 -> 2
-    run(println(mul(v(1), v(2))));
+    interpret(mul(v(1), v(2)));
     // 10 % 3 -> 1
-    run(println(mod(v(1), v(2))));
+    interpret(mod(v(1), v(2)));
     // 1 == 2 -> false
-    run(println(eq_(v(1), v(2))));
+    interpret(eq_(v(1), v(2)));
     // 1 > 2 -> false
-    run(println(gt(v(1), v(2))));
+    interpret(gt(v(1), v(2)));
     // 1 >= 2 -> false
-    run(println(ge(v(1), v(2))));
+    interpret(ge(v(1), v(2)));
     // 1 < 2 -> true
-    run(println(lt(v(1), v(2))));
+    interpret(lt(v(1), v(2)));
     // 1 <= 2 -> true
-    run(println(le(v(1), v(2))));
+    interpret(le(v(1), v(2)));
     // true && false -> false
-    run(println(and_(v(true), v(false))));
+    interpret(and_(v(true), v(false)));
     // true || false -> true
-    run(println(or_(v(true), v(false))));
+    interpret(or_(v(true), v(false)));
   }
   //-### Variable definition
   {
     /*
      * int a = 100;
-     * println(a);
+     * a;
      */
-    run(block(define(var("a"), v(100)),
-              var("a"),
-              println(var("a"))));
+    interpret(block(define(var("a"), v(100)),
+                    var("a"),
+                    var("a")));
   }
   //-### If-then-else
   {
     // true ? 1 : 2
-    run(println(if_(v(true), v(1), v(2))));
+    interpret(if_(v(true), v(1), v(2)));
   }
-  //-### Function definition
+  //-### Function definition and call
   {
-    run(block(define(var("+"), lambda(params(var("x"), var("y")),
-                                      add(var("x"), var("y")))),
-              define(var("s"), call(var("+"), v(10), v(20))),
-              println(var("s"))));
+    interpret(block(define(var("+"), lambda(params(var("x"), var("y")),
+                                            add(var("x"), var("y")))),
+                    define(var("s"), call(var("+"), v(10), v(20))),
+                    var("s")));
   }
   //-### Closure
   {
@@ -99,12 +93,12 @@ int main() {
     using makeAddX = var("makeAddX");
 
     // 11, 12
-    run(block(define(makeAddX, lambda(params(y),
-                                      lambda(params(x), add(x, y)))),
-              define(add1, call(makeAddX, v(1))),
-              define(add2, call(makeAddX, v(2))),
-              println(call(add1, v(10))),    // 11
-              println(call(add2, v(10)))));  //12
+    interpret(block(define(makeAddX, lambda(params(y),
+                                            lambda(params(x), add(x, y)))),
+                    define(add1, call(makeAddX, v(1))),
+                    define(add2, call(makeAddX, v(2))),
+                    call(add1, v(10)),    // 11
+                    call(add2, v(10))));  //12
   }
   //-### Recursive Function
   {
@@ -112,18 +106,18 @@ int main() {
     using factorial = var("factorial");
 
     // 3628800
-    run(block(define(factorial, lambda(params(n),
-                                       if_(eq_(n, v(1)),
-                                           v(1),
-                                           mul(n, call(factorial, sub(n, v(1))))))),
-              println(call(factorial, v(10)))));
+    interpret(block(define(factorial, lambda(params(n),
+                                             if_(eq_(n, v(1)),
+                                                 v(1),
+                                                 mul(n, call(factorial, sub(n, v(1))))))),
+                    call(factorial, v(10))));
   }
   //-### Quote and Eval
   {
-      //    // quote
-      //    using quoted_add = quote(add(v(1), v(2)));
-      //    // eval
-      //    run(println(eval(quoted_add)));
+    // quote
+    using quoted_add = quote(add(v(1), v(2)));
+    // eval
+    interpret(eval(quoted_add));
   }
   //-### Pattern Match
   {
@@ -142,15 +136,15 @@ int main() {
          * Here we quote the expression `add(v(1), v(2))` before match it.
          */
     // the result is '+'
-    run(println(match(quote(add(v(1), v(2))),
-                      case_(sub(_, _), v('-')),
-                      case_(add(_, _), v('+')),
-                      default_(v('?')))));
+    interpret(match(quote(add(v(1), v(2))),
+                    case_(sub(_, _), v('-')),
+                    case_(add(_, _), v('+')),
+                    default_(v('?'))));
 
     // Capture the first parameter of an `add` expression with `x`.
     // Here the expression `v(1)` is captured as `v(1)`,
-    run(println(match(quote(add(v(1), v(2))),
-                      case_(add(capture(_, x), _), x),
-                      default_(v('?')))));
+    interpret(match(quote(add(v(1), v(2))),
+                    case_(add(capture(_, x), _), x),
+                    default_(v('?'))));
   }
 }

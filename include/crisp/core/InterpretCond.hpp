@@ -42,11 +42,6 @@ struct Interpret<Cond<WhenBranch, ElseBranch>, Environ> {
 
   using type = typename ResultInterp::type;
   using env = typename ResultInterp::env;
-
-  inline static auto Run() {
-    WhenConditionExprInterp::Run();
-    ResultInterp::Run();
-  }
 };
 
 template <typename Environ, typename WhenBranch, typename Branch2, typename... Branches>
@@ -65,11 +60,6 @@ struct Interpret<Cond<WhenBranch, Branch2, Branches...>, Environ> {
 
   using type = typename ResultInterp::type;
   using env = typename ResultInterp::env;
-
-  inline static auto Run() {
-    WhenConditionExprInterp::Run();
-    ResultInterp::Run();
-  }
 };
 
 }  // namespace crisp

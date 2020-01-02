@@ -35,22 +35,12 @@ template <typename Environ, typename CondInterpretd, typename Body,
 struct DelayIf {
   using BodyInterp = Interpret<Body, Environ>;
   using type = typename BodyInterp::type;
-
-  static decltype(type::c_value()) Run() {
-    BodyInterp::Run();
-    return type::c_value();
-  }
 };
 
 template <typename Environ, typename Body, typename ElseBody>
 struct DelayIf<Environ, Bool<false>, Body, ElseBody> {
   using ElseBodyInterp = Interpret<ElseBody, Environ>;
   using type = typename ElseBodyInterp::type;
-
-  static decltype(type::c_value()) Run() {
-    ElseBodyInterp::c_value();
-    return type::Run();
-  }
 };
 
 template <typename Environ, typename Cond, typename Body, typename ElseBody>
@@ -62,12 +52,6 @@ struct Interpret<If<Cond, Body, ElseBody>, Environ> {
 
   using DelayIfInterp = DelayIf<Environ, CondValue, Body, ElseBody>;
   using type = typename DelayIfInterp::type;
-
-  static decltype(type::c_value()) Run() {
-    CondInterp::Run();
-    DelayIfInterp::Run();
-    return type::c_value();
-  }
 };
 }  // namespace crisp
 #endif  //CRISP_INTERPRETIF_HPP

@@ -59,7 +59,6 @@ using crisp::___;
 #define lambda(args...) crisp::Lambda<args>
 #define call(f, args...) crisp::Call<f, args>
 #define block(args...) crisp::Block<args>
-#define println(args...) crisp::Println<args>
 
 #define cond(args...) crisp::Cond<args>
 #define when(args...) crisp::When<args>
@@ -93,7 +92,5 @@ using PreDefinedEnv = Env<Dict<Pair<Map<_, _>::__name__, Closure<Env<>, Map<_, _
 #else
 #define interpret(expr) crisp::Interpret<expr, crisp::PreDefinedEnv>::type
 #endif
-
-#define run(expr) crisp::Interpret<expr, crisp::Env<>>::Run()
 
 #endif  //CRISP_MACROAPI_H

@@ -29,10 +29,8 @@ using namespace util;
  */
 template <typename Environ, typename AST>
 struct Interpret<Quote<AST>, Environ> {
-using env = Environ;
-using type = AST;
-
-static decltype(type::c_value()) Run() { return type::c_value(); }
+  using env = Environ;
+  using type = AST;
 };
-}
-#endif  //CRISP_INTERPRETQUOTE_HPP
+}  // namespace crisp
+#endif  // CRISP_INTERPRETQUOTE_HPP

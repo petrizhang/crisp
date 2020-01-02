@@ -40,12 +40,6 @@ struct Interpret<Block<Head, Tail...>, Environ> {
   // Pass the resulted env from `Head` to the next expression's execution
   using TailInterp = Interpret<Block<Tail...>, typename HeadInterp::env>;
   using type = typename TailInterp::type;
-
-  static decltype(type::c_value()) Run() {
-    HeadInterp::Run();
-    TailInterp::Run();
-    return type::c_value();
-  }
 };
 
 template <typename Environ, typename Head>
@@ -54,11 +48,6 @@ struct Interpret<Block<Head>, Environ> {
 
   using env = typename HeadInterp::env;
   using type = typename HeadInterp::type;
-
-  static decltype(type::c_value()) Run() {
-    HeadInterp::Run();
-    return type::c_value();
-  }
 };
 }  // namespace crisp
 #endif  //CRISP_INTERPRETBLOCK_HPP

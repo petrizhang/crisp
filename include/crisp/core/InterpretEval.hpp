@@ -38,12 +38,6 @@ struct Interpret<Eval<Expr>, Environ> {
   using ASTInterp = Interpret<AST, Environ>;
   using type = typename ASTInterp::type;
   using env = typename ASTInterp::env;
-
-  static decltype(type::c_value()) Run() {
-    ExprInterp::Run();
-    ASTInterp::Run();
-    return type::c_value();
-  }
 };
 }  // namespace crisp
 #endif  //CRISP_INTERPRETEVAL_HPP

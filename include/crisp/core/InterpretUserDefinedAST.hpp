@@ -27,15 +27,14 @@ struct Interpret<F<Args...>, Environ> {
 
   using FApplyInterp = typename ConditionalApply<
       When<Bool<is_base_of<CrispFunction, FApply>::value>,
-           DeferConstruct<Interpret, Call<typename FApply::__name__, Args...>, Environ>>,
+           DeferConstruct<Interpret, Call<typename FApply::__name__, Args...>,
+                          Environ>>,
       Else<DeferConstruct<Id, FApply>>>::type;
 
   // TODO: check we should use which env carefully
   using env = Environ;
   using type = typename FApplyInterp::type;
-
-  inline static auto Run() { return "#omit"; };
 };
 }  // namespace crisp
 
-#endif  //CRISP_INTERPRETUSERDEFINEDAST_HPP
+#endif  // CRISP_INTERPRETUSERDEFINEDAST_HPP

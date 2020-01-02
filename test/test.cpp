@@ -29,35 +29,35 @@ void TestEnv() {
   using e0 = Env<d0>;
   using e1 = EnvPushHead<e0, d1>::type;
 
-  static_assert(EnvLookup<e0, x>::type::c_value() == 1, "");
-  static_assert(EnvLookup<e1, x>::type::c_value() == 2, "");
-  static_assert(EnvLookup<e1, y>::type::c_value() == 3, "");
+  static_assert(EnvLookup<e0, x>::type::value == 1, "");
+  static_assert(EnvLookup<e1, x>::type::value == 2, "");
+  static_assert(EnvLookup<e1, y>::type::value == 3, "");
 
   using e2 = Env<>;
   using e3 = EnvPut<e2, x, Int<4>>::type;
-  static_assert(EnvLookup<e3, x>::type::c_value() == 4, "");
+  static_assert(EnvLookup<e3, x>::type::value == 4, "");
 }
 
 void TestBinaryOpImpl() {
-  static_assert((AddImpl<Int<3>, Int<4>>::type::c_value() == 7), "");
-  static_assert((SubImpl<Int<100>, Int<4>>::type::c_value() == 96), "");
-  static_assert((MulImpl<Int<100>, Int<4>>::type::c_value() == 400), "");
-  static_assert((ModImpl<Int<101>, Int<4>>::type::c_value() == 1), "");
+  static_assert((AddImpl<Int<3>, Int<4>>::type::value == 7), "");
+  static_assert((SubImpl<Int<100>, Int<4>>::type::value == 96), "");
+  static_assert((MulImpl<Int<100>, Int<4>>::type::value == 400), "");
+  static_assert((ModImpl<Int<101>, Int<4>>::type::value == 1), "");
 
-  static_assert((IsGreaterEqualImpl<Int<5>, Int<4>>::type::c_value()), "");
-  static_assert((IsGreaterEqualImpl<Int<4>, Int<4>>::type::c_value()), "");
-  static_assert(!(IsGreaterEqualImpl<Int<3>, Int<4>>::type::c_value()), "");
+  static_assert((IsGreaterEqualImpl<Int<5>, Int<4>>::type::value), "");
+  static_assert((IsGreaterEqualImpl<Int<4>, Int<4>>::type::value), "");
+  static_assert(!(IsGreaterEqualImpl<Int<3>, Int<4>>::type::value), "");
 
-  static_assert((IsGreaterThanImpl<Int<5>, Int<4>>::type::c_value()), "");
-  static_assert((!IsGreaterThanImpl<Int<4>, Int<4>>::type::c_value()), "");
-  static_assert(!(IsGreaterThanImpl<Int<3>, Int<4>>::type::c_value()), "");
+  static_assert((IsGreaterThanImpl<Int<5>, Int<4>>::type::value), "");
+  static_assert((!IsGreaterThanImpl<Int<4>, Int<4>>::type::value), "");
+  static_assert(!(IsGreaterThanImpl<Int<3>, Int<4>>::type::value), "");
 
   typedef AddImpl<Int<3>, Int<2>>::type i5;
-  static_assert((IsEqualImpl<i5, Int<5>>::type::c_value()), "");
+  static_assert((IsEqualImpl<i5, Int<5>>::type::value), "");
 }
 
 void TestInterpBinaryOp() {
-  static_assert((Interpret<Add<Int<1>, Int<2>, Int<3>, Int<4>>>::type::c_value() == 10), "");
+  static_assert((Interpret<Add<Int<1>, Int<2>, Int<3>, Int<4>>>::type::value == 10), "");
 }
 
 void TestConditionalApply() {

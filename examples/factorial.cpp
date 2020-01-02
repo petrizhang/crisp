@@ -28,9 +28,9 @@ using factorialDef = define(factorial, lambda(params(n),
 
 int main() {
   constexpr auto r0 = interpret(block(factorialDef,
-                                      call(factorial, v(3))))::c_value();
+                                      call(factorial, v(3))))::value;
   constexpr auto r1 = interpret(block(factorialDef,
-                                      call(factorial, v(10))))::c_value();
+                                      call(factorial, v(10))))::value;
 
   // factorial(3) = 6
   static_assert(r0 == 6, "");

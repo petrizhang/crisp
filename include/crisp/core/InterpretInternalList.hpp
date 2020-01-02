@@ -32,8 +32,6 @@ template <typename Environ>
 struct Interpret<InternalList<>, Environ> {
   using env = Environ;
   using type = InternalList<>;
-
-  static constexpr const char *Run() { return "#undefined"; }
 };
 
 template <typename Environ, typename Head, typename... Tail>
@@ -46,12 +44,6 @@ struct Interpret<InternalList<Head, Tail...>, Environ> {
 
   using env = Environ;
   using type = typename InternalListPushFront<TailValue, HeadValue>::type;
-
-  static auto Run() {
-    HeadInterp::Run();
-    TailInterp::Run();
-    return "#undefined";
-  }
 };
 
 }  // namespace crisp

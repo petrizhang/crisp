@@ -32,13 +32,7 @@ template <char... args, typename Environ>
 struct Interpret<Var<args...>, Environ> {
   using env = Environ;
   using type = typename EnvLookup<Environ, Var<args...>>::type;
-
-  inline static auto Run() {
-    // TODO: fix Run method fails when `type` is a primitive type
-    // return type::c_value();
-    return "#undefined";
-  }
 };
 }  // namespace crisp
 
-#endif  //CRISP_INTERPRETVARIABLE_HPP
+#endif  // CRISP_INTERPRETVARIABLE_HPP

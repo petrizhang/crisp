@@ -34,11 +34,6 @@ struct Interpret<Define<Ident, Value>, Environ> {
 
   using env = typename EnvPut<Environ, Ident, typename ValueInterp::type>::type;
   using type = Undefined;
-
-  static decltype(type::c_value()) Run() {
-    ValueInterp::Run();
-    return type::c_value();
-  }
 };
 }  // namespace crisp
 #endif  //CRISP_INTERPRETDEFINE_HPP

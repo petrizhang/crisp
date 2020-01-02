@@ -30,10 +30,6 @@ struct Interpret<List<Elements...>, Environ> {
 
   using env = Environ;
   using type = typename Convert<ElementsValue, List>::type;
-  inline static auto Run() {
-    ElementsInterp::Run();
-    return type::c_value();
-  }
 };
 
 template <typename Environ, typename LeftList, typename RightList>
@@ -44,34 +40,28 @@ struct Interpret<Concat<LeftList, RightList>, Environ> {
   using LeftListValue = typename LeftInterp::type;
   using RightListValue = typename RightInterp::type;
 
-  static_assert(IsTemplateOf<List, LeftListValue>::value, "the input type is not a List<...> instaniation");
-  static_assert(IsTemplateOf<List, RightListValue>::value, "the input type is not a List<...> instaniation");
+  static_assert(IsTemplateOf<List, LeftListValue>::value,
+                "the input type is not a List<...> instaniation");
+  static_assert(IsTemplateOf<List, RightListValue>::value,
+                "the input type is not a List<...> instaniation");
 
   using env = Environ;
   using type = typename ListConcat<LeftListValue, RightListValue>::type;
-  inline static auto Run() {
-    LeftInterp::Run();
-    RightList::Run();
-    return type::c_value();
-  }
 };
 
-#define InterpretNonEmptyListUnaryOperation(OpName)                                                        \
-  template <typename Environ, typename L>                                                                  \
-  struct Interpret<OpName<L>, Environ> {                                                                   \
-    using LInterp = Interpret<L, Environ>;                                                                 \
-    using ListValue = typename LInterp::type;                                                              \
-                                                                                                           \
-    static_assert(IsTemplateOf<List, ListValue>::value, "the input type is not a List<...> instaniation"); \
-    static_assert(!IsEmptyImpl<ListValue>::value, "cannot apply `" #OpName "` on an empty list");          \
-                                                                                                           \
-    using env = Environ;                                                                                   \
-    using type = typename List##OpName<ListValue>::type;                                                   \
-                                                                                                           \
-    inline static auto Run() {                                                                             \
-      LInterp::Run();                                                                                      \
-      return type::c_value();                                                                              \
-    }                                                                                                      \
+#define InterpretNonEmptyListUnaryOperation(OpName)                  \
+  template <typename Environ, typename L>                            \
+  struct Interpret<OpName<L>, Environ> {                             \
+    using LInterp = Interpret<L, Environ>;                           \
+    using ListValue = typename LInterp::type;                        \
+                                                                     \
+    static_assert(IsTemplateOf<List, ListValue>::value,              \
+                  "the input type is not a List<...> instaniation"); \
+    static_assert(!IsEmptyImpl<ListValue>::value,                    \
+                  "cannot apply `" #OpName "` on an empty list");    \
+                                                                     \
+    using env = Environ;                                             \
+    using type = typename List##OpName<ListValue>::type;             \
   };
 
 InterpretNonEmptyListUnaryOperation(Head);
@@ -80,47 +70,38 @@ InterpretNonEmptyListUnaryOperation(PopLast);
 InterpretNonEmptyListUnaryOperation(DropHead);
 InterpretNonEmptyListUnaryOperation(DropLast);
 
-#define InterpretListUnaryOperation(OpName)                                                                \
-  template <typename Environ, typename L>                                                                  \
-  struct Interpret<OpName<L>, Environ> {                                                                   \
-    using LInterp = Interpret<L, Environ>;                                                                 \
-    using ListValue = typename LInterp::type;                                                              \
-                                                                                                           \
-    static_assert(IsTemplateOf<List, ListValue>::value, "the input type is not a List<...> instaniation"); \
-                                                                                                           \
-    using env = Environ;                                                                                   \
-    using type = typename List##OpName<ListValue>::type;                                                   \
-                                                                                                           \
-    inline static auto Run() {                                                                             \
-      LInterp::Run();                                                                                      \
-      return type::c_value();                                                                              \
-    }                                                                                                      \
+#define InterpretListUnaryOperation(OpName)                          \
+  template <typename Environ, typename L>                            \
+  struct Interpret<OpName<L>, Environ> {                             \
+    using LInterp = Interpret<L, Environ>;                           \
+    using ListValue = typename LInterp::type;                        \
+                                                                     \
+    static_assert(IsTemplateOf<List, ListValue>::value,              \
+                  "the input type is not a List<...> instaniation"); \
+                                                                     \
+    using env = Environ;                                             \
+    using type = typename List##OpName<ListValue>::type;             \
   };
 
 InterpretListUnaryOperation(Tail);
 
-#define InterpretListBinaryOperation(OpName)                                                               \
-  template <typename Environ, typename L, typename E>                                                      \
-  struct Interpret<OpName<L, E>, Environ> {                                                                \
-    using LInterp = Interpret<L, Environ>;                                                                 \
-    using EInterp = Interpret<E, Environ>;                                                                 \
-    using ListValue = typename LInterp::type;                                                              \
-    using ExprValue = typename EInterp::type;                                                              \
-                                                                                                           \
-    static_assert(IsTemplateOf<List, ListValue>::value, "the input type is not a List<...> instaniation"); \
-                                                                                                           \
-    using env = Environ;                                                                                   \
-    using type = typename List##OpName<ListValue, ExprValue>::type;                                        \
-                                                                                                           \
-    inline static auto Run() {                                                                             \
-      LInterp::Run();                                                                                      \
-      EInterp::Run();                                                                                      \
-      return type::c_value();                                                                              \
-    }                                                                                                      \
+#define InterpretListBinaryOperation(OpName)                         \
+  template <typename Environ, typename L, typename E>                \
+  struct Interpret<OpName<L, E>, Environ> {                          \
+    using LInterp = Interpret<L, Environ>;                           \
+    using EInterp = Interpret<E, Environ>;                           \
+    using ListValue = typename LInterp::type;                        \
+    using ExprValue = typename EInterp::type;                        \
+                                                                     \
+    static_assert(IsTemplateOf<List, ListValue>::value,              \
+                  "the input type is not a List<...> instaniation"); \
+                                                                     \
+    using env = Environ;                                             \
+    using type = typename List##OpName<ListValue, ExprValue>::type;  \
   };
 
 InterpretListBinaryOperation(PushHead);
 InterpretListBinaryOperation(PushLast);
 }  // namespace crisp
 
-#endif  //CRISP_INTERPRETLIST_HPP
+#endif  // CRISP_INTERPRETLIST_HPP

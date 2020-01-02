@@ -57,11 +57,6 @@ struct CallClosure<CallSiteEnviron,
   // Interpret function body
   using BodyInterp = Interpret<Body, ExecutionEnv>;
   using type = typename BodyInterp::type;
-
-  static decltype(type::c_value()) Run() {
-    BodyInterp::Run();
-    return type::c_value();
-  }
 };
 
 template <typename Environ, typename Func, typename... Args>
@@ -79,12 +74,6 @@ struct Interpret<Call<Func, Args...>, Environ> {
   using env = Environ;
   // Call the closure.
   using type = typename CallClosure<Environ, ClosureValue, ArgValues>::type;
-
-  static decltype(type::c_value()) Run() {
-    ClosureInterp::Run();
-    ArgInterp::Run();
-    return type::c_value();
-  }
 };
 
 template <typename Environ, typename... Args>

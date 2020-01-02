@@ -32,10 +32,10 @@ int main() {
   using r1 = interpret(call(add1, v(1)));
   using r2 = interpret(call(add2, v(1)));
 
-  static_assert(r1::c_value() == 2, "");
-  std::cout << r1::c_value() << std::endl;
-  static_assert(r2::c_value() == 3, "");
-  std::cout << r2::c_value() << std::endl;
+  static_assert(r1::value == 2, "");
+  std::cout << r1::value << std::endl;
+  static_assert(r2::value == 3, "");
+  std::cout << r2::value << std::endl;
 
   return 0;
 }

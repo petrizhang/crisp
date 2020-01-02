@@ -24,9 +24,9 @@ using namespace util;
 
 /**
  * Interpret IsEqual<L,R>
- * @tparam Environ 
- * @tparam L 
- * @tparam R 
+ * @tparam Environ
+ * @tparam L
+ * @tparam R
  */
 template <typename Environ, typename L, typename R>
 struct Interpret<IsEqual<L, R>, Environ> {
@@ -37,12 +37,6 @@ struct Interpret<IsEqual<L, R>, Environ> {
 
   using type = typename IsEqualImpl<typename LInterp::type,
                                     typename RInterp::type>::type;
-
-  static decltype(type::c_value()) Run() {
-    LInterp::Run();
-    RInterp::Run();
-    return type::c_value();
-  }
 };
 
 #define InterpretBinaryOperator(OpName)                               \
@@ -55,12 +49,6 @@ struct Interpret<IsEqual<L, R>, Environ> {
                                                                       \
     using type = typename OpName##Impl<typename LInterp::type,        \
                                        typename RInterp::type>::type; \
-                                                                      \
-    static decltype(type::c_value()) Run() {                          \
-      LInterp::Run();                                                 \
-      RInterp::Run();                                                 \
-      return type::c_value();                                         \
-    }                                                                 \
   };
 
 InterpretBinaryOperator(IsGreaterThan);
@@ -68,4 +56,4 @@ InterpretBinaryOperator(IsLessThan);
 InterpretBinaryOperator(IsGreaterEqual);
 InterpretBinaryOperator(IsLessEqual);
 }  // namespace crisp
-#endif  //CRISP_INTERPRETBINARYOPERATOR_HPP
+#endif  // CRISP_INTERPRETBINARYOPERATOR_HPP

@@ -32,8 +32,6 @@ template <typename Environ, typename Body, typename ParamL>
 struct Interpret<Lambda<ParamL, Body>, Environ> {
   using env = Environ;
   using type = Closure<Environ, Lambda<ParamL, Body>>;
-
-  static constexpr const char *Run() { return "#closure"; }
 };
 }  // namespace crisp
 #endif  //CRISP_INTERPRETLAMBDA_HPP

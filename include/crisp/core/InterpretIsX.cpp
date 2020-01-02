@@ -29,11 +29,6 @@ struct Interpret<IsEmpty<Expr>, Environ> {
 
   using env = Environ;
   using type = Bool<IsEmptyImpl<ExprValue>::value>;
-
-  inline static auto Run() {
-    ExprInterp ::Run();
-    return type::c_value();
-  }
 };
 
 template <typename Environ, typename Expr>
@@ -43,11 +38,6 @@ struct Interpret<IsNil<Expr>, Environ> {
 
   using env = Environ;
   using type = Bool<std::is_same<ExprValue, Nil>::value>;
-
-  inline static auto Run() {
-    ExprInterp ::Run();
-    return type::c_value();
-  }
 };
 }  // namespace crisp
 #endif  //CRISP_INTERPRETISX_HPP
