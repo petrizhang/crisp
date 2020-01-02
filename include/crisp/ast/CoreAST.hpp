@@ -111,7 +111,9 @@ constexpr auto operator""_v() {
  * @tparam R
  */
 template <typename L, typename R>
-struct Pair {};
+struct Pair {
+  static const char* repr() { return "pair"; };
+};
 
 // TODO print ast nodes prettily
 /**
@@ -119,14 +121,18 @@ struct Pair {};
  * @tparam AST
  */
 template <typename AST>
-struct Quote {};
+struct Quote {
+  static const char* repr() { return "quote"; };
+};
 
 /**
  * Evaluate a quoted expression in current environment.
  * @tparam QuotedExpr
  */
 template <typename QuotedExpr>
-struct Eval {};
+struct Eval {
+  static const char* repr() { return "eval"; };
+};
 
 /**
  * Closure. We use this type to represent a function value.
@@ -134,7 +140,9 @@ struct Eval {};
  * @tparam Func
  */
 template <typename Environ, typename Func>
-struct Closure {};
+struct Closure {
+  static const char* repr() { return "closure"; };
+};
 
 /**
  * Block.
@@ -143,14 +151,18 @@ struct Closure {};
  * @tparam Args
  */
 template <typename... Args>
-struct Block {};
+struct Block {
+  static const char* repr() { return "block"; };
+};
 
 /**
  * Parameter list used in function definition.
  * @tparam Params
  */
 template <typename... Params>
-struct ParamList {};
+struct ParamList {
+  static const char* repr() { return "params"; };
+};
 
 /**
  * If-then-else expression.
@@ -159,21 +171,27 @@ struct ParamList {};
  * @tparam ElseBody
  */
 template <typename Cond, typename Body, typename ElseBody>
-struct If {};
+struct If {
+  static const char* repr() { return "if"; };
+};
 
 /**
  * Define statement.
  * @tparam Args
  */
 template <typename... Args>
-struct Define {};
+struct Define {
+  static const char* repr() { return "define"; };
+};
 
 /**
  * Function call.
  * @tparam Args
  */
 template <typename... Args>
-struct Call {};
+struct Call {
+  static const char* repr() { return "call"; };
+};
 
 /**
  * Lambda literal.
@@ -181,41 +199,63 @@ struct Call {};
  * @tparam Body
  */
 template <typename Params, typename Body>
-struct Lambda {};
+struct Lambda {
+  static const char* repr() { return "lambda"; };
+};
 
 /**
  * List
  * @tparam Args
  */
 template <typename... Args>
-struct List {};
+struct List {
+  static const char* repr() { return "list"; };
+};
 
 template <typename... Args>
-struct Head {};
+struct Head {
+  static const char* repr() { return "head"; };
+};
 
 template <typename... Args>
-struct Tail {};
+struct Tail {
+  static const char* repr() { return "tail"; };
+};
 
 template <typename... Args>
-struct PopFront {};
+struct PopFront {
+  static const char* repr() { return "pop_front"; };
+};
 
 template <typename... Args>
-struct PopBack {};
+struct PopBack {
+  static const char* repr() { return "pop_back"; };
+};
 
 template <typename... Args>
-struct PushFront {};
+struct PushFront {
+  static const char* repr() { return "push_front"; };
+};
 
 template <typename... Args>
-struct PushBack {};
+struct PushBack {
+  static const char* repr() { return "push_back"; };
+};
 
 template <typename... Args>
-struct DropHead {};
+struct DropHead {
+  static const char* repr() { return "drop_head"; };
+};
 
 template <typename... Args>
-struct DropLast {};
+struct DropLast {
+  static const char* repr() { return "drop_last"; };
+};
 
 template <typename... Args>
-struct Concat {};
+struct Concat {
+  static const char* repr() { return "concat"; };
+};
 
 /**
  * +
@@ -224,7 +264,9 @@ struct Concat {};
  * @tparam Args
  */
 template <typename L, typename R, typename... Args>
-struct Add {};
+struct Add {
+  static const char* repr() { return "+"; };
+};
 
 /**
  * -
@@ -233,7 +275,9 @@ struct Add {};
  * @tparam Args
  */
 template <typename L, typename R, typename... Args>
-struct Sub {};
+struct Sub {
+  static const char* repr() { return "-"; };
+};
 
 /**
  * *
@@ -242,7 +286,9 @@ struct Sub {};
  * @tparam Args
  */
 template <typename L, typename R, typename... Args>
-struct Mul {};
+struct Mul {
+  static const char* repr() { return "*"; };
+};
 
 /**
  * /
@@ -251,7 +297,9 @@ struct Mul {};
  * @tparam Args
  */
 template <typename L, typename R, typename... Args>
-struct Mod {};
+struct Mod {
+  static const char* repr() { return "/"; };
+};
 
 /**
  * &&
@@ -260,7 +308,9 @@ struct Mod {};
  * @tparam Args
  */
 template <typename L, typename R, typename... Args>
-struct And {};
+struct And {
+  static const char* repr() { return "and"; };
+};
 
 /**
  * ||
@@ -269,7 +319,9 @@ struct And {};
  * @tparam Args
  */
 template <typename L, typename R, typename... Args>
-struct Or {};
+struct Or {
+  static const char* repr() { return "or"; };
+};
 
 /**
  * ==
@@ -277,7 +329,9 @@ struct Or {};
  * @tparam R
  */
 template <typename L, typename R>
-struct IsEqual {};
+struct IsEqual {
+  static const char* repr() { return "=="; };
+};
 
 /**
  * >
@@ -285,7 +339,9 @@ struct IsEqual {};
  * @tparam R
  */
 template <typename L, typename R>
-struct IsGreaterThan {};
+struct IsGreaterThan {
+  static const char* repr() { return ">"; };
+};
 
 /**
  * <
@@ -293,7 +349,9 @@ struct IsGreaterThan {};
  * @tparam R
  */
 template <typename L, typename R>
-struct IsLessThan {};
+struct IsLessThan {
+  static const char* repr() { return "<"; };
+};
 
 /**
  * >=
@@ -301,7 +359,9 @@ struct IsLessThan {};
  * @tparam R
  */
 template <typename L, typename R>
-struct IsGreaterEqual {};
+struct IsGreaterEqual {
+  static const char* repr() { return ">="; };
+};
 
 /**
  * <=
@@ -309,12 +369,16 @@ struct IsGreaterEqual {};
  * @tparam R
  */
 template <typename L, typename R>
-struct IsLessEqual {};
+struct IsLessEqual {
+  static const char* repr() { return "<="; };
+};
 
 /**
  * Placeholder used in match expression which will match any value.
  */
-struct _ {};
+struct _ {
+  static const char* repr() { return "-"; };
+};
 
 /**
  * Placeholder used in match expression which will match any sequence.
@@ -326,9 +390,13 @@ struct _ {};
  * @endcode
  * will be ```Int<4>```
  */
-struct ___ {};
+struct ___ {
+  static const char* repr() { return "___"; };
+};
 
-struct __1 {};
+struct __1 {
+  static const char* repr() { return "__1"; };
+};
 
 /**
  * Case branch used in `Match` expression.
@@ -337,14 +405,18 @@ struct __1 {};
  * @tparam Result
  */
 template <typename Condition, typename Result>
-struct Case {};
+struct Case {
+  static const char* repr() { return "case"; };
+};
 
 /**
  * Default branch used in `Match` and `Cond` expression.
  * @tparam Expr
  */
 template <typename Expr>
-struct Default {};
+struct Default {
+  static const char* repr() { return "default"; };
+};
 
 /**
  * When branch used in `Match` expression.
@@ -352,14 +424,18 @@ struct Default {};
  * @tparam Result
  */
 template <typename Condition, typename Result>
-struct When {};
+struct When {
+  static const char* repr() { return "when"; };
+};
 
 /**
  * Else branch used in `Match` and `Cond` expression.
  * @tparam Expr
  */
 template <typename Expr>
-struct Else {};
+struct Else {
+  static const char* repr() { return "else"; };
+};
 
 /**
  * Pattern match expression.
@@ -370,7 +446,9 @@ struct Else {};
  */
 template <typename AST, typename Branch1, typename Branch2,
           typename... Branches>
-struct Match {};
+struct Match {
+  static const char* repr() { return "match"; };
+};
 
 /**
  * Capture in match expression.
@@ -378,7 +456,9 @@ struct Match {};
  * @tparam VarName
  */
 template <typename Target, typename VarName>
-struct Capture {};
+struct Capture {
+  static const char* repr() { return "capture"; };
+};
 
 /**
  * Cond expression.
@@ -394,19 +474,29 @@ struct Capture {};
  * @tparam Branches
  */
 template <typename Branch1, typename Branch2, typename... Branches>
-struct Cond {};
+struct Cond {
+  static const char* repr() { return "cond"; };
+};
 
 template <typename E>
-struct IsEmpty {};
+struct IsEmpty {
+  static const char* repr() { return "empty?"; };
+};
 
 template <typename E>
-struct IsNil {};
+struct IsNil {
+  static const char* repr() { return "nil?"; };
+};
 
 template <typename S>
-struct Str2List {};
+struct Str2List {
+  static const char* repr() { return "str2list"; };
+};
 
 template <typename... Pairs>
-struct Dict {};
+struct Dict {
+  static const char* repr() { return "dict"; };
+};
 
 }  // namespace crisp
 

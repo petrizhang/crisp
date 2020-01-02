@@ -17,15 +17,40 @@
 #include <iostream>
 #include <type_traits>
 
-#include "crisp/util/Conditional.hpp"
-#include "crisp/util/Defer.hpp"
-#include "crisp/util/Dict.hpp"
+#include "crisp/dump/DumpToLisp.hpp"
 
+// clang-format off
+#include "crisp/MacroAPI.h"
+// clang-format on
+using check = var("check");
+using fmt = var("fmt");
+using flag = var("flag");
+using fmt_head = var("fmt_head");
+using fmt_tail = var("fmt_tail");
+using result = var("result");
+using fmt_type = var("fmt_type");
+
+using check_def =
+    define(check,
+           lambda(params(fmt, result, flag),
+                  if_(is_empty(fmt),
+                      result,
+                      block(define(fmt_head, head(fmt)),
+                            define(fmt_tail, tail(fmt)),
+                            if_(flag,
+                                block(define(fmt_type, match(fmt_head,
+                                                             case_(v('d'), v(1)),
+                                                             case_(v('u'), v(1)),
+                                                             case_(v('f'), v(1)),
+                                                             case_(v('c'), v(1)),
+                                                             case_(v('s'), v(1)),
+                                                             default_(nil))),
+                                      if_(is_nil(fmt_type),
+                                          call(check, fmt_tail, result, v(false)),
+                                          call(check, fmt_tail, push_back(result, fmt_type), v(false)))),
+                                call(check, fmt_tail, result, eq_(fmt_head, v('%'))))))));
 using namespace crisp;
-using namespace util;
-using std::is_same;
-
 int main() {
-  std::cout << "a" << "\n";
+  DumpToLisp<check_def>::dump(std::cout, 4);
   return 0;
 }

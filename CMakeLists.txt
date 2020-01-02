@@ -9,7 +9,8 @@ FILE(GLOB Source
         include/crisp/ast/*
         include/crisp/core/*
         include/crisp/util/*
-        include/crisp/library/*)
+        include/crisp/library/*
+        include/crisp/dump/*)
 set(crisp ${Source})
 
 include_directories(include)
