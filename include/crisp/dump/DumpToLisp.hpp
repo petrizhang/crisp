@@ -27,7 +27,11 @@ template <typename...>
 struct DumpList {};
 
 template <class T>
-struct DumpToLisp;
+struct DumpToLisp {
+  static void dump(std::ostream &os, int unit = 2, int indent = 0) {
+    os << "#???";
+  }
+};
 
 template <>
 struct DumpToLisp<Nil> {
