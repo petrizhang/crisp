@@ -17,7 +17,7 @@
 #include <iostream>
 #include <type_traits>
 
-#include "crisp/core/Interpreter.hpp"
+#include "crisp/interpreter/Interpreter.hpp"
 #include "crisp/dump/DumpToLisp.hpp"
 using namespace crisp;
 

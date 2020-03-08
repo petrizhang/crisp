@@ -19,7 +19,7 @@
 
 #include "crisp/ast/CoreAST.hpp"
 #include "crisp/ast/LibAST.hpp"
-#include "crisp/core/Interpreter.hpp"
+#include "crisp/interpreter/Interpreter.hpp"
 
 using crisp::_;
 using crisp::operator""_s;

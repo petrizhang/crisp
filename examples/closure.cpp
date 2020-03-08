@@ -26,11 +26,10 @@ using prgram_make_addx = lambda(params(y),
 
 int main() {
   using make_addx = interpret(prgram_make_addx);
-  using add1 = interpret(call(make_addx, v(1)));
-  using add2 = interpret(call(make_addx, v(2)));
-
-  using r1 = interpret(call(add1, v(1)));
-  using r2 = interpret(call(add2, v(1)));
+  using add1      = interpret(call(make_addx, v(1)));
+  using add2      = interpret(call(make_addx, v(2)));
+  using r1        = interpret(call(add1, v(1)));
+  using r2        = interpret(call(add2, v(1)));
 
   static_assert(r1::value == 2, "");
   std::cout << r1::value << std::endl;

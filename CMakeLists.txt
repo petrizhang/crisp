@@ -3,14 +3,15 @@ project(crisp)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_compile_options(-ftemplate-depth-5000)
+add_compile_options(-ftemplate-depth-5000 -Wno-gnu-string-literal-operator-template)
 
 FILE(GLOB Source
         include/crisp/ast/*
-        include/crisp/core/*
+        include/crisp/interpreter/*
         include/crisp/util/*
         include/crisp/library/*
-        include/crisp/dump/*)
+        include/crisp/dump/*
+        include/crisp/base/*)
 set(crisp ${Source})
 
 include_directories(include)

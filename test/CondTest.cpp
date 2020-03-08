@@ -16,7 +16,7 @@
 
 #include <type_traits>
 
-#include "crisp/core/Interpreter.hpp"
+#include "crisp/interpreter/Interpreter.hpp"
 
 using namespace crisp;
 using namespace crisp;
