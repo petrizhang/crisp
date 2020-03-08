@@ -1,15 +1,16 @@
-#ifndef CRISP_BASE_LIST_HPP
-#define CRISP_BASE_LIST_HPP
+#ifndef CRISP_CORE_LIST_HPP
+#define CRISP_CORE_LIST_HPP
 
 #include <type_traits>
 
 #include "common.hpp"
-#include "crisp/base/common.hpp"
+#include "crisp/core/common.hpp"
+#include "crisp/core/lambda.hpp"
 
 namespace crisp {
-namespace base {
+namespace core {
 namespace list {
-using namespace crisp::base;
+using namespace crisp::core;
 
 /** from */
 template <typename T_>
@@ -73,6 +74,8 @@ struct size {
 template <typename... Args_>
 struct size<List<Args_...>> {
   static const size_t value = sizeof...(Args_);
+
+  using type = Int<sizeof...(Args_)>;
 };
 
 /** A copy of the list with an element prepended. */
@@ -160,8 +163,8 @@ struct init<List<Last_>> {
 
 template <typename Head_, typename... Args_>
 struct init<List<Head_, Args_...>> {
-  using _Remain = typename init<List<Args_...>>::type;
-  using type    = typename prepended<_Remain, Head_>::type;
+  using _Rest = typename init<List<Args_...>>::type;
+  using type  = typename prepended<_Rest, Head_>::type;
 };
 
 /** The rest of the list without its first element. */
@@ -192,10 +195,10 @@ struct take<L_, Int<n>> {
   static_assert(size<L_>::value >= n,
                 "Expected a list has more than n elements.");
 
-  using _Head   = typename head<L_>::type;
-  using _Tail   = typename tail<L_>::type;
-  using _Remain = typename take<_Tail, Int<n - 1>>::type;
-  using type    = typename prepended<_Remain, _Head>::type;
+  using _Head = typename head<L_>::type;
+  using _Tail = typename tail<L_>::type;
+  using _Rest = typename take<_Tail, Int<n - 1>>::type;
+  using type  = typename prepended<_Rest, _Head>::type;
 };
 
 template <typename L_>
@@ -204,17 +207,49 @@ struct take<L_, Int<0>> {
   using type = List<>;
 };
 
-/** find
- * Find the position of `Element` in the given list `L_`
- */
-template <typename L_, typename Element_>
-struct find {};
+/** Builds a new list by applying a function to all elements of this list. */
+template <typename L_, typename Lambda_>
+struct map {
+  static_assert(is_list<L_>::value, "Expected a list.");
+  static_assert(is_lambda<Lambda_>::value, "Expected a lambda instantiation.");
+};
 
-/** map */
-struct map {};
+template <typename Lambda_>
+struct map<List<>, Lambda_> {
+  using type = List<>;
+  static_assert(is_lambda<Lambda_>::value, "Expected a lambda instantiation.");
+};
 
-/** reduce */
-struct reduce {};
+template <typename Head_, typename... Tail_, typename Lambda_>
+struct map<List<Head_, Tail_...>, Lambda_> {
+  static_assert(is_lambda<Lambda_>::value, "Expected a lambda instantiation.");
+  using _HeadResult = typename Lambda_::template apply<Head_>::type;
+  using _TailResult = typename map<List<Tail_...>, Lambda_>::type;
+  using type        = typename prepended<_TailResult, _HeadResult>::type;
+};
+
+/** Reduces the elements of this collection using the specified associative
+ * binary operator. */
+template <typename L_, typename Lambda_>
+struct reduce {
+  static_assert(is_list<L_>::value, "Expected a list.");
+  static_assert(size<L_>::value >= 2,
+                "Expected a list has at least 2 elements.");
+  static_assert(is_lambda<Lambda_>::value, "Expected a lambda instantiation.");
+};
+
+template <typename E0_, typename E1_, typename Lambda_>
+struct reduce<List<E0_, E1_>, Lambda_> {
+  static_assert(is_lambda<Lambda_>::value, "Expected a lambda instantiation.");
+  using type = typename Lambda_::template apply<E0_, E1_>::type;
+};
+
+template <typename E0_, typename E1_, typename... Elements_, typename Lambda_>
+struct reduce<List<E0_, E1_, Elements_...>, Lambda_> {
+  static_assert(is_lambda<Lambda_>::value, "Expected a lambda instantiation.");
+  using _FirstResult = typename Lambda_::template apply<E0_, E1_>::type;
+  using type = typename reduce<List<_FirstResult, Elements_...>, Lambda_>::type;
+};
 
 /** filter */
 struct filter {};
@@ -222,8 +257,14 @@ struct filter {};
 /** flat_map */
 struct flat_map {};
 
+/** find
+ * Find the position of `Element` in the given list `L_`
+ */
+template <typename L_, typename Element_>
+struct find {};
+
 }  // namespace list
-}  // namespace base
+}  // namespace core
 }  // namespace crisp
 
-#endif  // CRISP_BASE_LIST_HPP
+#endif  // CRISP_CORE_LIST_HPP

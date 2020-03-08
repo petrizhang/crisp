@@ -1,10 +1,10 @@
-#ifndef CRISP_BASE_COMMON_HPP
-#define CRISP_BASE_COMMON_HPP
+#ifndef CRISP_CORE_COMMON_HPP
+#define CRISP_CORE_COMMON_HPP
 
 #include <type_traits>
 
 namespace crisp {
-namespace base {
+namespace core {
 using std::is_same;
 using std::size_t;
 
@@ -500,7 +500,7 @@ struct nil_f {
   using type = Nil;
 };
 
-}  // namespace base
+}  // namespace core
 }  // namespace crisp
 
-#endif  // CRISP_BASE_COMMON_HPP
+#endif  // CRISP_CORE_COMMON_HPP

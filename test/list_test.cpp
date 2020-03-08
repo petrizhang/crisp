@@ -1,7 +1,9 @@
-#include "crisp/base/list.hpp"
+#include "crisp/core/list.hpp"
 
 int main() {
-  using namespace crisp::base::list;
+  using namespace crisp::core::list;
+  using l0 = List<>;
+
   /// head
   {
     // This line will trigger a compile error:
@@ -92,7 +94,6 @@ int main() {
 
   // take
   {
-    using l0 = List<>;
     using l1 = List<int, char, bool>;
 
     // This line will trigger a compile error:
@@ -113,5 +114,32 @@ int main() {
     // This line will trigger a compile error:
     //    using t4 = take<l1, Int<4>>::type;
   }
+
+  /// map
+  {
+    using l1 = List<Int<0>, Int<1>, Int<2>>;
+
+    using add1 = lambda<add_<_1, Int<1>>>;
+
+    using t0 = map<l0, add1>::type;
+    static_assert(is_same<t0, List<>>::value, "");
+
+    using t1 = map<l1, add1>::type;
+    static_assert(is_same<t1, List<Int<1>, Int<2>, Int<3>>>::value, "");
+  }
+
+  /// reduce
+  {
+    using add2 = lambda<add_<_1, _2>>;
+    using l1   = List<Int<0>, Int<1>, Int<2>>;
+
+    // These lines will trigger a compile error:
+    //    using t0 = reduce<List<>, add2>::type;
+    //    using t1 = reduce<List<Int<0>>, add2>::type;
+
+    using t2 = reduce<l1, add2>::type;
+    static_assert(is_same<t2, Int<3>>::value, "");
+  }
+
   return 0;
 }

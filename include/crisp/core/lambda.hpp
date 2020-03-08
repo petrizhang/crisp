@@ -1,10 +1,10 @@
-#ifndef CRISP_BASE_LAMBDA_HPP
-#define CRISP_BASE_LAMBDA_HPP
+#ifndef CRISP_CORE_LAMBDA_HPP
+#define CRISP_CORE_LAMBDA_HPP
 
-#include "crisp/base/common.hpp"
+#include "crisp/core/common.hpp"
 
 namespace crisp {
-namespace base {
+namespace core {
 
 //===========================================================================//
 // Placeholders
@@ -28,58 +28,63 @@ struct get_arg {
   using type = A_;
 };
 
-template <typename T_>
-struct get_arg<Arg<1>, T_> {
+template <typename T_, typename... Args_>
+struct get_arg<Arg<1>, T_, Args_...> {
   using type = T_;
 };
 
-template <typename T1_, typename T_>
-struct get_arg<Arg<2>, T1_, T_> {
+template <typename T1_, typename T_, typename... Args_>
+struct get_arg<Arg<2>, T1_, T_, Args_...> {
   using type = T_;
 };
 
-template <typename T1_, typename T2_, typename T_>
-struct get_arg<Arg<3>, T1_, T2_, T_> {
+template <typename T1_, typename T2_, typename T_, typename... Args_>
+struct get_arg<Arg<3>, T1_, T2_, T_, Args_...> {
   using type = T_;
 };
 
-template <typename T1_, typename T2_, typename T3_, typename T_>
-struct get_arg<Arg<4>, T1_, T2_, T3_, T_> {
+template <typename T1_, typename T2_, typename T3_, typename T_,
+          typename... Args_>
+struct get_arg<Arg<4>, T1_, T2_, T3_, T_, Args_...> {
   using type = T_;
 };
 
-template <typename T1_, typename T2_, typename T3_, typename T4_, typename T_>
-struct get_arg<Arg<5>, T1_, T2_, T3_, T4_, T_> {
-  using type = T_;
-};
-
-template <typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
-          typename T_>
-struct get_arg<Arg<6>, T1_, T2_, T3_, T4_, T5_, T_> {
+template <typename T1_, typename T2_, typename T3_, typename T4_, typename T_,
+          typename... Args_>
+struct get_arg<Arg<5>, T1_, T2_, T3_, T4_, T_, Args_...> {
   using type = T_;
 };
 
 template <typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
-          typename T6_, typename T_>
-struct get_arg<Arg<7>, T1_, T2_, T3_, T4_, T5_, T6_, T_> {
+          typename T_, typename... Args_>
+struct get_arg<Arg<6>, T1_, T2_, T3_, T4_, T5_, T_, Args_...> {
   using type = T_;
 };
 
 template <typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
-          typename T6_, typename T7_, typename T_>
-struct get_arg<Arg<8>, T1_, T2_, T3_, T4_, T5_, T6_, T7_, T_> {
+          typename T6_, typename T_, typename... Args_>
+struct get_arg<Arg<7>, T1_, T2_, T3_, T4_, T5_, T6_, T_, Args_...> {
   using type = T_;
 };
 
 template <typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
-          typename T6_, typename T7_, typename T8_, typename T_>
-struct get_arg<Arg<9>, T1_, T2_, T3_, T4_, T5_, T6_, T7_, T8_, T_> {
+          typename T6_, typename T7_, typename T_, typename... Args_>
+struct get_arg<Arg<8>, T1_, T2_, T3_, T4_, T5_, T6_, T7_, T_, Args_...> {
   using type = T_;
 };
 
 template <typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
-          typename T6_, typename T7_, typename T8_, typename T9_, typename T_>
-struct get_arg<Arg<10>, T1_, T2_, T3_, T4_, T5_, T6_, T7_, T8_, T9_, T_> {
+          typename T6_, typename T7_, typename T8_, typename T_,
+          typename... Args_>
+struct get_arg<Arg<9>, T1_, T2_, T3_, T4_, T5_, T6_, T7_, T8_, T_, Args_...> {
+  using type = T_;
+};
+
+template <typename T1_, typename T2_, typename T3_, typename T4_, typename T5_,
+          typename T6_, typename T7_, typename T8_, typename T9_, typename T_,
+          typename... Args_>
+struct get_arg<Arg<10>, T1_, T2_, T3_, T4_, T5_, T6_, T7_, T8_, T9_, T_,
+               Args_...> {
   using type = T_;
 };
 
@@ -118,7 +123,10 @@ struct lambda<F_<Params_...>> {
   };
 };
 
-}  // namespace base
+template <typename T_>
+struct is_lambda : is_template_of<lambda, T_> {};
+
+}  // namespace core
 }  // namespace crisp
 
-#endif  // CRISP_BASE_LAMBDA_HPP
+#endif  // CRISP_CORE_LAMBDA_HPP

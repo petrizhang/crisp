@@ -11,7 +11,7 @@ FILE(GLOB Source
         include/crisp/util/*
         include/crisp/library/*
         include/crisp/dump/*
-        include/crisp/base/*)
+        include/crisp/core/*)
 set(crisp ${Source})
 
 include_directories(include)
