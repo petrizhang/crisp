@@ -103,13 +103,16 @@ int main() {
     using n         = var("n");
     using factorial = var("factorial");
 
-    // 3628800
+    // Int<3628800>
     using result = interpret(
-        block(define(factorial,
-                     lambda(params(n),               //
-                            if_(eq_(n, v(1)), v(1),  //
-                                mul(n, call(factorial, sub(n, v(1))))))),
+        block(define(factorial,                                            //
+                     lambda(params(n),                                     //
+                            if_(eq_(n, v(1)),                              //
+                                v(1),                                      //
+                                mul(n, call(factorial, sub(n, v(1))))))),  //
               call(factorial, v(10))));
+
+    static_assert(result::value == 3628800, "");
   }
   //-### Quote and Eval
   {
