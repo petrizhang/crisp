@@ -12,7 +12,7 @@ It means you could do anything that a general programming language can do
 with C++ templates at **compile time**.
 
 Yes, C++ templates are powerful enough to build arbitrarily complex programs. 
-But the tedious syntax and obscure semantic of C++ prevent people to do such thing.   
+But the tedious syntax and obscure semantic of C++ prevent people to do so.   
 
 Now, Crisp brings a **convenient, flexible and elegant** way for users to play with C++ templates and build
 compile-time programs.
