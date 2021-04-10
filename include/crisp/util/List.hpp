@@ -40,31 +40,31 @@ template <typename... Elements>
 struct ListTail<List<Elements...>> : ListLikeTail<List<Elements...>> {};
 
 template <typename T, typename Elem>
-struct ListPushHead;
+struct ListPushFront;
 
 template <typename... Elements, typename Elem>
-struct ListPushHead<List<Elements...>, Elem> : ListLikePushHead<List<Elements...>, Elem> {};
+struct ListPushFront<List<Elements...>, Elem> : ListLikePushFront<List<Elements...>, Elem> {};
 
 template <typename T, typename Elem>
-struct ListPushLast;
+struct ListPushBack;
 
 template <typename... Elements, typename Elem>
-struct ListPushLast<List<Elements...>, Elem> : ListLikePushLast<List<Elements...>, Elem> {};
+struct ListPushBack<List<Elements...>, Elem> : ListLikePushBack<List<Elements...>, Elem> {};
 
 template <typename T>
-struct ListPopHead;
+struct ListPopFront;
 
 template <typename... Elements>
-struct ListPopHead<List<Elements...>> {
-  using type = typename ListLikePopHeadImpl<List<Elements...>>::poped;
+struct ListPopFront<List<Elements...>> {
+  using type = typename ListLikePopFront<List<Elements...>>::poped;
 };
 
 template <typename T>
-struct ListPopLast;
+struct ListPopBack;
 
 template <typename... Elements>
-struct ListPopLast<List<Elements...>> {
-  using type = typename ListLikePopLastImpl<List<Elements...>>::poped;
+struct ListPopBack<List<Elements...>> {
+  using type = typename ListLikePopBack<List<Elements...>>::poped;
 };
 
 template <typename T>
@@ -72,7 +72,7 @@ struct ListDropHead;
 
 template <typename... Elements>
 struct ListDropHead<List<Elements...>> {
-  using type = typename ListLikePopHeadImpl<List<Elements...>>::rest;
+  using type = typename ListLikePopFront<List<Elements...>>::rest;
 };
 
 template <typename T>
@@ -80,7 +80,7 @@ struct ListDropLast;
 
 template <typename... Elements>
 struct ListDropLast<List<Elements...>> {
-  using type = typename ListLikePopLastImpl<List<Elements...>>::rest;
+  using type = typename ListLikePopBack<List<Elements...>>::rest;
 };
 
 template <typename L, typename R>

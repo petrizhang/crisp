@@ -19,7 +19,7 @@
 #include "crisp/util/ListLike.hpp"
 
 template <typename... Args>
-struct A {};
+struct list {};
 
 using namespace util;
 
@@ -31,10 +31,10 @@ int main() {
     // This line will trigger a compile error:
     // using t0 = typename VectorLikeHead<A<>>::type;
 
-    using t1 = typename ListLikeHead<A<int>>::type;
+    using t1 = typename ListLikeHead<list<int>>::type;
     static_assert(std::is_same<t1, int>::value, "");
 
-    using t2 = typename ListLikeHead<A<bool, int, char>>::type;
+    using t2 = typename ListLikeHead<list<bool, int, char>>::type;
     static_assert(std::is_same<t2, bool>::value, "");
   }
 
@@ -45,10 +45,10 @@ int main() {
     // This line will trigger a compile error:
     // using t0 = typename VectorLikeLast<A<>>::type;
 
-    using t1 = typename ListLikeLast<A<int>>::type;
+    using t1 = typename ListLikeLast<list<int>>::type;
     static_assert(std::is_same<t1, int>::value, "");
 
-    using t2 = typename ListLikeLast<A<bool, int, char>>::type;
+    using t2 = typename ListLikeLast<list<bool, int, char>>::type;
     static_assert(std::is_same<t2, char>::value, "");
   }
 
@@ -56,53 +56,53 @@ int main() {
    *  TemplateTail tests
    */
   {
-    using t0 = typename ListLikeTail<A<int>>::type;
-    static_assert(std::is_same<t0, A<>>::value, "");
+    using t0 = typename ListLikeTail<list<int>>::type;
+    static_assert(std::is_same<t0, list<>>::value, "");
 
-    using t1 = typename ListLikeTail<A<bool, int>>::type;
-    static_assert(std::is_same<t1, A<int>>::value, "");
+    using t1 = typename ListLikeTail<list<bool, int>>::type;
+    static_assert(std::is_same<t1, list<int>>::value, "");
 
-    using t2 = typename ListLikeTail<A<bool, int, char>>::type;
-    static_assert(std::is_same<t2, A<int, char>>::value, "");
+    using t2 = typename ListLikeTail<list<bool, int, char>>::type;
+    static_assert(std::is_same<t2, list<int, char>>::value, "");
   }
 
   /**
    * TemplatePushFront tests
    */
   {
-    using t0 = typename ListLikePushHead<A<>, int>::type;
-    static_assert(std::is_same<t0, A<int>>::value, "");
+    using t0 = typename ListLikePushFront<list<>, int>::type;
+    static_assert(std::is_same<t0, list<int>>::value, "");
 
-    using t1 = typename ListLikePushHead<A<bool>, int>::type;
-    static_assert(std::is_same<t1, A<int, bool>>::value, "");
+    using t1 = typename ListLikePushFront<list<bool>, int>::type;
+    static_assert(std::is_same<t1, list<int, bool>>::value, "");
   }
 
   /**
     * TemplatePushBack tests
     */
   {
-    using t0 = typename ListLikePushLast<A<>, int>::type;
-    static_assert(std::is_same<t0, A<int>>::value, "");
+    using t0 = typename ListLikePushBack<list<>, int>::type;
+    static_assert(std::is_same<t0, list<int>>::value, "");
 
-    using t1 = typename ListLikePushLast<A<bool>, int>::type;
-    static_assert(std::is_same<t1, A<bool, int>>::value, "");
+    using t1 = typename ListLikePushBack<list<bool>, int>::type;
+    static_assert(std::is_same<t1, list<bool, int>>::value, "");
   }
 
   /**
    * TemplateConcat tests
    */
   {
-    using t0 = typename ListLikeConcat<A<>, A<>>::type;
-    static_assert(std::is_same<t0, A<>>::value, "");
+    using t0 = typename ListLikeConcat<list<>, list<>>::type;
+    static_assert(std::is_same<t0, list<>>::value, "");
 
-    using t1 = typename ListLikeConcat<A<int>, A<>>::type;
-    static_assert(std::is_same<t1, A<int>>::value, "");
+    using t1 = typename ListLikeConcat<list<int>, list<>>::type;
+    static_assert(std::is_same<t1, list<int>>::value, "");
 
-    using t2 = typename ListLikeConcat<A<>, A<int>>::type;
-    static_assert(std::is_same<t2, A<int>>::value, "");
+    using t2 = typename ListLikeConcat<list<>, list<int>>::type;
+    static_assert(std::is_same<t2, list<int>>::value, "");
 
-    using t3 = typename ListLikeConcat<A<int, bool>, A<int, char, bool>>::type;
-    static_assert(std::is_same<t3, A<int, bool, int, char, bool>>::value, "");
+    using t3 = typename ListLikeConcat<list<int, bool>, list<int, char, bool>>::type;
+    static_assert(std::is_same<t3, list<int, bool, int, char, bool>>::value, "");
   }
   return 0;
 }

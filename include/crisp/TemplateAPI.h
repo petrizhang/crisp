@@ -19,7 +19,7 @@
 
 #include "crisp/ast/CoreAST.hpp"
 #include "crisp/ast/LibAST.hpp"
-#include "crisp/core/Interpreter.hpp"
+#include "crisp/interpreter/Interpreter.hpp"
 
 // clang-format off
 using crisp::_;
@@ -71,10 +71,10 @@ using crisp::List;
 using crisp::Head;
 using crisp::Tail;
 using crisp::Concat;
-using crisp::PushHead;
-using crisp::PushLast;
-using crisp::PopHead;
-using crisp::PopLast;
+using crisp::PushFront;
+using crisp::PushBack;
+using crisp::PopFront;
+using crisp::PopBack;
 using crisp::DropHead;
 using crisp::DropLast;
 

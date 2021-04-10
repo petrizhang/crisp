@@ -34,7 +34,7 @@ template <typename T, typename Elem>
 struct InternalListPushFront;
 
 template <typename... Elements, typename Elem>
-struct InternalListPushFront<InternalList<Elements...>, Elem> : ListLikePushHead<InternalList<Elements...>, Elem> {};
+struct InternalListPushFront<InternalList<Elements...>, Elem> : ListLikePushFront<InternalList<Elements...>, Elem> {};
 
 template <typename L, typename R>
 struct InternalListExtendBack;

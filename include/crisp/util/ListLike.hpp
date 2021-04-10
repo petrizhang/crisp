@@ -100,10 +100,10 @@ struct ListLikeTail<V<Head, Args...>> {
  * @tparam E an element type
  */
 template <typename V, typename E>
-struct ListLikePushHead;
+struct ListLikePushFront;
 
 template <template <typename...> class V, typename... Args, typename E>
-struct ListLikePushHead<V<Args...>, E> {
+struct ListLikePushFront<V<Args...>, E> {
   using type = V<E, Args...>;
 };
 
@@ -114,10 +114,10 @@ struct ListLikePushHead<V<Args...>, E> {
  * @tparam E an element type
  */
 template <typename V, typename E>
-struct ListLikePushLast;
+struct ListLikePushBack;
 
 template <template <typename...> class V, typename... Args, typename E>
-struct ListLikePushLast<V<Args...>, E> {
+struct ListLikePushBack<V<Args...>, E> {
   using type = V<Args..., E>;
 };
 
@@ -126,12 +126,12 @@ struct ListLikePushLast<V<Args...>, E> {
   * @tparam V
   */
 template <typename V>
-struct ListLikePopHeadImpl {
+struct ListLikePopFront {
   static_assert(!IsEmptyImpl<V>::value, "cannot apply pop method on an empty list.");
 };
 
 template <template <typename...> class V, typename Head, typename... Args>
-struct ListLikePopHeadImpl<V<Head, Args...>> {
+struct ListLikePopFront<V<Head, Args...>> {
   using poped = Head;
   using rest = V<Args...>;
 };
@@ -141,21 +141,21 @@ struct ListLikePopHeadImpl<V<Head, Args...>> {
  * @tparam V
  */
 template <typename V>
-struct ListLikePopLastImpl {
+struct ListLikePopBack {
   static_assert(!IsEmptyImpl<V>::value, "cannot apply pop method on an empty list.");
 };
 
 template <template <typename...> class V, typename Head>
-struct ListLikePopLastImpl<V<Head>> {
+struct ListLikePopBack<V<Head>> {
   using poped = Head;
   using rest = V<>;
 };
 
 template <template <typename...> class V, typename Head, typename... Args>
-struct ListLikePopLastImpl<V<Head, Args...>> {
-  using poped = typename ListLikePopLastImpl<V<Args...>>::poped;
-  using rest = typename ListLikePushHead<
-      typename ListLikePopLastImpl<V<Args...>>::rest,
+struct ListLikePopBack<V<Head, Args...>> {
+  using poped = typename ListLikePopBack<V<Args...>>::poped;
+  using rest = typename ListLikePushFront<
+      typename ListLikePopBack<V<Args...>>::rest,
       Head>::type;
 };
 

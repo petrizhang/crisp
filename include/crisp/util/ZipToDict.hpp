@@ -34,7 +34,7 @@ struct ZipToDict;
 template <template <typename...> class C, typename K, typename V, typename... Keys, typename... Values>
 struct ZipToDict<C<K, Keys...>, C<V, Values...>> {
   using TailResult = typename ZipToDict<C<Keys...>, C<Values...>>::type;
-  using type = typename ListLikePushHead<TailResult, Pair<K, V>>::type;
+  using type = typename ListLikePushFront<TailResult, Pair<K, V>>::type;
 };
 
 template <template <typename...> class C>

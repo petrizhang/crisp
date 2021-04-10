@@ -29,7 +29,7 @@ struct Str2ListImpl<Str<>> {
 
 template <char c, char... Chars>
 struct Str2ListImpl<Str<c, Chars...>> {
-  using type = typename ListPushHead<
+  using type = typename ListPushFront<
       typename Str2ListImpl<Str<Chars...>>::type,
       Char<c>>::type;
 };

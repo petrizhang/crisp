@@ -15,26 +15,19 @@
  */
 
 #include <iostream>
+#include <type_traits>
 
-#include "crisp/MacroAPI.h"
-
-using x = var("x");
-using y = var("y");
-
-using prgram_make_addx = lambda(params(y),
-                                lambda(params(x), add(x, y)));
+#include "crisp/interpreter/Interpreter.hpp"
+#include "crisp/dump/DumpToLisp.hpp"
+using namespace crisp;
 
 int main() {
-  using make_addx = interpret(prgram_make_addx);
-  using add1      = interpret(call(make_addx, v(1)));
-  using add2      = interpret(call(make_addx, v(2)));
-  using r1        = interpret(call(add1, v(1)));
-  using r2        = interpret(call(add2, v(1)));
-
-  static_assert(r1::value == 2, "");
-  std::cout << r1::value << std::endl;
-  static_assert(r2::value == 3, "");
-  std::cout << r2::value << std::endl;
-
+  static_assert(Interpret<IsBool<Bool<true>>>::type::value, "");
+  static_assert(Interpret<IsInt<Int<1>>>::type::value, "");
+  static_assert(Interpret<IsChar<Char<'c'>>>::type::value, "");
+  static_assert(Interpret<IsStr<Str<>>>::type::value, "");
+  static_assert(Interpret<IsStr<Str<'a', 'b'>>>::type::value, "");
+  static_assert(Interpret<IsVar<Quote<Var<>>>>::type::value, "");
+  static_assert(Interpret<IsVar<Quote<Var<'a', 'b'>>>>::type::value, "");
   return 0;
 }

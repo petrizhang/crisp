@@ -41,9 +41,9 @@ struct Interpret<Concat<LeftList, RightList>, Environ> {
   using RightListValue = typename RightInterp::type;
 
   static_assert(IsTemplateOf<List, LeftListValue>::value,
-                "the input type is not a List<...> instaniation");
+                "the input type is not a List<...> instantiation");
   static_assert(IsTemplateOf<List, RightListValue>::value,
-                "the input type is not a List<...> instaniation");
+                "the input type is not a List<...> instantiation");
 
   using env = Environ;
   using type = typename ListConcat<LeftListValue, RightListValue>::type;
@@ -65,8 +65,8 @@ struct Interpret<Concat<LeftList, RightList>, Environ> {
   };
 
 InterpretNonEmptyListUnaryOperation(Head);
-InterpretNonEmptyListUnaryOperation(PopHead);
-InterpretNonEmptyListUnaryOperation(PopLast);
+InterpretNonEmptyListUnaryOperation(PopFront);
+InterpretNonEmptyListUnaryOperation(PopBack);
 InterpretNonEmptyListUnaryOperation(DropHead);
 InterpretNonEmptyListUnaryOperation(DropLast);
 
@@ -100,8 +100,8 @@ InterpretListUnaryOperation(Tail);
     using type = typename List##OpName<ListValue, ExprValue>::type;  \
   };
 
-InterpretListBinaryOperation(PushHead);
-InterpretListBinaryOperation(PushLast);
+InterpretListBinaryOperation(PushFront);
+InterpretListBinaryOperation(PushBack);
 }  // namespace crisp
 
 #endif  // CRISP_INTERPRETLIST_HPP
