@@ -1,7 +1,7 @@
 # Crisp
 Crisp: ***C***ompile-Time Interprete***r*** for L***isp***. A header-only library implemented with C++ templates.
 
-See a demo [safe_printf](https://github.com/pzque/crisp/blob/master/demos/safe_printf.cpp) which can validate printf format at compile time with Crisp.
+See a demo [safe_printf](https://github.com/pzque/crisp/blob/master/demos/safe_printf.cpp) which can validate printf formats at compile time with Crisp.
 
 ![language](https://img.shields.io/badge/language-c++-orange.svg)
 ![license](https://img.shields.io/badge/license-Apache2-green.svg)
