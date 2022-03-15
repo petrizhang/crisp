@@ -1,5 +1,5 @@
 # Crisp
-Crisp: ***C***ompile-Time Interprete***r*** for L***isp***
+Crisp: ***C***ompile-Time Interprete***r*** for L***isp***. A header-only library implemented with C++ templates.
 
 ![language](https://img.shields.io/badge/language-c++-orange.svg)
 ![license](https://img.shields.io/badge/license-Apache2-green.svg)
