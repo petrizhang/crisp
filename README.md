@@ -1,5 +1,5 @@
 # Crisp
-Crisp: ***C***ompile-Time Interprete***r*** for L***isp*** With C++ Templates
+Crisp: ***C***ompile-Time Interprete***r*** for L***isp***
 
 ![language](https://img.shields.io/badge/language-c++-orange.svg)
 ![license](https://img.shields.io/badge/license-Apache2-green.svg)
